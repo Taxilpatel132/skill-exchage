@@ -7,25 +7,26 @@ const courseService = require('../services/course.service');
 const otpService = require('../services/otp.service');
 exports.registerUser = async (req, res) => {
 
-    const { Fullname, Email, Password, Phone } = req.body;
-    if (!Fullname || !Email || !Password || !Phone) {
+    const { fullname, email, password, phone } = req.body;
+    if (!fullname || !email || !password || !phone) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
 
 
-    const user = await userservice.createuser({ Fullname, Email, Password, Phone });
+    const user = await userservice.createuser({ fullname, email, password, phone });
     if (user) {
 
         return res.status(201).json({ message: "User registered successfully", user });
     }
 }
 exports.loginUser = async (req, res) => {
-    const { Email, Password } = req.body;
-    if (!Email || !Password) {
+    console.log("from login user", req.body);
+    const { email, password } = req.body;
+    if (!email || !password) {
         return res.status(400).json({ message: "email and password are require" });
     }
-    const user = await userservice.loginUser({ Email, Password });
+    const user = await userservice.loginUser({ email, password });
     if (user) {
         const token = user.generateAuthToken();
         //res.header("Authorization", `Bearer ${token}`);

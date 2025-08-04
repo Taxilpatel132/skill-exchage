@@ -2,32 +2,33 @@ const usermodel = require("../models/users.model");
 
 
 exports.createuser = async (userData) => {
-    const { Fullname, Email, Password, Phone } = userData;
-    if (!Fullname || !Email || !Password || !Phone) {
+    const { fullname, email, password, phone } = userData;
+    if (!fullname || !email || !password || !phone) {
         throw new Error("something is wrong");
     }
 
-    const UserExist = await usermodel.findOne({ Email: Email });
+    const UserExist = await usermodel.findOne({ Email: email });
     if (UserExist) {
         throw new Error("User already exists");
     }
-    const hashpassword = await usermodel.hashpassword(Password);
+    const hashpassword = await usermodel.hashPassword(password);
     const User = new usermodel({
-        Fullname, Password: hashpassword, Email, Phone,
+        fullname, password: hashpassword, email, phone,
     })
     const savedUser = await User.save();
     return savedUser;
 }
 exports.loginUser = async (userData) => {
-    const { Email, Password } = userData;
-    if (!Email || !Password) {
+    const { email, password } = userData;
+    if (!email || !password) {
         throw new Error("email and password are require");
     }
-    const user = await usermodel.findOne({ Email: Email });
+    console.log(email, password);
+    const user = await usermodel.findOne({ email: email });
     if (!user) {
         throw new Error("User not found");
     }
-    const isMatch = await user.comparepassword(Password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
         throw new Error("Invalid credentials");
     }
@@ -38,7 +39,7 @@ exports.findByEmail = async (email) => {
     if (!email) {
         throw new Error("Email is required");
     }
-    const user = await usermodel.findOne({ Email: email });
+    const user = await usermodel.findOne({ email: email });
     if (!user) {
         throw new Error("User not found");
     }
@@ -61,7 +62,7 @@ exports.updatePassword = async (passData) => {
         const hashpassword = await usermodel.hashpassword(password);
         const updatedUser = await usermodel.findByIdAndUpdate(
             userId,
-            { Password: hashpassword },
+            { password: hashpassword },
             { new: true }
         );
 

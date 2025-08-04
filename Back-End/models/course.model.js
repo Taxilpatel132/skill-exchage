@@ -1,4 +1,5 @@
 // models/Course.js
+
 const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema({
@@ -11,20 +12,25 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-
-    advisor: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-    },
     priceInPoints: {
         type: Number,
         default: 10
     },
-    tags: [String],
+    categories: {
+        type: [String],
+        required: true,
+        enum: ["Programming", "Design", "Marketing", "Business", "Other"]
+    },
+    tags: {
+        type: [String],
+        required: true
+    },
+
+
     thumbnail: {
         type: String,
         required: true,
+        match: /\.(jpeg|jpg|gif|png)$/
     },
 
 
@@ -44,12 +50,6 @@ const courseSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-
-
-    enrolledUsers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
 
 
     status: {
@@ -77,5 +77,5 @@ const courseSchema = new mongoose.Schema({
     }],
 });
 
-const cousre = mongoose.model("Course", courseSchema);
-module.exports = cousre;
+const course = mongoose.model("Course", courseSchema);
+module.exports = course;

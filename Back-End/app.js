@@ -1,11 +1,19 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const userRoutes = require('./routes/user.route');
 const adminRoutes = require('./routes/admin.route');
 const courseRoutes = require('./routes/course.route');
 const cookieparser = require("cookie-parser");
+
 app.use(express.json());
 app.use(cookieparser());
+app.use(cors({
+    origin: '*', // Replace with your frontend URL
+    credentials: true,  // Important for cookies/auth
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.get('/', (req, res) => {
     res.send('Hello, World!');
 });

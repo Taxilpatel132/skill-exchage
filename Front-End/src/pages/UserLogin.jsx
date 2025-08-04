@@ -1,11 +1,13 @@
 import { useState } from 'react';
-
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 const UserLogin = () => {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
-        username: '',
+        email: '',
         password: ''
     });
 
@@ -20,11 +22,22 @@ const UserLogin = () => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Simulate API call
-        setTimeout(() => {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/';
+        console.log('url:', `${apiUrl}/users/login`);
+
+        try {
+            let responds = await axios.post(`${apiUrl}/users/login`, formData);
+            if (responds.data) {
+                console.log('Login successful:', responds.data);
+                navigate('/dashboard');
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+
+        } finally {
             setIsLoading(false);
-            console.log('Login submitted:', formData);
-        }, 2000);
+        }
+
     };
 
     return (
@@ -79,7 +92,7 @@ const UserLogin = () => {
                                     <input
                                         type="text"
                                         id="username"
-                                        name="username"
+                                        name="email"
                                         value={formData.username}
                                         onChange={handleInputChange}
                                         required
@@ -161,7 +174,7 @@ const UserLogin = () => {
                                         Remember me
                                     </label>
                                 </div>
-                                <a href="#" className="text-xs font-medium hover:underline transition-all duration-200" style={{ color: '#4F46E5', fontFamily: 'Poppins, sans-serif', fontWeight: '500' }}>
+                                <a href="/forgot-password" className="text-xs font-medium hover:underline transition-all duration-200" style={{ color: '#4F46E5', fontFamily: 'Poppins, sans-serif', fontWeight: '500' }}>
                                     Forgot password?
                                 </a>
                             </div>
@@ -195,7 +208,7 @@ const UserLogin = () => {
                         <div className="mt-4 text-center">
                             <p className="text-xs" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '400', color: '#111827' }}>
                                 Don't have an account?{' '}
-                                <a href="#" className="font-medium hover:underline transition-colors duration-200" style={{ color: '#4F46E5', fontWeight: '500' }}>
+                                <a href="/signup" className="font-medium hover:underline transition-colors duration-200" style={{ color: '#4F46E5', fontWeight: '500' }}>
                                     Sign up for free
                                 </a>
                             </p>

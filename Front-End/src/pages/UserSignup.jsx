@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import axios from 'axios';
 const UserSignup = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -35,17 +35,29 @@ const UserSignup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        console.log("from register user", formData);
 
-        // Simulate API call
-        setTimeout(() => {
+        // Get API URL with fallback
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/';
+        console.log('url:', `${apiUrl}/users/register`);
+
+        try {
+            let responds = await axios.post(`${apiUrl}/users/register`, formData);
+            if (responds.data) {
+                console.log('Registration successful:', responds.data);
+
+            }
+        } catch (error) {
+            console.error('Registration failed:', error);
+
+        } finally {
             setIsLoading(false);
-            console.log('Signup submitted:', formData);
-        }, 2000);
+        }
     };
 
     return (
         <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#F9FAFB' }}>
-            {/* Custom Gradient Background */}
+
             <div
                 className="absolute inset-0"
                 style={{
@@ -53,7 +65,7 @@ const UserSignup = () => {
                 }}
             ></div>
 
-            {/* Animated Background Elements */}
+
             <div className="absolute inset-0">
                 <div className="absolute top-10 left-10 w-64 h-64 bg-white opacity-6 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-10 right-10 w-80 h-80 bg-white opacity-6 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -299,7 +311,7 @@ const UserSignup = () => {
                         <div className="mt-4 text-center">
                             <p className="text-xs" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '400', color: '#111827' }}>
                                 Already have an account?{' '}
-                                <a href="#" className="font-medium hover:underline transition-colors duration-200" style={{ color: '#4F46E5', fontWeight: '500' }}>
+                                <a href="/login" className="font-medium hover:underline transition-colors duration-200" style={{ color: '#4F46E5', fontWeight: '500' }}>
                                     Sign in here
                                 </a>
                             </p>

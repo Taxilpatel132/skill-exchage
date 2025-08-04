@@ -13,7 +13,7 @@ const sendOTP = async (toEmail) => {
     });
 
 
-    // Check for missing or empty environment variables
+
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || process.env.EMAIL_USER.trim() === "" || process.env.EMAIL_PASS.trim() === "") {
         console.error("EMAIL_USER or EMAIL_PASS environment variable is missing or empty.");
         throw new Error("Email credentials are not set in environment variables.");
@@ -71,7 +71,7 @@ exports.verifyOTP = async (email, otp, role) => {
         if (otpRecord.expiresAt < new Date()) {
             throw new Error("OTP has expired");
         }
-        // OTP is valid, delete it from the database
+
         let token;
         await Otp.deleteOne({ _id: otpRecord._id });
         if (role == 'admin') {
