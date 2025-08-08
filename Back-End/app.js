@@ -21,4 +21,5 @@ app.get('/', (req, res) => {
 app.use('/users', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/course', courseRoutes);
+
 module.exports = app;

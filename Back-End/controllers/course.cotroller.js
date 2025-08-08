@@ -1,3 +1,4 @@
+const { create } = require('../models/notifications.model');
 const courseService = require('../services/course.service');
 
 exports.createCourse = async (req, res) => {
@@ -16,7 +17,20 @@ exports.createCourse = async (req, res) => {
 
 
         const cc = await courseService.createCC({ courseId: savedCourse?._id, advisorId: advisor?._id })
-        res.status(201).json({ course: savedCourse, courseCreator: cc });
+        if (!cc) {
+            return res.status(400).json({ message: "Failed to create course creator" });
+        }
+        const notificationData = {
+            userId: advisor._id,
+            message: `published a new course : ${savedCourse.title}`,
+            type: 'course_creation'
+        };
+        const notification = await courseService.createNotificationOncreatecourse(notificationData);
+        if (!notification) {
+            return res.status(400).json({ message: "Failed to create notification" });
+        }
+
+        res.status(201).json({ course: savedCourse, courseCreator: cc, massage: "Course created successfully", notification: "notification is create" });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

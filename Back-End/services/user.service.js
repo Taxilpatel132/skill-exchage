@@ -1,15 +1,16 @@
 const usermodel = require("../models/users.model");
 const courseCreator = require("../models/coures_creator.model");
 const courseService = require("../services/course.service");
-const UserCourseHistory = require("../models/user_course_history.model");
+const UserCourseHistory = require("../models/course_learner.model");
+const NotificationService = require("../services/notification.service");
 exports.createuser = async (userData) => {
     const { fullname, email, password, phone } = userData;
     if (!fullname || !email || !password || !phone) {
         throw new Error("something is wrong");
     }
-    console.log(userData);
+    // console.log(userData);
     const UserExist = await usermodel.findOne({ email });
-    console.log()
+    // console.log()
     if (UserExist) {
         throw new Error("User already exists");
     }
@@ -162,6 +163,10 @@ exports.getUserProfile = async (userId) => {
         const couresList = cc[0].courses.map(async (course) => {
             return await courseService.getCourseById(course._id);
         });
+        const notificationList = await NotificationService.receiverNotification(userId);
+        if (!notificationList || notificationList.length === 0) {
+            notificationList = [];
+        }
         return {
             _id: user._id,
             fullname: user.fullname.firstname + ' ' + user.fullname.lastname,
@@ -175,7 +180,7 @@ exports.getUserProfile = async (userId) => {
             phone: user.phone || "No phone number provided",
             bio: user.bio || "No bio provided",
             totalViews: totalViews.toString(),
-
+            notifications: notificationList,
             coursesList: await Promise.all(couresList)
         };
     } catch (error) {
