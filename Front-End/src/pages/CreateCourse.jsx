@@ -356,59 +356,8 @@ const CreateCourse = () => {
                                 </div>
                             </div>
 
-                            {/* Session Details */}
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                                    Session Details
-                                </h2>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Date *
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="session.date"
-                                            value={formData.sessionDetails.date}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors duration-200 ${errors.sessionDate ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-indigo-500'
-                                                }`}
-                                        />
-                                        {errors.sessionDate && <p className="mt-1 text-sm text-red-600">{errors.sessionDate}</p>}
-                                    </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Start Time *
-                                        </label>
-                                        <input
-                                            type="time"
-                                            name="session.startTime"
-                                            value={formData.sessionDetails.startTime}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors duration-200 ${errors.sessionStartTime ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-indigo-500'
-                                                }`}
-                                        />
-                                        {errors.sessionStartTime && <p className="mt-1 text-sm text-red-600">{errors.sessionStartTime}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            End Time *
-                                        </label>
-                                        <input
-                                            type="time"
-                                            name="session.endTime"
-                                            value={formData.sessionDetails.endTime}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors duration-200 ${errors.sessionEndTime ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-indigo-500'
-                                                }`}
-                                        />
-                                        {errors.sessionEndTime && <p className="mt-1 text-sm text-red-600">{errors.sessionEndTime}</p>}
-                                    </div>
-                                </div>
-                            </div>
 
                             {/* File Resources */}
                             <div className="space-y-6">

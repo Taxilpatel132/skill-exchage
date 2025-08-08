@@ -12,8 +12,6 @@ exports.registerUser = async (req, res) => {
         return res.status(400).json({ message: "All fields are required" });
     }
 
-
-
     const user = await userservice.createuser({ fullname, email, password, phone });
     if (user) {
 
@@ -21,7 +19,7 @@ exports.registerUser = async (req, res) => {
     }
 }
 exports.loginUser = async (req, res) => {
-    console.log("from login user", req.body);
+    //console.log("from login user", req.body);
     const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).json({ message: "email and password are require" });
@@ -39,7 +37,27 @@ exports.getuserProfile = async (req, res) => {
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
-    return res.status(200).json({ message: "User profile retrieved successfully", user });
+    const userProfile = await userservice.getUserProfile(user._id);
+    if (!userProfile) {
+        return res.status(404).json({ message: "User profile not found" });
+    }
+    return res.status(200).json({ message: "User profile retrieved successfully", userProfile });
+}
+exports.getOtherUserProfile = async (req, res) => {
+    const { userId } = req.params;
+    if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+    }
+    const userProfile = await userservice.getUserProfile(userId);
+    if (!userProfile) {
+        return res.status(404).json({ message: "User profile not found" });
+    }
+    const OtherUserProfile = {
+        ...userProfile,
+        other: true // Indicating this is a profile of another user
+
+    }
+    return res.status(200).json({ message: "User profile retrieved successfully", OtherUserProfile });
 }
 exports.logout = async (req, res) => {
     token = req.token;
@@ -149,4 +167,64 @@ exports.createNewPassword = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ message: error.message });
     }
+}
+
+exports.getusercardDetails = async (req, res) => {
+    try {
+        const userCardDetails = await userservice.getUserCardDetails();
+        if (!userCardDetails || userCardDetails.length === 0) {
+            return res.status(404).json({ message: "No user card details found" });
+        }
+        return res.status(200).json({
+            message: "User card details retrieved successfully",
+            userCardDetails
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Failed to retrieve user card details",
+            error: error.message
+        });
+    }
+}
+
+exports.getUsersByName = async (req, res) => {
+    try {
+        const { name } = req.query; // Get search name from query parameters
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({ message: "Search name is required" });
+        }
+
+        const users = await userservice.getUsersByName(name.trim());
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({
+                message: "No users found with the specified name",
+                searchTerm: name
+            });
+        }
+
+        return res.status(200).json({
+            message: "Users retrieved successfully",
+            count: users.length,
+            searchTerm: name,
+            users
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Failed to search users by name",
+            error: error.message
+        });
+    }
+}
+exports.getUserHistory = async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    const history = await userservice.getUserHistory(user._id);
+    if (!history || history.length === 0) {
+        return res.status(404).json({ message: "No history found for this user" });
+    }
+    return res.status(200).json({ message: "User history retrieved successfully", history });
 }

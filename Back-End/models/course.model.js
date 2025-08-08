@@ -17,7 +17,7 @@ const courseSchema = new mongoose.Schema({
         default: 10
     },
     categories: {
-        type: [String],
+        type: String,
         required: true,
         enum: ["Programming", "Design", "Marketing", "Business", "Other"]
     },
@@ -25,20 +25,20 @@ const courseSchema = new mongoose.Schema({
         type: [String],
         required: true
     },
-
-
+    advisor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ["active", "blocked"],
+        default: "active"
+    },
     thumbnail: {
         type: String,
         required: true,
         match: /\.(jpeg|jpg|gif|png)$/
-    },
-
-
-    sessionDetails: {
-        date: Date,
-        startTime: String,
-        endTime: String,
-        duration: Number
     },
 
 
@@ -49,13 +49,6 @@ const courseSchema = new mongoose.Schema({
     totalRatings: {
         type: Number,
         default: 0
-    },
-
-
-    status: {
-        type: String,
-        enum: ["coming_soon", "on_going", "complete", "blocked"],
-        default: "coming_soon"
     },
 
     createdAt: {

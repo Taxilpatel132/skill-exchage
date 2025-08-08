@@ -113,7 +113,9 @@ const Home = () => {
                         <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
                             Featured Courses
                         </h1>
-                        <button className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
+                        <button
+
+                            className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
                             View All →
                         </button>
                     </div>

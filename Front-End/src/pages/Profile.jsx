@@ -29,7 +29,7 @@ const Profile = () => {
             priceInPoints: 25,
             categories: ["Programming"],
             tags: ["React", "Hooks", "JavaScript"],
-            thumbnail: "https://via.placeholder.com/400x300/3498db/ffffff?text=React+Hooks",
+            thumbnail: "https://imgs.search.brave.com/-xqPuBFI7OtX3JG9nwNYfur0xE3KjPo_BKVlc4H2xqg/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4u/aGFzaG5vZGUuY29t/L3Jlcy9oYXNobm9k/ZS9pbWFnZS91cGxv/YWQvdjE2Nzk0NTMx/Mjg0OTgvNTBkNTI1/OTktMDUxMy00NmU1/LThiODctNjJkMDI0/NDU3MTBiLnBuZz93/PTE2MDAmaD04NDAm/Zml0PWNyb3AmY3Jv/cD1lbnRyb3B5JmF1/dG89Y29tcHJlc3Ms/Zm9ybWF0JmZvcm1h/dD13ZWJw",
             averageRating: 4.9,
             totalRatings: 234,
             status: "on_going",
@@ -124,14 +124,13 @@ const Profile = () => {
                                         </div>
 
                                         {/* Action Buttons */}
-                                        <div className="flex space-x-3">
-                                            <button className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-400 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-cyan-500 transition-all duration-200 shadow-lg hover:shadow-xl">
-                                                Edit Profile
-                                            </button>
+                                        <div className="flex space-x-3 mt-4 lg:mt-0 justify-center lg:justify-end w-full  lg:w-auto color-gray-900">
+
                                             <button className="px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:border-indigo-300 hover:text-indigo-600 transition-all duration-200">
                                                 Share Profile
                                             </button>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>

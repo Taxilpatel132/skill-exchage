@@ -3,22 +3,27 @@ const courseService = require('../services/course.service');
 exports.createCourse = async (req, res) => {
     try {
         const advisor = req.user; // Assuming the user is authenticated and their ID is available in req.user
-        const { title, description, tags } = req.body;
-        if (!title || !description || !advisor || !tags) {
+        const { title, description, tags, category, priceInPoints, thumbnail } = req.body;
+        if (!title || !description || !tags || !category || !priceInPoints || !thumbnail) {
             return res.status(400).json({ message: "All fields are required" });
         }
-        const savedCourse = await courseService.createCourse({ title, description, advisor, tags });
+        console.log("Course created successfully:");
+        const savedCourse = await courseService.createCourse({ title, description, tags, category, priceInPoints, thumbnail, advisor: advisor });
+
         if (!savedCourse) {
             return res.status(400).json({ message: "Failed to create course" });
         }
-        res.status(201).json(savedCourse);
+
+
+        const cc = await courseService.createCC({ courseId: savedCourse?._id, advisorId: advisor?._id })
+        res.status(201).json({ course: savedCourse, courseCreator: cc });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 }
 exports.getAllCourses = async (req, res) => {
     try {
-        const courses = await courseService.getAllCourses();
+        const courses = await courseService.getAllCourses(req.user);
         if (!courses || courses.length === 0) {
             return res.status(404).json({ message: "No courses found" });
         }

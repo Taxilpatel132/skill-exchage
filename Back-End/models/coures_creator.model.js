@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const UserCoursesSchema = new mongoose.Schema({
-    userId: {
+    advisorId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
@@ -12,6 +12,10 @@ const UserCoursesSchema = new mongoose.Schema({
             ref: 'Course',
         },
     ],
+    avgRating: {
+        type: Number,
+        default: 0,
+    },
 });
 
 const UserCourses = mongoose.model('UserCourses', UserCoursesSchema);

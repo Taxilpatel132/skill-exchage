@@ -23,7 +23,7 @@ const OTPInput = ({
             { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(1.7)" }
         );
 
-        // Animate OTP inputs individually with stagger
+
         setTimeout(() => {
             otpInputsRef.current.forEach((input, index) => {
                 if (input) {
@@ -44,12 +44,12 @@ const OTPInput = ({
     }, []);
 
     const handleOtpChange = (index, value) => {
-        if (value.length <= 1 && /^[a-zA-Z0-9]*$/.test(value)) { // Allow alphanumeric characters
+        if (value.length <= 1 && /^[a-zA-Z0-9]*$/.test(value)) {
             const newOtp = [...otp];
             newOtp[index] = value;
             setOtp(newOtp);
 
-            // Auto focus next input
+
             if (value && index < length - 1) {
                 otpInputsRef.current[index + 1]?.focus();
             }

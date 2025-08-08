@@ -5,7 +5,7 @@ require("dotenv").config({ path: require('path').resolve(__dirname, '../../.env'
 const adminModel = require("../models/admin.model");
 const usermodel = require("../models/users.model");
 const sendOTP = async (toEmail) => {
-
+    console.log("Sending OTP to:", toEmail);
     const otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
         specialChars: false,
@@ -38,6 +38,7 @@ const sendOTP = async (toEmail) => {
     };
 
     await transporter.sendMail(mailOptions);
+
     return otp;
 };
 
@@ -81,7 +82,7 @@ exports.verifyOTP = async (email, otp, role) => {
             }
             token = admin.generateAuthToken();
         } else {
-            const user = await usermodel.findOne({ Email: email });
+            const user = await usermodel.findOne({ email: email });
             if (!user) {
                 throw new Error("user not found");
             }
