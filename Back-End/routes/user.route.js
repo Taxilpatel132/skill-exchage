@@ -6,11 +6,11 @@ router.post('/register', usercontroller.registerUser);
 router.post('/login', usercontroller.loginUser);
 router.get('/profile', authmiddleware.authUser, usercontroller.getuserProfile);
 router.get('/logout', authmiddleware.authUser, usercontroller.logout);
-/*router.put('/add-skills', authmiddleware.authUser, usercontroller.addSkill);
-router.put('/update-profile-photo', authmiddleware.authUser, usercontroller.updateProfilePhoto);
-router.put('/update-education', authmiddleware.authUser, usercontroller.updateEducation);*/
 router.put('/block-course', authmiddleware.authUser, usercontroller.blockedCourse);
-router.post('/forgot-password', usercontroller.forgotPassword);
+router.post('/send-otp', usercontroller.forgotPassword);
 router.post('/verify-otp', usercontroller.verifyOTP);
 router.put('/update-password', usercontroller.createNewPassword);
+router.get('/user-card-details', authmiddleware.optionalAuthUser, usercontroller.getusercardDetails);
+router.get('/search-users', authmiddleware.optionalAuthUser, usercontroller.getUsersByName);
+router.get('/other-user-profile/:userId', authmiddleware.optionalAuthUser, usercontroller.getOtherUserProfile);
 module.exports = router;

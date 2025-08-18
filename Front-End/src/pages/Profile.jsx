@@ -29,7 +29,7 @@ const Profile = () => {
             priceInPoints: 25,
             categories: ["Programming"],
             tags: ["React", "Hooks", "JavaScript"],
-            thumbnail: "https://via.placeholder.com/400x300/3498db/ffffff?text=React+Hooks",
+            thumbnail: "https://imgs.search.brave.com/-xqPuBFI7OtX3JG9nwNYfur0xE3KjPo_BKVlc4H2xqg/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4u/aGFzaG5vZGUuY29t/L3Jlcy9oYXNobm9k/ZS9pbWFnZS91cGxv/YWQvdjE2Nzk0NTMx/Mjg0OTgvNTBkNTI1/OTktMDUxMy00NmU1/LThiODctNjJkMDI0/NDU3MTBiLnBuZz93/PTE2MDAmaD04NDAm/Zml0PWNyb3AmY3Jv/cD1lbnRyb3B5JmF1/dG89Y29tcHJlc3Ms/Zm9ybWF0JmZvcm1h/dD13ZWJw",
             averageRating: 4.9,
             totalRatings: 234,
             status: "on_going",
@@ -45,7 +45,7 @@ const Profile = () => {
             priceInPoints: 20,
             categories: ["Design"],
             tags: ["CSS", "Grid", "Flexbox"],
-            thumbnail: "https://via.placeholder.com/400x300/e74c3c/ffffff?text=CSS+Guide",
+            thumbnail: "https://imgs.search.brave.com/zZQEn9xcJFvkzA9PUColDq_7UXDPU8vkOccqTsy1sxA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pdHZp/ZWMuY29tL2Jsb2cv/d3AtY29udGVudC91/cGxvYWRzLzIwMjQv/MDMvVGh1bWJuYWls/LWNzcy12aXBwcm8u/cG5n",
             averageRating: 4.7,
             totalRatings: 189,
             status: "complete",
@@ -61,7 +61,7 @@ const Profile = () => {
             priceInPoints: 15,
             categories: ["Programming"],
             tags: ["JavaScript", "Fundamentals", "Beginner"],
-            thumbnail: "https://via.placeholder.com/400x300/f39c12/ffffff?text=JS+Basics",
+            thumbnail: "https://imgs.search.brave.com/vnqK7vW7UlS8xQPgJWgiamTDsgUYDxVu8h4ve-6UtaQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNS8w/NC8yMy8xNy80MS9q/YXZhc2NyaXB0LTcz/NjQwMV82NDAucG5n",
             averageRating: 4.8,
             totalRatings: 456,
             status: "complete",
@@ -124,14 +124,13 @@ const Profile = () => {
                                         </div>
 
                                         {/* Action Buttons */}
-                                        <div className="flex space-x-3">
-                                            <button className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-400 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-cyan-500 transition-all duration-200 shadow-lg hover:shadow-xl">
-                                                Edit Profile
-                                            </button>
+                                        <div className="flex space-x-3 mt-4 lg:mt-0 justify-center lg:justify-end w-full  lg:w-auto color-gray-900">
+
                                             <button className="px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:border-indigo-300 hover:text-indigo-600 transition-all duration-200">
                                                 Share Profile
                                             </button>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>

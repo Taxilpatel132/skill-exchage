@@ -76,4 +76,3 @@ exports.blockCourse = async (req, res) => {
     }
     res.status(200).json({ message: "Course blocked successfully", course });
 }
-

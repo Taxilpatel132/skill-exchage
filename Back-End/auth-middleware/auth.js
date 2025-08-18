@@ -10,6 +10,7 @@ exports.authUser = async (req, res, next) => {
             req.headers.authorization.split(" ")[1] :
             null);
     //console.log("from auth user", token);
+    ;
     if (!token) {
         //console.log("no token");
         return res.status(401).json({
@@ -49,7 +50,57 @@ exports.authUser = async (req, res, next) => {
             message: "something is wrong"
         })
     }
+}
 
+exports.optionalAuthUser = async (req, res, next) => {
+    // This middleware will attempt to authenticate the user but won't fail if no token is provided
+    const token = req.cookies.token ||
+        (req.headers.authorization?.startsWith('Bearer ') ?
+            req.headers.authorization.split(" ")[1] :
+            null);
+
+    // If no token provided, continue without authentication
+    if (!token) {
+        req.user = null;
+        req.token = null;
+        return next();
+    }
+
+    // Check if token is blacklisted
+    const istoken = await blackListTokenModel.findOne({ token });
+    if (istoken) {
+        req.user = null;
+        req.token = null;
+        return next();
+    }
+
+    try {
+        let decode;
+        try {
+            const rawToken = token.replace(/^"|"$/g, '');
+            decode = jwt.verify(rawToken, process.env.SECRET_KEY);
+        } catch (error) {
+            console.log('Optional token verification failed:', error.message);
+            req.user = null;
+            req.token = null;
+            return next();
+        }
+
+        const user = await usermodel.findById(decode._id);
+        if (user) {
+            req.user = user;
+            req.token = token;
+        } else {
+            req.user = null;
+            req.token = null;
+        }
+        return next();
+    } catch (error) {
+        console.log('Optional auth error:', error);
+        req.user = null;
+        req.token = null;
+        return next();
+    }
 }
 
 exports.authAdmin = async (req, res, next) => {

@@ -64,7 +64,16 @@ const userSchema = new mongoose.Schema({
     bio: {
         type: String,
 
-    }
+    }, followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    bestSkill: {
+        type: String,
+        default: ""
+    },
+    notifications: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Notification'
+    }],
 
 }, {
     timestamps: true

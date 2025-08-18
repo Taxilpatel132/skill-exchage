@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import OTPInput from '../components/OTPInput';
+import axios from 'axios';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -23,14 +24,15 @@ const ForgotPassword = () => {
     const handleSendOTP = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        // console.log('Sending OTP to:', email);
+        console.log(`${import.meta.env.VITE_API_URL}/users/send-otp`);
+        const otpsend = await axios.post(`${import.meta.env.VITE_API_URL}/users/send-otp`, { email: email });
 
-        // Simulate API call
         setTimeout(() => {
             setIsLoading(false);
             setOtpSent(true);
             setShowOTP(true);
 
-            // Animate email form out
             gsap.to(emailFormRef.current, {
                 opacity: 0,
                 x: -50,
@@ -43,11 +45,13 @@ const ForgotPassword = () => {
     const handleOTPComplete = async (otpValue) => {
         setIsLoading(true);
 
-        // Simulate verification
+        const verify = await axios.post(`${import.meta.env.VITE_API_URL}/users/verify-otp`, { email: email, otp: otpValue });
+        console.log(verify);
+
         setTimeout(() => {
             setIsLoading(false);
-            console.log('OTP Verified:', otpValue);
-            navigate('/');
+
+            navigate('/create-new-password');
         }, 1500);
     };
 
