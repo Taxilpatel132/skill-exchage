@@ -13,6 +13,8 @@ import CreateCourse from './pages/CreateCourse'
 import Profile from './pages/Profile'
 import CreateNewPassword from './pages/CreateNewPassword'
 import History from './pages/Histroy'
+import CourseDetails from './pages/CourseDetails'
+
 function App() {
   const [count, setCount] = useState(0)
 
@@ -29,6 +31,8 @@ function App() {
         <Route path='/profile' element={<Profile />} />
         <Route path='/create-new-password' element={<CreateNewPassword />} />
         <Route path='/history' element={<History />} />
+        <Route path="/course/:id" element={<CourseDetails />} />
+
       </Routes>
 
     </>
