@@ -2,6 +2,7 @@ const courseModel = require('../models/course.model');
 const userModel = require('../models/users.model');
 const ratingModel = require('../models/rating.model');
 const UserCourses = require('../models/coures_creator.model');
+const UserEnroll = require("../models/User_enroll.model");
 exports.createCourse = async (courseData) => {
     const { title, description, tags, category, priceInPoints, thumbnail, advisor } = courseData;
 
@@ -134,4 +135,80 @@ exports.createCC = async (ccData) => {
     }
     await userCourses.save();
     return userCourses;
+};
+
+exports.askQuestion = async (questionData) => {
+    const { courseId, studentId, question } = questionData;
+    const course = await courseModel.findById(courseId).populate;
+    if (!course) {
+        throw new Error("Course not found");
+    }
+    const user = await userModel.findById(studentId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    // Check if the user is enrolled in the course
+
+    const newQuestion = {
+        student: studentId,
+        question,
+        answers: []
+    };
+    course.questions.push(newQuestion);
+    await course.save();
+    return newQuestion;
+};
+
+exports.createNotificationOncreatecourse = async (notificationData) => {
+    const Notification = require('../models/notification.model');
+    const { userId, message, type } = notificationData;
+
+    if (!userId || !message || !type) {
+        throw new Error("All fields are required for notification");
+    }
+
+    const notification = new Notification({
+        user: userId,
+        message,
+        type
+    });
+
+    const savedNotification = await notification.save();
+    return savedNotification;
+}
+
+exports.enrollInCourse = async (enrollData) => {
+    const { courseId, studentId } = enrollData;
+    if (!courseId || !studentId) {
+        throw new Error("Course ID and Student ID are required");
+    }
+
+    const course = await courseModel.findById(courseId);
+    if (!course) {
+        throw new Error("Course not found");
+    }
+
+    const user = await userModel.findById(studentId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+
+    let userEnroll = await UserEnroll.findOne({ user: studentId });
+
+    if (!userEnroll) {
+        userEnroll = new UserEnroll({
+            user: studentId,
+            courses: [courseId]
+        });
+    } else {
+        if (userEnroll.courses.includes(courseId)) {
+            throw new Error("User is already enrolled in this course");
+        }
+        userEnroll.courses.push(courseId);
+    }
+
+    await userEnroll.save();
+    return userEnroll;
 };

@@ -1,7 +1,7 @@
 const usermodel = require("../models/users.model");
 const courseCreator = require("../models/coures_creator.model");
 const courseService = require("../services/course.service");
-const UserCourseHistory = require("../models/course_learner.model");
+//const UserCourseHistory = require("../models/course_learner.model");
 const NotificationService = require("../services/notification.service");
 exports.createuser = async (userData) => {
     const { fullname, email, password, phone } = userData;
@@ -188,53 +188,3 @@ exports.getUserProfile = async (userId) => {
     }
 }
 
-exports.getUserHistory = async (userId) => {
-    if (!userId) {
-        throw new Error("User ID is required");
-    }
-    try {
-
-        const history = await UserCourseHistory.find({ userId })
-            .populate('courseId');
-
-        // Format the result for clarity
-        const enrollmentCourses = history.map(entry => ({
-            course: {
-                _id: entry.courseId._id,
-                title: entry.courseId.title,
-                description: entry.courseId.description,
-                thumbnail: entry.courseId.thumbnail,
-                categories: entry.courseId.categories,
-                tags: entry.courseId.tags,
-            },
-            enrollmentDate: entry.enrollmentDate,
-            progress: entry.progress
-        }));
-
-        const coures_creator = await courseCreator.find({ advisorId: userId }).populate('courses');
-        const createdCoursesIds = coures_creator[0].courses.map(course => {
-            return course._id;
-        })
-        const earningsHistory = await UserCourseHistory.find({ courseId: { $in: createdCoursesIds } })
-            .populate('courseId');
-        const earningsCourses = earningsHistory.map(entry => ({
-            course: {
-                _id: entry.courseId._id,
-                title: entry.courseId.title,
-                description: entry.courseId.description,
-                thumbnail: entry.courseId.thumbnail,
-                categories: entry.courseId.categories,
-                tags: entry.courseId.tags,
-            },
-            enrollmentDate: entry.enrollmentDate,
-            progress: entry.progress
-
-        }));
-        return {
-            enrollmentCourses,
-            createdCourses: earningsCourses
-        };
-    } catch (error) {
-        throw new Error("Failed to get user history: " + error.message);
-    }
-}

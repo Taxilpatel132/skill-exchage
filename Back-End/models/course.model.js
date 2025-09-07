@@ -51,6 +51,12 @@ const courseSchema = new mongoose.Schema({
         default: 0
     },
 
+    // Simplified stats
+    enrollmentCount: {
+        type: Number,
+        default: 0
+    },
+
     createdAt: {
         type: Date,
         default: Date.now

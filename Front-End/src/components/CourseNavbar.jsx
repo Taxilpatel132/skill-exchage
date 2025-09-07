@@ -5,10 +5,10 @@ const CourseNavbar = ({ title, sections }) => {
     const [activeSection, setActiveSection] = useState('overview');
     const [isSticky, setIsSticky] = useState(false);
 
-    // Handle scroll to make navbar sticky
+
     useEffect(() => {
         const handleScroll = () => {
-            // Make navbar sticky after scrolling past header
+
             const offset = window.scrollY;
             if (offset > 300) {
                 setIsSticky(true);
@@ -16,7 +16,7 @@ const CourseNavbar = ({ title, sections }) => {
                 setIsSticky(false);
             }
 
-            // Update active section based on scroll position
+
             const position = window.scrollY + 100;
 
             for (let i = sections.length - 1; i >= 0; i--) {
@@ -67,8 +67,8 @@ const CourseNavbar = ({ title, sections }) => {
                                     key={section.id}
                                     onClick={() => scrollToSection(section.id)}
                                     className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${activeSection === section.id
-                                            ? 'border-indigo-600 text-indigo-600'
-                                            : 'border-transparent text-gray-700 hover:border-gray-300'
+                                        ? 'border-indigo-600 text-indigo-600'
+                                        : 'border-transparent text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
                                     {section.label}
