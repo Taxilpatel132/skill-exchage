@@ -5,7 +5,7 @@ const notificationSchema = new mongoose.Schema({
     sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Optional: who triggered it
     type: {
         type: String,
-        enum: ["new_course", "new_message", "question_answered"],
+        enum: ["new_course", "new_message", "question", "answer"],
         required: true
     },
     course: { type: mongoose.Schema.Types.ObjectId, ref: "Course" }, // for new_course type

@@ -1,8 +1,10 @@
 const courseModel = require('../models/course.model');
 const userModel = require('../models/users.model');
-const ratingModel = require('../models/rating.model');
+
 const UserCourses = require('../models/coures_creator.model');
 const UserEnroll = require("../models/User_enroll.model");
+const Notification = require('../models/notification.model');
+const CourseQA = require('../models/course_qa.model');
 exports.createCourse = async (courseData) => {
     const { title, description, tags, category, priceInPoints, thumbnail, advisor } = courseData;
 
@@ -139,39 +141,42 @@ exports.createCC = async (ccData) => {
 
 exports.askQuestion = async (questionData) => {
     const { courseId, studentId, question } = questionData;
-    const course = await courseModel.findById(courseId).populate;
-    if (!course) {
-        throw new Error("Course not found");
+    if (!courseId || !studentId || !question) {
+        throw new Error("Course ID, Student ID, and question are required");
     }
-    const user = await userModel.findById(studentId);
-    if (!user) {
-        throw new Error("User not found");
+    const courses = await UserEnroll.findOne({ user: studentId }).populate;
+    if (!courses || !courses.courses.includes(courseId)) {
+        throw new Error("User is not enrolled in this course");
     }
 
-    // Check if the user is enrolled in the course
 
-    const newQuestion = {
+    const newQuestion = new CourseQA({
+        course: courseId,
         student: studentId,
         question,
         answers: []
-    };
-    course.questions.push(newQuestion);
-    await course.save();
+    });
+    await newQuestion.save();
+
+
     return newQuestion;
 };
 
-exports.createNotificationOncreatecourse = async (notificationData) => {
-    const Notification = require('../models/notification.model');
-    const { userId, message, type } = notificationData;
 
-    if (!userId || !message || !type) {
-        throw new Error("All fields are required for notification");
+
+exports.createNotification = async (notificationData) => {
+    const { receiverId, senderId, type, courseId, message } = notificationData;
+
+    if (!receiverId || !type) {
+        throw new Error("Receiver ID and type are required for notification");
     }
 
     const notification = new Notification({
-        user: userId,
-        message,
-        type
+        receiver: receiverId,
+        sender: senderId,
+        type,
+        course: courseId,
+        message
     });
 
     const savedNotification = await notification.save();
@@ -212,3 +217,17 @@ exports.enrollInCourse = async (enrollData) => {
     await userEnroll.save();
     return userEnroll;
 };
+
+exports.getUserCourseHistory = async (userId) => {
+    if (!userId) {
+        throw new Error("User ID is required");
+    }
+    const userEnroll = await UserEnroll.findOne({ user: userId }).populate('courses');
+    if (!userEnroll || userEnroll.courses.length === 0) {
+        throw new Error("No course history found for this user");
+    }
+    return userEnroll.courses;
+
+
+}
+
