@@ -228,3 +228,15 @@ exports.getUserHistory = async (req, res) => {
     }
     return res.status(200).json({ message: "User history retrieved successfully", history });
 }
+
+exports.getMyEnrollments = async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    const enrollments = await userservice.getUserEnrollments(user._id);
+    if (!enrollments || enrollments.length === 0) {
+        return res.status(404).json({ message: "No enrollments found for this user" });
+    }
+    return res.status(200).json({ message: "User enrollments retrieved successfully", enrollments });
+}

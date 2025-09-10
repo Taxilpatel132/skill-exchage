@@ -3,6 +3,7 @@ const courseCreator = require("../models/coures_creator.model");
 const courseService = require("../services/course.service");
 //const UserCourseHistory = require("../models/course_learner.model");
 const NotificationService = require("../services/notification.service");
+const UserEnroll = require("../models/User_enroll.model");
 exports.createuser = async (userData) => {
     const { fullname, email, password, phone } = userData;
     if (!fullname || !email || !password || !phone) {
@@ -188,3 +189,15 @@ exports.getUserProfile = async (userId) => {
     }
 }
 
+expoerts.getUserEnrollments = async (userId) => {
+    if (!userId) {
+        throw new Error("User ID is required");
+    }
+
+    try {
+        const userEnroll = await UserEnroll.findOne({ user: userId }).populate('courses');
+        return userEnroll ? userEnroll.courses : [];
+    } catch (error) {
+        throw new Error("Failed to get user enrollments: " + error.message);
+    }
+};

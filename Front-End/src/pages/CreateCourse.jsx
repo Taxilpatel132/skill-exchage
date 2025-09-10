@@ -7,434 +7,670 @@ const CreateCourse = () => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        priceInPoints: 10,
-        categories: [],
-        tags: [],
-        thumbnail: null,
-        sessionDetails: {
-            date: '',
-            startTime: '',
-            endTime: '',
-            duration: 0
-        },
-        fileResources: []
+        fullDescription: '',
+        category: '',
+        level: '',
+        pricePoints: '',
+        duration: '',
+        language: 'English',
+        thumbnail: '',
+        skills: [],
+        learningObjectives: [''],
+        prerequisites: [''],
+        courseHighlights: [''],
+        tools: [],
+        targetAudience: [''],
+        certificate: true,
+        modules: []
     });
-    const [tagInput, setTagInput] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [currentSkill, setCurrentSkill] = useState('');
+    const [currentTool, setCurrentTool] = useState('');
     const [errors, setErrors] = useState({});
 
-    const categoryOptions = ["Programming", "Design", "Marketing", "Business", "Other"];
+    // Cloudinary file upload states
+    const [selectedFiles, setSelectedFiles] = useState({
+        thumbnail: null,
+        video: null,
+        materials: []
+    });
+    const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState('');
+
+    const categories = ['Programming', 'Design', 'Marketing', 'Business', 'Other'];
+    const levels = ['Beginner', 'Intermediate', 'Advanced'];
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
 
-        if (name === 'categories') {
-            if (checked) {
-                setFormData(prev => ({
-                    ...prev,
-                    categories: [...prev.categories, value]
-                }));
-            } else {
-                setFormData(prev => ({
-                    ...prev,
-                    categories: prev.categories.filter(cat => cat !== value)
-                }));
-            }
-        } else if (name.startsWith('session.')) {
-            const sessionField = name.split('.')[1];
+    const handleArrayInputChange = (index, field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: prev[field].map((item, i) => i === index ? value : item)
+        }));
+    };
+
+    const addArrayItem = (field) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: [...prev[field], '']
+        }));
+    };
+
+    const removeArrayItem = (index, field) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: prev[field].filter((_, i) => i !== index)
+        }));
+    };
+
+    const addSkill = () => {
+        if (currentSkill.trim() && !formData.skills.includes(currentSkill.trim())) {
             setFormData(prev => ({
                 ...prev,
-                sessionDetails: {
-                    ...prev.sessionDetails,
-                    [sessionField]: value
-                }
+                skills: [...prev.skills, currentSkill.trim()]
             }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                [name]: type === 'number' ? Number(value) : value
-            }));
+            setCurrentSkill('');
         }
     };
 
-    const handleThumbnailUpload = (e) => {
+    const removeSkill = (skillToRemove) => {
+        setFormData(prev => ({
+            ...prev,
+            skills: prev.skills.filter(skill => skill !== skillToRemove)
+        }));
+    };
+
+    const addTool = () => {
+        if (currentTool.trim() && !formData.tools.includes(currentTool.trim())) {
+            setFormData(prev => ({
+                ...prev,
+                tools: [...prev.tools, currentTool.trim()]
+            }));
+            setCurrentTool('');
+        }
+    };
+
+    const removeTool = (toolToRemove) => {
+        setFormData(prev => ({
+            ...prev,
+            tools: prev.tools.filter(tool => tool !== toolToRemove)
+        }));
+    };
+
+    // File selection handler
+    const handleFileSelect = (e, fileType) => {
         const file = e.target.files[0];
         if (file) {
-            // In real app, upload to server and get URL
-            const thumbnailUrl = URL.createObjectURL(file);
-            setFormData(prev => ({
+            console.log(`Selected ${fileType}:`, file.name);
+            setSelectedFiles(prev => ({
                 ...prev,
-                thumbnail: thumbnailUrl
+                [fileType]: file
             }));
         }
     };
 
-    const addTag = () => {
-        if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-            setFormData(prev => ({
-                ...prev,
-                tags: [...prev.tags, tagInput.trim()]
-            }));
-            setTagInput('');
+    // Upload file to Cloudinary
+    const uploadFile = async (fileType) => {
+        const file = selectedFiles[fileType];
+        if (!file) {
+            alert('Please select a file first!');
+            return;
         }
-    };
 
-    const removeTag = (tagToRemove) => {
-        setFormData(prev => ({
-            ...prev,
-            tags: prev.tags.filter(tag => tag !== tagToRemove)
-        }));
-    };
+        setUploading(true);
+        setUploadProgress(`Uploading ${fileType}...`);
 
-    const handleFileResourceUpload = (e) => {
-        const files = Array.from(e.target.files);
-        const newResources = files.map(file => ({
-            filename: file.name,
-            url: URL.createObjectURL(file),
-            type: getFileType(file.name)
-        }));
+        try {
+            // Dynamically import the upload function
+            const { uploadToCloudinary } = await import('../utils/cloudinary');
 
-        setFormData(prev => ({
-            ...prev,
-            fileResources: [...prev.fileResources, ...newResources]
-        }));
-    };
+            const result = await uploadToCloudinary(file, `course-${fileType}s`);
 
-    const getFileType = (filename) => {
-        const extension = filename.split('.').pop().toLowerCase();
-        if (['pdf'].includes(extension)) return 'pdf';
-        if (['mp4', 'avi', 'mov'].includes(extension)) return 'video';
-        if (['ppt', 'pptx'].includes(extension)) return 'ppt';
-        if (['doc', 'docx'].includes(extension)) return 'docx';
-        return 'other';
-    };
+            // Update form data with the Cloudinary URL
+            if (fileType === 'thumbnail') {
+                setFormData(prev => ({ ...prev, thumbnail: result.url }));
+            }
 
-    const removeFileResource = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            fileResources: prev.fileResources.filter((_, i) => i !== index)
-        }));
-    };
+            console.log(`${fileType} uploaded:`, result.url);
+            setUploadProgress(`${fileType} uploaded successfully! ✓`);
 
-    const validateForm = () => {
-        const newErrors = {};
+            // Clear the file selection after successful upload
+            setSelectedFiles(prev => ({ ...prev, [fileType]: null }));
 
-        if (!formData.title.trim()) newErrors.title = 'Title is required';
-        if (!formData.description.trim()) newErrors.description = 'Description is required';
-        if (formData.categories.length === 0) newErrors.categories = 'Select at least one category';
-        if (formData.tags.length === 0) newErrors.tags = 'Add at least one tag';
-        if (!formData.thumbnail) newErrors.thumbnail = 'Thumbnail is required';
-        if (!formData.sessionDetails.date) newErrors.sessionDate = 'Session date is required';
-        if (!formData.sessionDetails.startTime) newErrors.sessionStartTime = 'Start time is required';
-        if (!formData.sessionDetails.endTime) newErrors.sessionEndTime = 'End time is required';
+            // Show success message
+            alert(`${fileType} uploaded successfully!`);
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        } catch (error) {
+            console.error(`${fileType} upload failed:`, error);
+            setUploadProgress(`${fileType} upload failed. Please try again.`);
+            alert(`Upload failed: ${error.message}`);
+        } finally {
+            setUploading(false);
+            setTimeout(() => setUploadProgress(''), 3000);
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return;
-
-        setIsSubmitting(true);
-
         try {
-            // Calculate duration
-            const duration = calculateDuration(formData.sessionDetails.startTime, formData.sessionDetails.endTime);
+            // Prepare data for backend (match backend field names)
             const courseData = {
                 ...formData,
-                sessionDetails: {
-                    ...formData.sessionDetails,
-                    duration
-                }
+                priceInPoints: parseInt(formData.pricePoints), // Convert pricePoints to priceInPoints
+                learningObjectives: formData.learningObjectives.filter(obj => obj.trim()),
+                prerequisites: formData.prerequisites.filter(req => req.trim()),
+                courseHighlights: formData.courseHighlights.filter(highlight => highlight.trim()),
+                targetAudience: formData.targetAudience.filter(audience => audience.trim())
             };
 
-            console.log('Creating course:', courseData);
-            // API call would go here
+            // Remove the old field name
+            delete courseData.pricePoints;
 
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            console.log('Sending course data:', courseData);
 
-            navigate('/dashboard');
+            // Send to your backend API
+            const response = await fetch('/api/courses', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add authorization header if needed
+                    // 'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(courseData)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Course created successfully:', result);
+                alert('Course created successfully!');
+                navigate('/courses'); // Redirect to courses page
+            } else {
+                const error = await response.json();
+                console.error('Failed to create course:', error);
+                alert(`Failed to create course: ${error.message}`);
+            }
         } catch (error) {
             console.error('Error creating course:', error);
-        } finally {
-            setIsSubmitting(false);
+            alert('Error creating course. Please try again.');
         }
-    };
-
-    const calculateDuration = (startTime, endTime) => {
-        const start = new Date(`2000-01-01 ${startTime}`);
-        const end = new Date(`2000-01-01 ${endTime}`);
-        return Math.abs(end - start) / (1000 * 60); // duration in minutes
     };
 
     return (
         <>
             <Navbar />
             <div className="min-h-screen bg-gray-50 py-8">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                        {/* Header */}
-                        <div className="bg-gradient-to-r from-indigo-600 to-cyan-400 px-6 py-8">
-                            <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                Create New Course
-                            </h1>
-                            <p className="text-indigo-100 mt-2">Share your expertise with the world</p>
-                        </div>
+                <div className="max-w-4xl mx-auto px-6">
+                    {/* Header */}
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Course</h1>
+                        <p className="text-gray-600">Share your knowledge and help others learn new skills</p>
+                    </div>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-8">
-                            {/* Basic Information */}
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                                    Basic Information
-                                </h2>
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        {/* Basic Information */}
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                                <div className="w-2 h-6 bg-gradient-to-b from-indigo-500 to-cyan-400 rounded-full mr-3"></div>
+                                Basic Information
+                            </h2>
 
-                                {/* Title */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Course Title *
-                                    </label>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Course Title</label>
                                     <input
                                         type="text"
                                         name="title"
                                         value={formData.title}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors duration-200 ${errors.title ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-indigo-500'
-                                            }`}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                         placeholder="Enter course title"
+                                        required
                                     />
-                                    {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
                                 </div>
 
-                                {/* Description */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Description *
-                                    </label>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Short Description</label>
                                     <textarea
                                         name="description"
                                         value={formData.description}
                                         onChange={handleInputChange}
-                                        rows={4}
-                                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors duration-200 resize-none ${errors.description ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-indigo-500'
-                                            }`}
-                                        placeholder="Describe your course content and learning outcomes"
+                                        rows={3}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        placeholder="Brief description for course cards (150 characters max)"
+                                        maxLength={150}
+                                        required
                                     />
-                                    {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
                                 </div>
 
-                                {/* Price */}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Description</label>
+                                    <textarea
+                                        name="fullDescription"
+                                        value={formData.fullDescription}
+                                        onChange={handleInputChange}
+                                        rows={5}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        placeholder="Detailed course description for the course page"
+                                        required
+                                    />
+                                </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Price (Points)
-                                    </label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                    <select
+                                        name="category"
+                                        value={formData.category}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        required
+                                    >
+                                        <option value="">Select category</option>
+                                        {categories.map(cat => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Level</label>
+                                    <select
+                                        name="level"
+                                        value={formData.level}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        required
+                                    >
+                                        <option value="">Select level</option>
+                                        {levels.map(level => (
+                                            <option key={level} value={level}>{level}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Price (Points)</label>
                                     <input
                                         type="number"
-                                        name="priceInPoints"
-                                        value={formData.priceInPoints}
+                                        name="pricePoints"
+                                        value={formData.pricePoints}
                                         onChange={handleInputChange}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        placeholder="100"
                                         min="1"
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors duration-200"
+                                        required
                                     />
                                 </div>
-                            </div>
-
-                            {/* Categories and Tags */}
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                                    Categories & Tags
-                                </h2>
-
-                                {/* Categories */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                                        Categories * (Select all that apply)
-                                    </label>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        {categoryOptions.map(category => (
-                                            <label key={category} className="flex items-center space-x-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    name="categories"
-                                                    value={category}
-                                                    checked={formData.categories.includes(category)}
-                                                    onChange={handleInputChange}
-                                                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                                />
-                                                <span className="text-sm text-gray-700">{category}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                    {errors.categories && <p className="mt-1 text-sm text-red-600">{errors.categories}</p>}
-                                </div>
-
-                                {/* Tags */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Tags *
-                                    </label>
-                                    <div className="flex space-x-2 mb-3">
-                                        <input
-                                            type="text"
-                                            value={tagInput}
-                                            onChange={(e) => setTagInput(e.target.value)}
-                                            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                                            className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500"
-                                            placeholder="Add a tag and press Enter"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={addTag}
-                                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-                                        >
-                                            Add
-                                        </button>
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {formData.tags.map((tag, index) => (
-                                            <span key={index} className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm flex items-center space-x-2">
-                                                <span>#{tag}</span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeTag(tag)}
-                                                    className="text-indigo-600 hover:text-indigo-800"
-                                                >
-                                                    ×
-                                                </button>
-                                            </span>
-                                        ))}
-                                    </div>
-                                    {errors.tags && <p className="mt-1 text-sm text-red-600">{errors.tags}</p>}
-                                </div>
-                            </div>
-
-                            {/* Thumbnail */}
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                                    Course Thumbnail
-                                </h2>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Upload Thumbnail *
-                                    </label>
-                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-400 transition-colors duration-200">
-                                        {formData.thumbnail ? (
-                                            <div className="space-y-3">
-                                                <img src={formData.thumbnail} alt="Thumbnail" className="mx-auto h-32 w-48 object-cover rounded-lg" />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setFormData(prev => ({ ...prev, thumbnail: null }))}
-                                                    className="text-red-600 hover:text-red-800 text-sm"
-                                                >
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div>
-                                                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                                                </svg>
-                                                <p className="mt-2 text-sm text-gray-600">Click to upload or drag and drop</p>
-                                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                                            </div>
-                                        )}
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleThumbnailUpload}
-                                            className="hidden"
-                                            id="thumbnail-upload"
-                                        />
-                                        <label htmlFor="thumbnail-upload" className="cursor-pointer inline-block mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200">
-                                            Choose File
-                                        </label>
-                                    </div>
-                                    {errors.thumbnail && <p className="mt-1 text-sm text-red-600">{errors.thumbnail}</p>}
-                                </div>
-                            </div>
-
-
-
-
-                            {/* File Resources */}
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                                    Course Resources
-                                </h2>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Upload Files (Optional)
-                                    </label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
                                     <input
-                                        type="file"
-                                        multiple
-                                        onChange={handleFileResourceUpload}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500"
+                                        type="text"
+                                        name="duration"
+                                        value={formData.duration}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        placeholder="e.g., 8 Weeks • ~60 hrs"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                                    <input
+                                        type="text"
+                                        name="language"
+                                        value={formData.language}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        placeholder="English"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Course Thumbnail</label>
+
+                                    {/* URL Input */}
+                                    <input
+                                        type="url"
+                                        name="thumbnail"
+                                        value={formData.thumbnail}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 mb-3"
+                                        placeholder="https://example.com/image.jpg"
+                                        required
                                     />
 
-                                    {formData.fileResources.length > 0 && (
-                                        <div className="mt-4 space-y-2">
-                                            {formData.fileResources.map((file, index) => (
-                                                <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                                                    <div className="flex items-center space-x-3">
-                                                        <span className={`px-2 py-1 text-xs rounded ${file.type === 'pdf' ? 'bg-red-100 text-red-800' :
-                                                            file.type === 'video' ? 'bg-blue-100 text-blue-800' :
-                                                                file.type === 'ppt' ? 'bg-orange-100 text-orange-800' :
-                                                                    'bg-gray-100 text-gray-800'
-                                                            }`}>
-                                                            {file.type.toUpperCase()}
-                                                        </span>
-                                                        <span className="text-sm text-gray-700">{file.filename}</span>
-                                                    </div>
+                                    {/* Cloudinary Upload Section */}
+                                    <div className="p-4 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50">
+                                        <div className="text-center">
+                                            <p className="text-sm font-medium text-blue-700 mb-3">☁️ Or upload to Cloudinary</p>
+
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleFileSelect(e, 'thumbnail')}
+                                                className="mb-3 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                                disabled={uploading}
+                                            />
+
+                                            {selectedFiles.thumbnail && (
+                                                <div className="mb-3">
+                                                    <p className="text-sm text-green-600 mb-2">✓ Selected: {selectedFiles.thumbnail.name}</p>
                                                     <button
                                                         type="button"
-                                                        onClick={() => removeFileResource(index)}
-                                                        className="text-red-600 hover:text-red-800"
+                                                        onClick={() => uploadFile('thumbnail')}
+                                                        disabled={uploading}
+                                                        className={`px-4 py-2 rounded-lg text-white font-medium ${uploading
+                                                            ? 'bg-gray-400 cursor-not-allowed'
+                                                            : 'bg-blue-500 hover:bg-blue-600'
+                                                            }`}
                                                     >
-                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
+                                                        {uploading ? 'Uploading...' : 'Upload to Cloudinary'}
                                                     </button>
                                                 </div>
-                                            ))}
+                                            )}
+
+                                            {uploadProgress && (
+                                                <p className={`text-sm ${uploadProgress.includes('failed') ? 'text-red-600' : 'text-green-600'
+                                                    }`}>
+                                                    {uploadProgress}
+                                                </p>
+                                            )}
+
+                                            {formData.thumbnail && formData.thumbnail.includes('cloudinary') && (
+                                                <div className="mt-3">
+                                                    <p className="text-xs text-green-600 mb-2">Uploaded to Cloudinary ✓</p>
+                                                    <img
+                                                        src={formData.thumbnail}
+                                                        alt="Thumbnail preview"
+                                                        className="mx-auto w-24 h-16 object-cover rounded-lg border border-gray-200"
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
+                                    </div>
+                                </div>
+
+                                <div className="md:col-span-2">
+                                    <label className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            name="certificate"
+                                            checked={formData.certificate}
+                                            onChange={handleInputChange}
+                                            className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                        />
+                                        <span className="ml-2 text-sm font-medium text-gray-700">Include completion certificate</span>
+                                    </label>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Submit Button */}
-                            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                        {/* Skills */}
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                                <div className="w-2 h-6 bg-gradient-to-b from-green-500 to-teal-400 rounded-full mr-3"></div>
+                                Skills Covered
+                            </h2>
+
+                            <div className="flex gap-3 mb-4">
+                                <input
+                                    type="text"
+                                    value={currentSkill}
+                                    onChange={(e) => setCurrentSkill(e.target.value)}
+                                    className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="Add a skill (e.g., React, Node.js)"
+                                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                                />
                                 <button
                                     type="button"
-                                    onClick={() => navigate('/dashboard')}
-                                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                                    onClick={addSkill}
+                                    className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors duration-200"
                                 >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-400 text-white rounded-lg hover:from-indigo-700 hover:to-cyan-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4}></circle>
-                                                <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            <span>Creating Course...</span>
-                                        </>
-                                    ) : (
-                                        <span>Create Course</span>
-                                    )}
+                                    Add
                                 </button>
                             </div>
-                        </form>
-                    </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                {formData.skills.map((skill, idx) => (
+                                    <span
+                                        key={idx}
+                                        className="inline-flex items-center gap-2 px-3 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium"
+                                    >
+                                        {skill}
+                                        <button
+                                            type="button"
+                                            onClick={() => removeSkill(skill)}
+                                            className="text-green-500 hover:text-green-700"
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Learning Objectives */}
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                                <div className="w-2 h-6 bg-gradient-to-b from-blue-500 to-purple-400 rounded-full mr-3"></div>
+                                Learning Objectives
+                            </h2>
+
+                            <div className="space-y-4">
+                                {formData.learningObjectives.map((objective, idx) => (
+                                    <div key={idx} className="flex gap-3">
+                                        <input
+                                            type="text"
+                                            value={objective}
+                                            onChange={(e) => handleArrayInputChange(idx, 'learningObjectives', e.target.value)}
+                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            placeholder="What will students learn?"
+                                        />
+                                        {formData.learningObjectives.length > 1 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => removeArrayItem(idx, 'learningObjectives')}
+                                                className="px-3 py-3 text-red-500 hover:text-red-700"
+                                            >
+                                                ×
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => addArrayItem('learningObjectives')}
+                                    className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                                >
+                                    + Add Learning Objective
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Prerequisites */}
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                                <div className="w-2 h-6 bg-gradient-to-b from-orange-500 to-red-400 rounded-full mr-3"></div>
+                                Prerequisites
+                            </h2>
+
+                            <div className="space-y-4">
+                                {formData.prerequisites.map((prereq, idx) => (
+                                    <div key={idx} className="flex gap-3">
+                                        <input
+                                            type="text"
+                                            value={prereq}
+                                            onChange={(e) => handleArrayInputChange(idx, 'prerequisites', e.target.value)}
+                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            placeholder="What should students know beforehand?"
+                                        />
+                                        {formData.prerequisites.length > 1 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => removeArrayItem(idx, 'prerequisites')}
+                                                className="px-3 py-3 text-red-500 hover:text-red-700"
+                                            >
+                                                ×
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => addArrayItem('prerequisites')}
+                                    className="text-orange-600 hover:text-orange-700 font-medium text-sm"
+                                >
+                                    + Add Prerequisite
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Course Highlights */}
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                                <div className="w-2 h-6 bg-gradient-to-b from-purple-500 to-pink-400 rounded-full mr-3"></div>
+                                Course Highlights
+                            </h2>
+
+                            <div className="space-y-4">
+                                {formData.courseHighlights.map((highlight, idx) => (
+                                    <div key={idx} className="flex gap-3">
+                                        <input
+                                            type="text"
+                                            value={highlight}
+                                            onChange={(e) => handleArrayInputChange(idx, 'courseHighlights', e.target.value)}
+                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            placeholder="Special features or benefits"
+                                        />
+                                        {formData.courseHighlights.length > 1 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => removeArrayItem(idx, 'courseHighlights')}
+                                                className="px-3 py-3 text-red-500 hover:text-red-700"
+                                            >
+                                                ×
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => addArrayItem('courseHighlights')}
+                                    className="text-purple-600 hover:text-purple-700 font-medium text-sm"
+                                >
+                                    + Add Highlight
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Tools */}
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                                <div className="w-2 h-6 bg-gradient-to-b from-cyan-500 to-blue-400 rounded-full mr-3"></div>
+                                Tools & Technologies
+                            </h2>
+
+                            <div className="flex gap-3 mb-4">
+                                <input
+                                    type="text"
+                                    value={currentTool}
+                                    onChange={(e) => setCurrentTool(e.target.value)}
+                                    className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="Add a tool (e.g., VS Code, Git)"
+                                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTool())}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={addTool}
+                                    className="px-6 py-3 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-colors duration-200"
+                                >
+                                    Add
+                                </button>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                {formData.tools.map((tool, idx) => (
+                                    <span
+                                        key={idx}
+                                        className="inline-flex items-center gap-2 px-3 py-2 bg-cyan-100 text-cyan-700 rounded-full text-sm font-medium"
+                                    >
+                                        {tool}
+                                        <button
+                                            type="button"
+                                            onClick={() => removeTool(tool)}
+                                            className="text-cyan-500 hover:text-cyan-700"
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Target Audience */}
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                                <div className="w-2 h-6 bg-gradient-to-b from-emerald-500 to-teal-400 rounded-full mr-3"></div>
+                                Target Audience
+                            </h2>
+
+                            <div className="space-y-4">
+                                {formData.targetAudience.map((audience, idx) => (
+                                    <div key={idx} className="flex gap-3">
+                                        <input
+                                            type="text"
+                                            value={audience}
+                                            onChange={(e) => handleArrayInputChange(idx, 'targetAudience', e.target.value)}
+                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            placeholder="Who is this course for?"
+                                        />
+                                        {formData.targetAudience.length > 1 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => removeArrayItem(idx, 'targetAudience')}
+                                                className="px-3 py-3 text-red-500 hover:text-red-700"
+                                            >
+                                                ×
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => addArrayItem('targetAudience')}
+                                    className="text-emerald-600 hover:text-emerald-700 font-medium text-sm"
+                                >
+                                    + Add Target Audience
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                            <div className="flex gap-4">
+                                <button
+                                    type="submit"
+                                    className="flex-1 py-4 px-6 bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+                                >
+                                    Create Course
+                                </button>
+                                <button
+                                    type="button"
+                                    className="px-6 py-4 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors duration-200"
+                                >
+                                    Save Draft
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </>

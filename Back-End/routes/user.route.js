@@ -13,4 +13,5 @@ router.put('/update-password', usercontroller.createNewPassword);
 router.get('/user-card-details', authmiddleware.optionalAuthUser, usercontroller.getusercardDetails);
 router.get('/search-users', authmiddleware.optionalAuthUser, usercontroller.getUsersByName);
 router.get('/other-user-profile/:userId', authmiddleware.optionalAuthUser, usercontroller.getOtherUserProfile);
+router.get('/my-enrollments', authmiddleware.authUser, usercontroller.getMyEnrollments);
 module.exports = router;

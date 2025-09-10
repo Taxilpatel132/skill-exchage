@@ -5,25 +5,65 @@ const UserCourses = require('../models/coures_creator.model');
 const UserEnroll = require("../models/User_enroll.model");
 const Notification = require('../models/notification.model');
 const CourseQA = require('../models/course_qa.model');
+const CourseReview = require('../models/course_review.model');
 exports.createCourse = async (courseData) => {
-    const { title, description, tags, category, priceInPoints, thumbnail, advisor } = courseData;
+    try {
+        const {
+            title,
+            description,
+            fullDescription,
+            category,
+            level,
+            priceInPoints,
+            duration,
+            language,
+            thumbnail,
+            skills,
+            learningObjectives,
+            prerequisites,
+            courseHighlights,
+            tools,
+            targetAudience,
+            certificate,
+            modules,
+            advisor
+        } = courseData;
 
-    if (!title || !description || !tags || !category || !priceInPoints || !thumbnail) {
-        throw new Error("All fields are required");
+        // Validate required fields
+        if (!title || !description || !fullDescription || !category || !level || !priceInPoints || !duration || !thumbnail || !skills || !advisor) {
+            throw new Error("Required fields are missing");
+        }
+
+        const course = new courseModel({
+            title,
+            description,
+            fullDescription,
+            category,
+            level,
+            priceInPoints,
+            duration,
+            language: language || 'English',
+            thumbnail,
+            skills,
+            learningObjectives: learningObjectives || [],
+            prerequisites: prerequisites || [],
+            courseHighlights: courseHighlights || [],
+            tools: tools || [],
+            targetAudience: targetAudience || [],
+            certificate: certificate !== undefined ? certificate : true,
+            modules: modules || [],
+            advisor
+        });
+
+        const savedCourse = await course.save();
+        if (!savedCourse) {
+            throw new Error("Failed to create course");
+        }
+
+        return savedCourse;
+    } catch (error) {
+        throw new Error(error.message);
     }
-
-    const course = new courseModel({
-        title,
-        description,
-        advisor,
-        tags,
-        category,
-        priceInPoints,
-        thumbnail,
-
-    });
-    const savedCourse = await course.save();
-    return savedCourse;
 }
 
 exports.getAllCourses = async (data) => {
@@ -144,20 +184,17 @@ exports.askQuestion = async (questionData) => {
     if (!courseId || !studentId || !question) {
         throw new Error("Course ID, Student ID, and question are required");
     }
-    const courses = await UserEnroll.findOne({ user: studentId }).populate;
+    const courses = await UserEnroll.findOne({ user: studentId }).populate('courses');
     if (!courses || !courses.courses.includes(courseId)) {
         throw new Error("User is not enrolled in this course");
     }
 
-
     const newQuestion = new CourseQA({
-        course: courseId,
-        student: studentId,
-        question,
-        answers: []
+        courseId: courseId,
+        studentId: studentId,
+        question
     });
     await newQuestion.save();
-
 
     return newQuestion;
 };
@@ -218,16 +255,198 @@ exports.enrollInCourse = async (enrollData) => {
     return userEnroll;
 };
 
-exports.getUserCourseHistory = async (userId) => {
-    if (!userId) {
-        throw new Error("User ID is required");
-    }
-    const userEnroll = await UserEnroll.findOne({ user: userId }).populate('courses');
-    if (!userEnroll || userEnroll.courses.length === 0) {
-        throw new Error("No course history found for this user");
-    }
-    return userEnroll.courses;
 
 
+exports.answerQuestion = async (answerData) => {
+    const { questionId, instructorId, answer } = answerData;
+    if (!questionId || !instructorId || !answer) {
+        throw new Error("Question ID, Instructor ID, and answer are required");
+    }
+
+    const question = await CourseQA.findById(questionId);
+    if (!question) {
+        throw new Error("Question not found");
+    }
+
+    const course = await courseModel.findById(question.courseId);
+    if (!course) {
+        throw new Error("Course not found for the question");
+    }
+
+    if (course.advisor.toString() !== instructorId) {
+        throw new Error("Only the course advisor can answer this question");
+    }
+
+    question.answer = {
+        text: answer,
+        answeredBy: instructorId,
+        answeredAt: new Date()
+    };
+    question.status = 'answered';
+
+    await question.save();
+    return question;
+};
+
+exports.rateCourse = async (rateData) => {
+    const { courseId, studentId, rating, review } = rateData;
+    if (!courseId || !studentId || !rating) {
+        throw new Error("Course ID, Student ID, and rating are required");
+    }
+
+    if (!review || review.trim() === "") {
+        throw new Error("Review text is required");
+    }
+
+    if (rating < 1 || rating > 5) {
+        throw new Error("Rating must be between 1 and 5");
+    }
+
+    const course = await courseModel.findById(courseId);
+    if (!course) {
+        throw new Error("Course not found");
+    }
+
+    const user = await userModel.findById(studentId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const courses = await UserEnroll.findOne({ user: studentId }).populate('courses');
+    if (!courses || !courses.courses.some(c => c._id.toString() === courseId)) {
+        throw new Error("User is not enrolled in this course");
+    }
+
+    // Check if user has already reviewed this course
+    let existingReview = await CourseReview.findOne({ courseId, userId: studentId });
+    let isNewReview = !existingReview;
+
+    if (existingReview) {
+        // Update existing review
+        const oldRating = existingReview.rating;
+        existingReview.rating = rating;
+        existingReview.review = review;
+        await existingReview.save();
+
+        // Recalculate average rating (replace old rating with new one)
+        const currentSum = course.totalRatings * course.averageRating;
+        const newSum = currentSum - oldRating + rating;
+        course.averageRating = parseFloat((newSum / course.totalRatings).toFixed(2));
+    } else {
+        // Create new review
+        const newReview = new CourseReview({
+            courseId,
+            userId: studentId,
+            rating,
+            review
+        });
+        await newReview.save();
+
+        // Update course rating statistics
+        const currentSum = course.totalRatings * course.averageRating;
+        const newSum = currentSum + rating;
+        const newTotal = course.totalRatings + 1;
+        course.averageRating = parseFloat((newSum / newTotal).toFixed(2));
+        course.totalRatings = newTotal;
+    }
+
+    await course.save();
+
+    return {
+        averageRating: course.averageRating,
+        totalRatings: course.totalRatings,
+        userReview: {
+            rating,
+            review,
+            isNewReview
+        }
+    };
 }
 
+// Get course with full details for display (unified model)
+exports.getCourseDetailsForDisplay = async (courseId) => {
+    try {
+        const course = await Course.findById(courseId)
+            .populate('advisor', 'username profilePicture bio experience followers');
+
+        if (!course) {
+            throw new Error('Course not found');
+        }
+
+        // Increment views
+        course.views += 1;
+        await course.save();
+
+        return course;
+    } catch (error) {
+        throw new Error(`Failed to get course details: ${error.message}`);
+    }
+};
+
+// Add module to course using unified model
+exports.addModuleToCourse = async (courseId, moduleData) => {
+    try {
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            throw new Error('Course not found');
+        }
+
+        // Use the course model's addModule method
+        await course.addModule(moduleData);
+
+        return course;
+    } catch (error) {
+        throw new Error(`Failed to add module: ${error.message}`);
+    }
+};
+
+// Get modules for a course using unified model
+exports.getCourseModules = async (courseId) => {
+    try {
+        const course = await Course.findById(courseId).select('modules');
+
+        if (!course) {
+            throw new Error('Course not found');
+        }
+
+        return course.getOrderedModules();
+    } catch (error) {
+        throw new Error(`Failed to get course modules: ${error.message}`);
+    }
+};
+
+// Add review to course using unified model
+exports.addReviewToCourse = async (courseId, userId, rating, reviewText) => {
+    try {
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            throw new Error('Course not found');
+        }
+
+        // Use the course model's addReview method
+        await course.addReview(userId, rating, reviewText);
+
+        return course;
+    } catch (error) {
+        throw new Error(`Failed to add review: ${error.message}`);
+    }
+};
+
+// Get reviews for a course
+exports.getCourseReviews = async (courseId) => {
+    try {
+        const course = await Course.findById(courseId)
+            .select('reviews')
+            .populate('reviews.userId', 'username profilePicture');
+
+        if (!course) {
+            throw new Error('Course not found');
+        }
+
+        return course.reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } catch (error) {
+        throw new Error(`Failed to get course reviews: ${error.message}`);
+    }
+};

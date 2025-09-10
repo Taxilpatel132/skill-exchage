@@ -3,6 +3,7 @@ import StarRating from '../components/StarRating';
 import QASection from '../components/QASection';
 import ReviewsSection from '../components/ReviewsSection';
 import CourseNavbar from '../components/CourseNavbar';
+import ModulesSection from '../components/ModulesSection';
 
 const CourseDetails = () => {
     // Simplified course data with your theme
@@ -52,6 +53,65 @@ const CourseDetails = () => {
         { id: 103, title: 'DevOps for Beginners', skills: ['CI/CD', 'Docker'], points: 280 },
     ];
 
+    const modules = [
+        {
+            id: 1,
+            title: 'Introduction to Web Development',
+            description: 'Get started with the fundamentals of web development, understanding how the web works, and setting up your development environment.',
+            duration: '2 hours',
+            order: 1,
+            videoUrl: 'https://example.com/video1.mp4',
+            resources: [
+                { title: 'Course Introduction Slides', type: 'pdf', url: '/resources/intro-slides.pdf' },
+                { title: 'Development Setup Guide', type: 'pdf', url: '/resources/setup-guide.pdf' },
+                { title: 'Knowledge Check Quiz', type: 'quiz', url: '/quiz/module1' }
+            ]
+        },
+        {
+            id: 2,
+            title: 'HTML & CSS Fundamentals',
+            description: 'Master the building blocks of web pages with HTML for structure and CSS for styling. Learn responsive design principles.',
+            duration: '4 hours',
+            order: 2,
+            videoUrl: 'https://example.com/video2.mp4',
+            resources: [
+                { title: 'HTML Cheat Sheet', type: 'pdf', url: '/resources/html-cheat-sheet.pdf' },
+                { title: 'CSS Grid & Flexbox Guide', type: 'pdf', url: '/resources/css-guide.pdf' },
+                { title: 'Practice Exercises', type: 'link', url: '/exercises/html-css' },
+                { title: 'Module 2 Assessment', type: 'quiz', url: '/quiz/module2' }
+            ]
+        },
+        {
+            id: 3,
+            title: 'JavaScript Essentials',
+            description: 'Learn JavaScript programming fundamentals, DOM manipulation, and modern ES6+ features that power interactive web applications.',
+            duration: '6 hours',
+            order: 3,
+            videoUrl: 'https://example.com/video3.mp4',
+            resources: [
+                { title: 'JavaScript Reference Guide', type: 'pdf', url: '/resources/js-reference.pdf' },
+                { title: 'Interactive Code Examples', type: 'link', url: '/examples/javascript' },
+                { title: 'DOM Manipulation Lab', type: 'video', url: '/videos/dom-lab.mp4' },
+                { title: 'JavaScript Quiz', type: 'quiz', url: '/quiz/module3' }
+            ]
+        },
+        {
+            id: 4,
+            title: 'React Development',
+            description: 'Build modern user interfaces with React. Learn components, state management, hooks, and best practices for scalable applications.',
+            duration: '8 hours',
+            order: 4,
+            videoUrl: 'https://example.com/video4.mp4',
+            resources: [
+                { title: 'React Components Guide', type: 'pdf', url: '/resources/react-components.pdf' },
+                { title: 'Hooks Reference', type: 'pdf', url: '/resources/react-hooks.pdf' },
+                { title: 'Project Starter Code', type: 'link', url: '/projects/react-starter' },
+                { title: 'React Best Practices', type: 'video', url: '/videos/react-best-practices.mp4' },
+                { title: 'Final Project Assessment', type: 'quiz', url: '/quiz/module4' }
+            ]
+        }
+    ];
+
     const handleAddReview = (e) => {
         e.preventDefault();
         if (!reviewForm.name || !reviewForm.rating || !reviewForm.text) return;
@@ -74,6 +134,7 @@ const CourseDetails = () => {
 
     // References for each section for navigation
     const overviewRef = useRef(null);
+    const modulesRef = useRef(null);
     const advisorRef = useRef(null);
     const qaRef = useRef(null);
     const reviewsRef = useRef(null);
@@ -81,6 +142,7 @@ const CourseDetails = () => {
     // Define sections for the navigation bar
     const sections = [
         { id: 'overview', label: 'Overview', ref: overviewRef },
+        { id: 'modules', label: 'Modules', ref: modulesRef },
         { id: 'advisor', label: 'Advisor', ref: advisorRef },
         { id: 'qa', label: 'Q&A', ref: qaRef },
         { id: 'reviews', label: 'Reviews', ref: reviewsRef },
@@ -150,6 +212,11 @@ const CourseDetails = () => {
                                 </div>
                             </div>
                         </section>
+
+                        {/* Modules Section Component */}
+                        <div id="modules" ref={modulesRef}>
+                            <ModulesSection modules={modules} isEnrolled={isEnrolled} />
+                        </div>
 
                         {/* Q&A Section Component */}
                         <div id="qa" ref={qaRef}>
