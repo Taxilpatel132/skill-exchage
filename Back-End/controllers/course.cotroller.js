@@ -56,12 +56,11 @@ exports.createCourse = async (req, res) => {
             tools: tools || [],
             targetAudience: targetAudience ? targetAudience.filter(audience => audience.trim()) : [],
             certificate: certificate !== undefined ? certificate : true,
-            modules: modules || [],
             advisor: advisor._id
         };
 
         console.log("Creating course with data:", courseData);
-        const savedCourse = await courseService.createCourse(courseData);
+        const savedCourse = await courseService.createCourse(courseData, modules);
 
         if (!savedCourse) {
             return res.status(400).json({ message: "Failed to create course" });
@@ -85,7 +84,7 @@ exports.createCourse = async (req, res) => {
                     receiverId: follower._id,
                     courseId: savedCourse._id,
                     message: `published a new course: ${savedCourse.title}`,
-                    type: 'course_creation'
+                    type: 'new_course'
                 };
                 const notification = await courseService.createNotification(notificationData);
                 if (notification) {
@@ -145,7 +144,7 @@ exports.getCourseByTitle = async (req, res) => {
         if (!title) {
             return res.status(400).json({ message: "Title is required" });
         }
-        const courses = await courseService.getCourseByTitile(title);
+        const courses = await courseService.getCourseByTitle(title);
         if (!courses || courses.length === 0) {
             return res.status(404).json({ message: "No courses found with the given title" });
         }
@@ -315,7 +314,7 @@ exports.addReviewToCourse = async (req, res) => {
         const student = req.user;
         const { courseId } = req.params;
         const { rating, review } = req.body;
-
+        console.log(courseId, rating, review);
         if (!courseId || !rating || !review) {
             return res.status(400).json({ message: "Course ID, rating, and review are required" });
         }
@@ -324,7 +323,7 @@ exports.addReviewToCourse = async (req, res) => {
             return res.status(400).json({ message: "Rating must be between 1 and 5" });
         }
 
-        const updatedCourse = await courseService.addReviewToCourse(courseId, student._id, rating, review);
+        const updatedCourse = await courseService.rateCourse({ courseId, studentId: student._id.toString(), rating, review });
 
         res.status(201).json({
             message: "Review added successfully",

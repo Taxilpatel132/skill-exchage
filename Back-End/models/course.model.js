@@ -48,29 +48,45 @@ const courseSchema = new mongoose.Schema({
         required: true,
         enum: ["Programming", "Design", "Marketing", "Business", "Other"]
     },
+    tools: [{
+        name: String,
+        version: String
+    }],
+    targetAudience: {
+        type: [String],
+        default: []
+    },
+    prerequisites: {
+        type: [String],
+        default: []
+    },
 
-    // Course content (reference to Module collection)
+    learingobjectives: {
+        type: [String],
+        default: []
+    },
+
     modules: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Module'
     }],
 
-    // Course reviews (reference to Review collection)
+
     reviews: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review'
-    }],    // Course metadata
+    }],
     advisor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
 
-    // Course statistics (used in CourseDetails page)
+
     enrollmentCount: {
         type: Number,
         default: 0,
-        alias: 'students' // For frontend compatibility
+        alias: 'students'
     },
 
     averageRating: {
@@ -89,6 +105,10 @@ const courseSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    views: {
+        type: Number,
+        default: 0
     },
 
     updatedAt: {
@@ -153,6 +173,11 @@ courseSchema.methods.addReview = function (reviewId) {
 courseSchema.methods.removeReview = function (reviewId) {
     this.reviews = this.reviews.filter(id => !id.equals(reviewId));
     return this.save();
+};
+
+// Method to get ordered modules
+courseSchema.methods.getOrderedModules = function () {
+    return this.modules || [];
 };
 
 const course = mongoose.model("Course", courseSchema);

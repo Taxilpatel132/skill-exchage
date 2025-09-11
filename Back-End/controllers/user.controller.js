@@ -32,25 +32,23 @@ exports.loginUser = async (req, res) => {
         return res.status(200).json({ message: "User logged in successfully", user, token });
     }
 }
-exports.getuserProfile = async (req, res) => {
-    const user = req.user;
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
-    }
-    const userProfile = await userservice.getUserProfile(user._id);
-    if (!userProfile) {
-        return res.status(404).json({ message: "User profile not found" });
-    }
-    return res.status(200).json({ message: "User profile retrieved successfully", userProfile });
-}
+
 exports.getOtherUserProfile = async (req, res) => {
     const { userId } = req.params;
+    const user = req.user;
     if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
     }
     const userProfile = await userservice.getUserProfile(userId);
     if (!userProfile) {
         return res.status(404).json({ message: "User profile not found" });
+    }
+    if (user && user._id.toString() === userId) {
+        const yourProfile = {
+            ...userProfile,
+            other: false // Indicating this is the user's own profile
+        }
+        return res.status(200).json({ message: "User profile retrieved successfully", yourProfile });
     }
     const OtherUserProfile = {
         ...userProfile,
@@ -169,24 +167,6 @@ exports.createNewPassword = async (req, res) => {
     }
 }
 
-exports.getusercardDetails = async (req, res) => {
-    try {
-        const userCardDetails = await userservice.getUserCardDetails();
-        if (!userCardDetails || userCardDetails.length === 0) {
-            return res.status(404).json({ message: "No user card details found" });
-        }
-        return res.status(200).json({
-            message: "User card details retrieved successfully",
-            userCardDetails
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Failed to retrieve user card details",
-            error: error.message
-        });
-    }
-}
-
 exports.getUsersByName = async (req, res) => {
     try {
         const { name } = req.query; // Get search name from query parameters
@@ -236,7 +216,56 @@ exports.getMyEnrollments = async (req, res) => {
     }
     const enrollments = await userservice.getUserEnrollments(user._id);
     if (!enrollments || enrollments.length === 0) {
-        return res.status(404).json({ message: "No enrollments found for this user" });
+        return res.status(200).json({ message: "No enrollments found for this user" });
     }
     return res.status(200).json({ message: "User enrollments retrieved successfully", enrollments });
+}
+
+exports.followUser = async (req, res) => {
+    const user = req.user;
+    const { followId } = req.params;
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    if (!followId) {
+        return res.status(400).json({ message: "Follow ID is required" });
+    }
+    if (user._id.toString() === followId) {
+        return res.status(400).json({ message: "You cannot follow yourself" });
+    }
+    try {
+        const updatedUser = await userservice.followUser(user._id, followId);
+        if (!updatedUser) {
+            return res.status(500).json({ message: "Failed to follow user" });
+        }
+        return res.status(200).json({ message: "User followed successfully", updatedUser });
+    } catch (error) {
+        return res.status(500).json({ message: "Failed to follow user", error: error.message });
+    }
+}
+
+exports.unfollowUser = async (req, res) => {
+    const user = req.user;
+    const { unfollowId } = req.params;
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+
+    }
+    if (!unfollowId) {
+        return res.status(400).json({ message: "Unfollow ID is required" });
+    }
+
+    if (user._id.toString() === unfollowId) {
+        return res.status(400).json({ message: "You cannot unfollow yourself" });
+    }
+
+    try {
+        const updatedUser = await userservice.unfollowUser(user._id, unfollowId);
+        if (!updatedUser) {
+            return res.status(500).json({ message: "Failed to unfollow user" });
+        }
+        return res.status(200).json({ message: "User unfollowed successfully", updatedUser });
+    } catch (error) {
+        return res.status(500).json({ message: "Failed to unfollow user", error: error.message });
+    }
 }

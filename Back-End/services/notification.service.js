@@ -1,6 +1,6 @@
 const courseModel = require('../models/course.model');
 const userModel = require('../models/users.model');
-const ratingModel = require('../models/rating.model');
+//const ratingModel = require('../models/rating.model');
 const UserCourses = require('../models/coures_creator.model');
 exports.createCourse = async (courseData) => {
     const { title, description, tags, category, priceInPoints, thumbnail, advisor } = courseData;
