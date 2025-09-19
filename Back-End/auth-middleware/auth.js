@@ -3,16 +3,14 @@ const usermodel = require("../models/users.model");
 const adminModel = require("../models/admin.model");
 const blackListTokenModel = require("../models/blacklisttoken.model");
 exports.authUser = async (req, res, next) => {
-    // console.log(req.headers);
-    //console.log(req.cookies);
+
     const token = req.cookies.token ||
         (req.headers.authorization?.startsWith('Bearer ') ?
             req.headers.authorization.split(" ")[1] :
             null);
-    //console.log("from auth user", token);
     ;
     if (!token) {
-        //console.log("no token");
+
         return res.status(401).json({
             message: "not valid"
         })
@@ -53,13 +51,13 @@ exports.authUser = async (req, res, next) => {
 }
 
 exports.optionalAuthUser = async (req, res, next) => {
-    // This middleware will attempt to authenticate the user but won't fail if no token is provided
+
     const token = req.cookies.token ||
         (req.headers.authorization?.startsWith('Bearer ') ?
             req.headers.authorization.split(" ")[1] :
             null);
 
-    // If no token provided, continue without authentication
+
     if (!token) {
         req.user = null;
         req.token = null;
