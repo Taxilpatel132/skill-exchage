@@ -175,30 +175,40 @@ const CreateCourse = () => {
 
             console.log('Sending course data:', courseData);
 
-            // Send to your backend API
-            const response = await fetch('/api/courses', {
+            // Send to your backend API using fetch
+            const response = await fetch('http://localhost:3000/courses', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Add authorization header if needed
-                    // 'Authorization': `Bearer ${token}`
+                    'Authorization': 'Bearer dummy-jwt-token-12345'
                 },
+                credentials: 'include',
                 body: JSON.stringify(courseData)
             });
 
+            const result = await response.json();
+
             if (response.ok) {
-                const result = await response.json();
                 console.log('Course created successfully:', result);
                 alert('Course created successfully!');
                 navigate('/courses'); // Redirect to courses page
             } else {
-                const error = await response.json();
-                console.error('Failed to create course:', error);
-                alert(`Failed to create course: ${error.message}`);
+                console.error('Failed to create course:', response.data);
+                alert(`Failed to create course: ${response.data.message}`);
             }
         } catch (error) {
             console.error('Error creating course:', error);
-            alert('Error creating course. Please try again.');
+
+            if (error.response) {
+                // Server responded with error status
+                alert(`Failed to create course: ${error.response.data.message || 'Server error'}`);
+            } else if (error.request) {
+                // Request was made but no response received
+                alert('Network error. Please check your connection.');
+            } else {
+                // Something else happened
+                alert('Error creating course. Please try again.');
+            }
         }
     };
 

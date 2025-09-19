@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import OTPInput from '../components/OTPInput';
-import axios from 'axios';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -26,7 +25,17 @@ const ForgotPassword = () => {
         setIsLoading(true);
         // console.log('Sending OTP to:', email);
         console.log(`${import.meta.env.VITE_API_URL}/users/send-otp`);
-        const otpsend = await axios.post(`${import.meta.env.VITE_API_URL}/users/send-otp`, { email: email });
+
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/users/send-otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email: email })
+        });
+
+        const otpsend = await response.json();
 
         setTimeout(() => {
             setIsLoading(false);
@@ -45,7 +54,16 @@ const ForgotPassword = () => {
     const handleOTPComplete = async (otpValue) => {
         setIsLoading(true);
 
-        const verify = await axios.post(`${import.meta.env.VITE_API_URL}/users/verify-otp`, { email: email, otp: otpValue });
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/users/verify-otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email: email, otp: otpValue })
+        });
+
+        const verify = await response.json();
         console.log(verify);
 
         setTimeout(() => {

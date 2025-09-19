@@ -369,7 +369,7 @@ exports.answerQuestion = async (answerData) => {
 
 exports.rateCourse = async (rateData) => {
     const { courseId, studentId, rating, review } = rateData;
-    console.log(courseId, studentId, rating, review);
+    console.log('reviews service', courseId, studentId, rating, review);
     if (!courseId || !studentId || !rating) {
         throw new Error("Course ID, Student ID, and rating are required");
     }
@@ -402,7 +402,7 @@ exports.rateCourse = async (rateData) => {
     let isNewReview = !existingReview;
 
     if (existingReview) {
-        // Update existing review
+
         const oldRating = existingReview.rating;
         existingReview.rating = rating;
         existingReview.review = review;
@@ -411,9 +411,9 @@ exports.rateCourse = async (rateData) => {
         // Recalculate average rating (replace old rating with new one)
         const currentSum = course.totalRatings * course.averageRating;
         const newSum = currentSum - oldRating + rating;
-        course.averageRating = parseFloat((newSum / course.totalRatings).toFixed(2));
+        course.averageRating = parseFloat((newSum / course.totalRatings).toFixed(3));
     } else {
-        // Create new review
+
         const newReview = new reviewModel({
             courseId,
             userId: studentId,
@@ -426,7 +426,7 @@ exports.rateCourse = async (rateData) => {
         const currentSum = course.totalRatings * course.averageRating;
         const newSum = currentSum + rating;
         const newTotal = course.totalRatings + 1;
-        course.averageRating = parseFloat((newSum / newTotal).toFixed(2));
+        course.averageRating = parseFloat((newSum / newTotal).toFixed(3));
         course.totalRatings = newTotal;
     }
 
@@ -447,7 +447,7 @@ exports.rateCourse = async (rateData) => {
 exports.getCourseDetailsForDisplay = async (courseId) => {
     try {
         const course = await courseModel.findById(courseId)
-            .populate('advisor', 'username profilePicture bio experience followers')
+            .populate('advisor', 'fullname username profilePhoto profilePicture bio experience followers email')
             .populate('modules');
 
         if (!course) {
@@ -497,22 +497,31 @@ exports.getCourseModules = async (courseId) => {
     }
 };
 
-// Add review to course using unified model
-
-
 // Get reviews for a course
 exports.getCourseReviews = async (courseId) => {
     try {
-        const course = await Course.findById(courseId)
-            .select('reviews')
-            .populate('reviews.userId', 'username profilePicture');
+        const reviews = await reviewModel.find({ courseId })
+            .populate('userId', 'fullname username profilePhoto profilePicture')
+            .sort({ createdAt: -1 });
 
-        if (!course) {
-            throw new Error('Course not found');
+        if (!reviews) {
+            return [];
         }
 
-        return course.reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        // Format reviews for frontend
+        return reviews.map(review => ({
+            _id: review._id,
+            rating: review.rating,
+            review: review.review,
+            createdAt: review.createdAt,
+            userId: {
+                fullname: review.userId?.fullname,
+                username: review.userId?.username,
+                profilePhoto: review.userId?.profilePhoto || review.userId?.profilePicture
+            }
+        }));
     } catch (error) {
+        console.error('Error fetching reviews:', error);
         throw new Error(`Failed to get course reviews: ${error.message}`);
     }
 };

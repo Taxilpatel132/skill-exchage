@@ -1,12 +1,27 @@
-import React from "react";
+import React, { useEffect, useInsertionEffect } from "react";
 import Navbar from "../components/Navbar";
 import CourseCard from "../components/CourseCard";
 import UserCard from "../components/UserCard";
-
+import axios from "axios";
+import { useUser } from "../context/UserContext";
 const Home = () => {
     const [showUserCard, setShowUserCard] = React.useState(true);
+    const [myData, setMyData] = React.useState(null);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [courses, setCourses] = React.useState([]);
+    useEffect(() => {
+        async function fetchData() {
+            const response = await axios.get('http://localhost:3000/users/mycard', { withCredentials: true });
 
-    // Demo users data
+            setMyData(response.data.usercard);
+
+            setIsLoggedIn(response.data.isLogin);
+
+            localStorage.setItem('myId', response.data?.usercard?._id);
+
+        }
+        fetchData();
+    }, []);
     const demoUsers = [
         {
             name: "John Doe",
@@ -82,10 +97,23 @@ const Home = () => {
             createdAt: "2024-01-20T09:15:00Z"
         }
     ];
+    useEffect(() => {
+        async function fetchCourses() {
+            try {
+                const response = await axios.get('http://localhost:3000/course/search/all', { withCredentials: true });
+                setCourses(response.data);
+                console.log(response.data)
+            } catch (error) {
+                console.error("Error fetching courses:", error);
+            }
+        }
+        fetchCourses();
+    }
+        , [])
 
     return (
         <>
-            <Navbar />
+            <Navbar IsLoggedIn={isLoggedIn} myData={myData} />
             <div className="container mx-auto px-4 py-8">
                 {showUserCard && (
                     <div className="mb-12">
@@ -120,8 +148,8 @@ const Home = () => {
                         </button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {demoCourses.map(course => (
-                            <CourseCard key={course._id} course={course} />
+                        {courses.map(c => (
+                            <CourseCard key={c._id} course={c} />
                         ))}
                     </div>
                 </div>

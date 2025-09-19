@@ -9,10 +9,11 @@ const cookieparser = require("cookie-parser");
 app.use(express.json());
 app.use(cookieparser());
 app.use(cors({
-    origin: '*', // Replace with your frontend URL
+    origin: ['http://localhost:5173', 'http://localhost:3000'], // Add your frontend URLs
     credentials: true,  // Important for cookies/auth
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie']
 }));
 app.get('/', (req, res) => {
     res.send('Hello, World!');

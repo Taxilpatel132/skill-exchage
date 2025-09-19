@@ -20,35 +20,14 @@ const ReviewSchema = new mongoose.Schema({
     review: {
         type: String,
         required: true,
-        trim: true,
-        maxlength: 500
-    },
-    isActive: {
-        type: Boolean,
-        default: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
+        trim: true
     }
+}, {
+    timestamps: true
 });
 
 // Prevent duplicate reviews from same user for same course
 ReviewSchema.index({ courseId: 1, userId: 1 }, { unique: true });
-
-// Index for faster queries
-ReviewSchema.index({ courseId: 1, createdAt: -1 });
-ReviewSchema.index({ userId: 1, createdAt: -1 });
-
-// Update the updatedAt field before saving
-ReviewSchema.pre('save', function (next) {
-    this.updatedAt = new Date();
-    next();
-});
 
 const Review = mongoose.model("Review", ReviewSchema);
 module.exports = Review;

@@ -1,79 +1,220 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 import CourseCard from '../components/CourseCard';
+import Loading from '../components/Loading';
 
 const Profile = () => {
-    const [showFullBio, setShowFullBio] = useState(false);
+    const { userId } = useParams();
+    const navigate = useNavigate();
+    const myId = localStorage.getItem('myId');
 
-    // Demo user data
-    const user = {
-        name: "Alex Johnson",
-        email: "alex.johnson@example.com",
-        profileImage: "https://imgs.search.brave.com/zezMWXvqTAoauw6kcChSPgmu38EVMBrAOJK489wiYVk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4u/ZHJpYmJibGUuY29t/L3VzZXJ1cGxvYWQv/NTI3NzI5NC9maWxl/L29yaWdpbmFsLWMw/MDk0NTgxMTkxZTky/Mzk5Yzc0ZWIwOWI1/M2E1YWNiLnBuZz9m/b3JtYXQ9d2VicCZy/ZXNpemU9NDAweDMw/MCZ2ZXJ0aWNhbD1j/ZW50ZXI",
-        bio: "Passionate full-stack developer and UI/UX enthusiast. I love teaching others and sharing knowledge about modern web technologies, design principles, and creative problem-solving techniues",
-        totalViews: 15420,
-        averageRating: 4.8,
-        totalCourses: 12,
-        followers: 1248,
-        following: 432,
-        joinedDate: "January 2023"
+    const isLoggedIn = !!localStorage.getItem('myId');
+    const [showFullBio, setShowFullBio] = useState(false);
+    const [profileData, setProfileData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followLoading, setFollowLoading] = useState(false);
+    const [myData, setMyData] = useState(null);
+
+    const isOwnProfile = !userId || (myId && userId === myId);
+
+    useEffect(() => {
+        async function fetchData() {
+            if (!isLoggedIn) return;
+
+            try {
+                const response = await axios.get('http://localhost:3000/users/mycard', { withCredentials: true });
+                setMyData(response.data.usercard);
+            } catch (error) {
+                // Failed to fetch user data
+            }
+        }
+        fetchData();
+    }, [isLoggedIn]);
+
+    useEffect(() => {
+        fetchProfileData();
+    }, [myId, userId]);
+
+    const fetchProfileData = async () => {
+        setLoading(true);
+        try {
+            if (isOwnProfile) {
+                if (myId) {
+                    try {
+                        const response = await axios.get(`http://localhost:3000/users/profile/${myId}`, {
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            withCredentials: true
+                        });
+
+                        const data = response.data;
+                        if (response.status === 200) {
+                            const userData = data.yourProfile;
+                            // For own profile, it should be yourProfile
+                            setProfileData({
+                                name: userData.fullname,
+                                email: userData.email,
+                                bio: userData.bio,
+                                totalViews: parseInt(userData.totalViews) || 0,
+                                averageRating: parseFloat(userData.avgRating) || 0, // Changed from userData.averageRating to userData.avgRating
+                                totalCourses: parseInt(userData.courses) || 0,
+                                followers: parseInt(userData.followers) || 0,
+                                following: parseInt(userData.following) || 0,
+                                joinedDate: new Date(userData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }),
+                                profileImage: userData.profilePhoto,
+                                _id: userData._id,
+                                coursesList: userData.coursesList || []
+                            });
+                        } else {
+                            throw new Error('Failed to fetch profile data');
+                        }
+                    } catch (error) {
+                        if (myData) {
+                            setProfileData({
+                                name: myData.fullname || myData.email,
+                                email: myData.email,
+                                bio: "No bio available",
+                                totalViews: 0,
+                                averageRating: 0,
+                                totalCourses: 0,
+                                followers: 0,
+                                following: 0,
+                                joinedDate: "Recently",
+                                profileImage: "https://imgs.search.brave.com/zezMWXvqTAoauw6kcChSPgmu38EVMBrAOJK489wiYVk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4u/ZHJpYmJibGUuY29t/L3VzZXJ1cGxvYWQv/NTI3NzI5NC9maWxl/L29yaWdpbmFsLWMw/MDk0NTgxMTkxZTky/Mzk5Yzc0ZWIwOWI1/M2E1YWNiLnBuZz9m/b3JtYXQ9d2VicCZy/ZXNpemU9NDAweDMw/MCZ2ZXJ0aWNhbD1j/ZW50ZXI",
+                                _id: myData._id,
+                                coursesList: []
+                            });
+                        }
+                    }
+                }
+            } else {
+                try {
+                    const response = await axios.get(`http://localhost:3000/users/profile/${userId}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        withCredentials: true
+                    });
+
+                    const data = response.data;
+
+                    if (response.status === 200) {
+                        const userData = data.OtherUserProfile; // For other users, it should be OtherUserProfile
+                        setProfileData({
+                            name: userData.fullname,
+                            email: userData.email,
+                            bio: userData.bio,
+                            totalViews: parseInt(userData.totalViews) || 0,
+                            averageRating: parseFloat(userData.avgRating) || 0, // Changed from userData.averageRating to userData.avgRating
+                            totalCourses: parseInt(userData.courses) || 0,
+                            followers: parseInt(userData.followers) || 0,
+                            following: parseInt(userData.following) || 0,
+                            joinedDate: new Date(userData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }),
+                            profileImage: userData.profilePhoto,
+                            _id: userData._id,
+                            coursesList: userData.coursesList || []
+                        });
+
+                        // Check if current user is following this user
+                        if (myData && myData.following) {
+                            setIsFollowing(myData.following.includes(userId));
+                        }
+                    } else {
+                        throw new Error('Failed to fetch profile data');
+                    }
+                } catch (error) {
+                    navigate('/dashboard');
+                }
+            }
+        } catch (error) {
+            navigate('/dashboard');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Demo courses data
-    const userCourses = [
-        {
-            _id: "1",
-            title: "React Hooks Mastery",
-            description: "Deep dive into React Hooks with practical examples and real-world projects.",
-            advisor: { name: "Alex Johnson" },
-            priceInPoints: 25,
-            categories: ["Programming"],
-            tags: ["React", "Hooks", "JavaScript"],
-            thumbnail: "https://imgs.search.brave.com/-xqPuBFI7OtX3JG9nwNYfur0xE3KjPo_BKVlc4H2xqg/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4u/aGFzaG5vZGUuY29t/L3Jlcy9oYXNobm9k/ZS9pbWFnZS91cGxv/YWQvdjE2Nzk0NTMx/Mjg0OTgvNTBkNTI1/OTktMDUxMy00NmU1/LThiODctNjJkMDI0/NDU3MTBiLnBuZz93/PTE2MDAmaD04NDAm/Zml0PWNyb3AmY3Jv/cD1lbnRyb3B5JmF1/dG89Y29tcHJlc3Ms/Zm9ybWF0JmZvcm1h/dD13ZWJw",
-            averageRating: 4.9,
-            totalRatings: 234,
-            status: "on_going",
-            views: 3200,
-            createdAt: "2024-01-15T10:00:00Z",
-            type: "video"
-        },
-        {
-            _id: "2",
-            title: "Modern CSS Techniques",
-            description: "Learn advanced CSS techniques including Grid, Flexbox, and animations.",
-            advisor: { name: "Alex Johnson" },
-            priceInPoints: 20,
-            categories: ["Design"],
-            tags: ["CSS", "Grid", "Flexbox"],
-            thumbnail: "https://imgs.search.brave.com/zZQEn9xcJFvkzA9PUColDq_7UXDPU8vkOccqTsy1sxA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pdHZp/ZWMuY29tL2Jsb2cv/d3AtY29udGVudC91/cGxvYWRzLzIwMjQv/MDMvVGh1bWJuYWls/LWNzcy12aXBwcm8u/cG5n",
-            averageRating: 4.7,
-            totalRatings: 189,
-            status: "complete",
-            views: 2800,
-            createdAt: "2024-01-10T14:30:00Z",
-            type: "pdf"
-        },
-        {
-            _id: "3",
-            title: "JavaScript Fundamentals",
-            description: "Complete beginner's guide to JavaScript programming language.",
-            advisor: { name: "Alex Johnson" },
-            priceInPoints: 15,
-            categories: ["Programming"],
-            tags: ["JavaScript", "Fundamentals", "Beginner"],
-            thumbnail: "https://imgs.search.brave.com/vnqK7vW7UlS8xQPgJWgiamTDsgUYDxVu8h4ve-6UtaQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNS8w/NC8yMy8xNy80MS9q/YXZhc2NyaXB0LTcz/NjQwMV82NDAucG5n",
-            averageRating: 4.8,
-            totalRatings: 456,
-            status: "complete",
-            views: 5200,
-            createdAt: "2024-01-05T09:15:00Z",
-            type: "live"
+    const handleFollowToggle = async () => {
+        if (!myData) {
+            alert('Please login to follow users');
+            return;
         }
-    ];
+
+        setFollowLoading(true);
+        try {
+            const endpoint = isFollowing
+                ? `/users/unfollow/${userId}`
+                : `/users/follow/${userId}`;
+
+            const response = await axios.get(`http://localhost:3000${endpoint}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true
+            });
+
+            if (response.status === 200) {
+                setIsFollowing(!isFollowing);
+                setProfileData(prev => ({
+                    ...prev,
+                    followers: isFollowing ? prev.followers - 1 : prev.followers + 1
+                }));
+            } else {
+                alert(response.data.message || 'Failed to update follow status');
+            }
+        } catch (error) {
+            console.error('Error toggling follow:', error);
+            alert(error.response?.data?.message || 'Network error. Please try again.');
+        } finally {
+            setFollowLoading(false);
+        }
+    };
+
+    const handleEditProfile = () => {
+        navigate('/edit-profile');
+    };
+
+    const handleShareProfile = () => {
+        const profileUrl = window.location.href;
+        if (navigator.share) {
+            navigator.share({
+                title: `${profileData.name}'s Profile`,
+                text: `Check out ${profileData.name}'s profile on Skill Exchange`,
+                url: profileUrl,
+            });
+        } else {
+            navigator.clipboard.writeText(profileUrl).then(() => {
+                alert('Profile link copied to clipboard!');
+            });
+        }
+    };
+
+    if (loading) {
+        return <Loading />;
+    }
+
+    if (!profileData) {
+        return (
+            <>
+                <Navbar IsLoggedIn={isLoggedIn} myData={myData} />
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Profile not found</h2>
+                        <p className="text-gray-600">The profile you're looking for doesn't exist.</p>
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+    const userCourses = profileData.coursesList || [];
 
     return (
         <>
-            <Navbar />
+            <Navbar IsLoggedIn={isLoggedIn} myData={myData} />
             <div className="min-h-screen bg-gray-50">
                 {/* Hero Section with Gradient Background */}
                 <div className="relative">
@@ -93,16 +234,15 @@ const Profile = () => {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="relative -mt-32">
                             <div className="flex flex-col lg:flex-row items-start lg:items-end space-y-6 lg:space-y-0 lg:space-x-8">
-                                {/* Profile Image - Half in gradient, half out */}
+                                {/* Profile Image */}
                                 <div className="relative">
                                     <div className="w-48 h-48 rounded-full overflow-hidden shadow-2xl ring-8 ring-white">
                                         <img
-                                            src={user.profileImage}
-                                            alt={user.name}
+                                            src={profileData.profileImage}
+                                            alt={profileData.name}
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
-                                    {/* Online Status Indicator */}
                                     <div className="absolute bottom-4 right-4 w-6 h-6 bg-green-400 rounded-full ring-4 ring-white"></div>
                                 </div>
 
@@ -111,26 +251,66 @@ const Profile = () => {
                                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                                         <div className="mb-6 lg:mb-0">
                                             <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                                {user.name}
+                                                {profileData.name}
                                             </h1>
                                             <p className="text-gray-600 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-                                                {user.email}
+                                                {profileData.email}
                                             </p>
                                             <div className="flex items-center space-x-6 text-sm text-gray-500">
-                                                <span>👥 {user.followers} followers</span>
-                                                <span>🔗 {user.following} following</span>
-                                                <span>📅 Joined {user.joinedDate}</span>
+                                                <span>👥 {profileData.followers} followers</span>
+                                                <span>🔗 {profileData.following} following</span>
+                                                <span>📅 Joined {profileData.joinedDate}</span>
                                             </div>
                                         </div>
 
                                         {/* Action Buttons */}
-                                        <div className="flex space-x-3 mt-4 lg:mt-0 justify-center lg:justify-end w-full  lg:w-auto color-gray-900">
-
-                                            <button className="px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:border-indigo-300 hover:text-indigo-600 transition-all duration-200">
-                                                Share Profile
-                                            </button>
+                                        <div className="flex space-x-3 mt-4 lg:mt-0 justify-center lg:justify-end w-full lg:w-auto">
+                                            {isOwnProfile ? (
+                                                <>
+                                                    <button
+                                                        onClick={handleEditProfile}
+                                                        className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-500 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-cyan-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+                                                    >
+                                                        ✏️ Edit Profile
+                                                    </button>
+                                                    <button
+                                                        onClick={handleShareProfile}
+                                                        className="px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:border-indigo-300 hover:text-indigo-600 transition-all duration-200"
+                                                    >
+                                                        📤 Share Profile
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button
+                                                        onClick={handleFollowToggle}
+                                                        disabled={followLoading || !myData}
+                                                        className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl ${isFollowing
+                                                            ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                            : 'bg-gradient-to-r from-indigo-600 to-cyan-500 text-white hover:from-indigo-700 hover:to-cyan-600'
+                                                            } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    >
+                                                        {followLoading ? (
+                                                            <span className="flex items-center space-x-2">
+                                                                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                </svg>
+                                                                <span>Processing...</span>
+                                                            </span>
+                                                        ) : (
+                                                            <>{isFollowing ? '✓ Following' : '➕ Follow'}</>
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        onClick={handleShareProfile}
+                                                        className="px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:border-indigo-300 hover:text-indigo-600 transition-all duration-200"
+                                                    >
+                                                        📤 Share Profile
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -145,14 +325,14 @@ const Profile = () => {
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-4 relative" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                    About Me
+                                    About {isOwnProfile ? 'Me' : profileData.name}
                                     <div className="absolute -bottom-2 left-0 w-16 h-1 bg-gradient-to-r from-indigo-600 to-cyan-400 rounded-full"></div>
                                 </h2>
                                 <div className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                                     <p className={`transition-all duration-300 ${!showFullBio ? 'line-clamp-4' : ''}`}>
-                                        {user.bio}
+                                        {profileData.bio || 'No bio available.'}
                                     </p>
-                                    {user.bio.length > 200 && (
+                                    {profileData.bio && profileData.bio.length > 200 && (
                                         <button
                                             onClick={() => setShowFullBio(!showFullBio)}
                                             className="mt-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors duration-200 flex items-center space-x-1"
@@ -171,26 +351,35 @@ const Profile = () => {
                                 </div>
                             </div>
 
-                            {/* My Courses Section */}
+                            {/* Courses Section */}
                             <div className="bg-white rounded-2xl shadow-lg p-8">
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                                     <h2 className="text-2xl font-bold text-gray-900 mb-4 sm:mb-0 relative" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        My Courses ({userCourses.length})
+                                        {isOwnProfile ? 'My Courses' : `${profileData.name}'s Courses`} ({userCourses.length})
                                         <div className="absolute -bottom-2 left-0 w-16 h-1 bg-gradient-to-r from-indigo-600 to-cyan-400 rounded-full"></div>
                                     </h2>
 
-                                    <button className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-indigo-600 text-white rounded-xl font-semibold hover:from-cyan-500 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2">
-                                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                        </svg>
-                                        <span>Create Course</span>
-                                    </button>
+                                    {isOwnProfile && (
+                                        <button
+                                            onClick={() => navigate('/create-course')}
+                                            className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-indigo-600 text-white rounded-xl font-semibold hover:from-cyan-500 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                                        >
+                                            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                            </svg>
+                                            <span>Create Course</span>
+                                        </button>
+                                    )}
                                 </div>
 
                                 {/* Course Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {userCourses.map(course => (
-                                        <CourseCard key={course._id} course={course} />
+                                        <CourseCard
+                                            key={course._id}
+                                            course={course}
+                                            isOwnCourse={isOwnProfile}
+                                        />
                                     ))}
                                 </div>
 
@@ -202,7 +391,12 @@ const Profile = () => {
                                             </svg>
                                         </div>
                                         <h3 className="text-lg font-semibold text-gray-900 mb-2">No courses found</h3>
-                                        <p className="text-gray-600">Start creating your first course to share your knowledge with others.</p>
+                                        <p className="text-gray-600">
+                                            {isOwnProfile
+                                                ? 'Start creating your first course to share your knowledge with others.'
+                                                : `${profileData.name} hasn't created any courses yet.`
+                                            }
+                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -214,7 +408,7 @@ const Profile = () => {
                                 {/* Profile Stats */}
                                 <div className="bg-white rounded-2xl shadow-lg p-6">
                                     <h3 className="text-lg font-bold text-gray-900 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        Profile Status
+                                        Profile Stats
                                     </h3>
 
                                     <div className="space-y-4">
@@ -227,7 +421,7 @@ const Profile = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-600">📊 Total Profile Views</p>
-                                                <p className="text-2xl font-bold text-gray-900">{user.totalViews.toLocaleString()}</p>
+                                                <p className="text-2xl font-bold text-gray-900">{profileData.totalViews.toLocaleString()}</p>
                                             </div>
                                         </div>
 
@@ -240,7 +434,7 @@ const Profile = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-600">⭐ Average Course Rating</p>
-                                                <p className="text-2xl font-bold text-gray-900">{user.averageRating}/5.0</p>
+                                                <p className="text-2xl font-bold text-gray-900">{parseFloat(profileData.averageRating).toFixed(3)}/5.000</p>
                                             </div>
                                         </div>
 
@@ -253,30 +447,19 @@ const Profile = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-600">📚 Total Courses</p>
-                                                <p className="text-2xl font-bold text-gray-900">{user.totalCourses}</p>
+                                                <p className="text-2xl font-bold text-gray-900">{profileData.totalCourses}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div>
-
-                                </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <style jsx>{`
-                .line-clamp-4 {
-                    display: -webkit-box;
-                    -webkit-line-clamp: 4;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                }
-            `}</style>
+
+
         </>
     );
 };

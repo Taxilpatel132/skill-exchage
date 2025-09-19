@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
+
 const UserLogin = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
@@ -10,7 +11,7 @@ const UserLogin = () => {
         email: '',
         password: ''
     });
-
+    const { user, setUser } = useUser();
     const handleInputChange = (e) => {
         setFormData({
             ...formData,
@@ -22,22 +23,41 @@ const UserLogin = () => {
         e.preventDefault();
         setIsLoading(true);
 
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/';
-        console.log('url:', `${apiUrl}/users/login`);
-
         try {
-            let responds = await axios.post(`${apiUrl}/users/login`, formData);
-            if (responds.data) {
-                console.log('Login successful:', responds.data);
-                navigate('/dashboard');
+            const response = await fetch('http://localhost:3000/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    email: formData.email,
+                    password: formData.password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log('Login successful:', data);
+                // Store token in localStorage if needed
+                if (data.token) {
+                    console.log("hello")
+                    localStorage.setItem('token', data.token);
+                    setUser(data.user);
+
+                }
+                navigate('/home');
+            } else {
+                console.error('Login failed:', data.message);
+                alert(data.message || 'Login failed');
             }
         } catch (error) {
             console.error('Login failed:', error);
-
+            alert('Network error. Please try again.');
         } finally {
             setIsLoading(false);
         }
-
     };
 
     return (

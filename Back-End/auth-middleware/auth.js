@@ -60,7 +60,7 @@ exports.optionalAuthUser = async (req, res, next) => {
 
     if (!token) {
         req.user = null;
-        req.token = null;
+
         return next();
     }
 

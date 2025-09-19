@@ -4,6 +4,10 @@ const courseService = require("../services/course.service");
 
 const NotificationService = require("../services/notification.service");
 const UserEnroll = require("../models/User_enroll.model");
+const course = require("../models/course.model");
+const UserProgress = require("../models/User_progress.model");
+const ModuleModel = require("../models/module.model");
+
 exports.createuser = async (userData) => {
     const { fullname, email, password, phone } = userData;
     if (!fullname || !email || !password || !phone) {
@@ -27,7 +31,6 @@ exports.loginUser = async (userData) => {
     if (!email || !password) {
         throw new Error("email and password are require");
     }
-    console.log(email, password);
     const user = await usermodel.findOne({ email: email });
     if (!user) {
         throw new Error("User not found");
@@ -36,7 +39,6 @@ exports.loginUser = async (userData) => {
     if (!isMatch) {
         throw new Error("Invalid credentials");
     }
-    //const token = user.generateAuthToken();
     return user;
 }
 exports.findByEmail = async (email) => {
@@ -135,18 +137,32 @@ exports.getUserProfile = async (userId) => {
         let totalViews = 0;
         let coursesList = [];
         let coursesCount = "0";
-        let avgRating = "0";
+        let avgRating = 0;
+        let coursesWithRatings = 0;
 
         if (cc && cc.length > 0 && cc[0].courses) {
             totalViews = cc[0].courses.reduce((acc, course) => acc + (course.views || 0), 0);
             coursesList = cc[0].courses.map(async (course) => {
-                return await courseService.getCourseById(course._id);
+                const courseDetails = await courseService.getCourseById(course._id);
+                return {
+                    ...courseDetails,
+                    advisor: {
+                        _id: course.advisor, // Include advisor ID for comparison
+                        ...courseDetails.advisor
+                    }
+                };
             });
             coursesCount = cc[0].courses.length.toString();
-            avgRating = cc[0].avgRating ? cc[0].avgRating.toString() : "0";
-        }
 
-        // const notificationList = await NotificationService.receiverNotification(userId);
+            // Calculate average rating with proper logic
+            for (const course1 of cc[0].courses) {
+                if (course1.averageRating > 0) {
+                    avgRating += course1.averageRating;
+                    coursesWithRatings++;
+                }
+            }
+            avgRating = coursesWithRatings > 0 ? avgRating / coursesWithRatings : 0;
+        }
 
         return {
             _id: user._id,
@@ -156,12 +172,11 @@ exports.getUserProfile = async (userId) => {
             following: user.following.length.toString(),
             profilePhoto: user.profilePhoto || defaultProfilePhoto,
             courses: coursesCount,
-            avgRating: avgRating,
+            avgRating: avgRating ? avgRating.toFixed(3) : "0.000", // Ensure 3 decimal places
             email: user.email,
             phone: user.phone || "No phone number provided",
             bio: user.bio || "No bio provided",
             totalViews: totalViews.toString(),
-            //notifications: notificationList || [],
             coursesList: await Promise.all(coursesList)
         };
     } catch (error) {
@@ -183,10 +198,37 @@ exports.getUserEnrollments = async (userId) => {
             }
         });
 
-        console.log(userEnroll.courses);
         const Mycourses = userEnroll ? userEnroll.courses : [];
 
-        const clearedCourses = Mycourses.map(course => {
+        // Get progress for each course
+        const coursesWithProgress = await Promise.all(Mycourses.map(async (course) => {
+            // Get or create progress record
+            let progressRecord = await UserProgress.findOne({
+                user: userId,
+                course: course._id
+            });
+
+            if (!progressRecord) {
+                // Get total modules for this course
+                const totalModules = await ModuleModel.countDocuments({ courseId: course._id });
+
+                // Create new progress record
+                progressRecord = new UserProgress({
+                    user: userId,
+                    course: course._id,
+                    totalModules,
+                    progressPercentage: 0,
+                    completedModules: [],
+                    totalTimeSpent: 0,
+                    isCompleted: false
+                });
+                await progressRecord.save();
+            }
+
+            // Calculate learning hours from course duration
+            const durationMatch = course.duration?.match(/(\d+)/);
+            const courseDurationHours = durationMatch ? parseInt(durationMatch[1]) : 0;
+
             return {
                 _id: course._id,
                 title: course.title,
@@ -203,15 +245,108 @@ exports.getUserEnrollments = async (userId) => {
                 averageRating: course.averageRating,
                 totalRatings: course.totalRatings,
                 createdAt: course.createdAt,
-                views: course.views
-            }
-        });
-        return clearedCourses;
+                views: course.views,
+                duration: course.duration,
+                // Progress tracking fields
+                progress: progressRecord.progressPercentage,
+                isCompleted: progressRecord.isCompleted,
+                completedAt: progressRecord.completedAt,
+                totalTimeSpent: progressRecord.totalTimeSpent, // in minutes
+                lastAccessedAt: progressRecord.lastAccessedAt,
+                totalModules: progressRecord.totalModules,
+                completedModules: progressRecord.completedModules.length,
+                estimatedHours: courseDurationHours
+            };
+        }));
+
+        return coursesWithProgress;
     } catch (error) {
         throw new Error("Failed to get user enrollments: " + error.message);
     }
 };
 
+// Add method to update progress
+exports.updateCourseProgress = async (userId, courseId, moduleId, timeSpent = 0) => {
+    if (!userId || !courseId || !moduleId) {
+        throw new Error("User ID, Course ID, and Module ID are required");
+    }
+
+    try {
+        let progressRecord = await UserProgress.findOne({
+            user: userId,
+            course: courseId
+        });
+
+        if (!progressRecord) {
+            // Get total modules for this course
+            const totalModules = await ModuleModel.countDocuments({ courseId });
+
+            // Create new progress record
+            progressRecord = new UserProgress({
+                user: userId,
+                course: courseId,
+                totalModules,
+                progressPercentage: 0,
+                completedModules: [],
+                totalTimeSpent: 0,
+                isCompleted: false
+            });
+        }
+
+        // Add completed module
+        progressRecord.addCompletedModule(moduleId, timeSpent);
+        await progressRecord.save();
+
+        return progressRecord;
+    } catch (error) {
+        throw new Error("Failed to update course progress: " + error.message);
+    }
+};
+
+// Add method to get enrollment statistics
+exports.getEnrollmentStats = async (userId) => {
+    if (!userId) {
+        throw new Error("User ID is required");
+    }
+
+    try {
+        const progressRecords = await UserProgress.find({ user: userId })
+            .populate('course', 'duration');
+
+        const stats = {
+            totalCourses: progressRecords.length,
+            inProgress: 0,
+            completed: 0,
+            totalHours: 0,
+            totalMinutesSpent: 0
+        };
+
+        progressRecords.forEach(record => {
+            if (record.isCompleted) {
+                stats.completed++;
+            } else if (record.progressPercentage > 0) {
+                stats.inProgress++;
+            }
+
+            // Add actual time spent
+            stats.totalMinutesSpent += record.totalTimeSpent;
+
+            // Add estimated course hours
+            if (record.course && record.course.duration) {
+                const durationMatch = record.course.duration.match(/(\d+)/);
+                const courseDurationHours = durationMatch ? parseInt(durationMatch[1]) : 0;
+                stats.totalHours += courseDurationHours;
+            }
+        });
+
+        // Convert minutes to hours for display
+        stats.actualHoursSpent = Math.round(stats.totalMinutesSpent / 60 * 10) / 10; // Round to 1 decimal
+
+        return stats;
+    } catch (error) {
+        throw new Error("Failed to get enrollment stats: " + error.message);
+    }
+};
 
 exports.followUser = async (userId, followId) => {
     if (!userId || !followId) {
@@ -259,3 +394,115 @@ exports.unfollowUser = async (userId, unfollowId) => {
     await user.save();
     return "Unfollowed successfully";
 }
+exports.mycard = async (userId) => {
+    if (!userId) {
+        throw new Error("user id is required");
+    }
+    try {
+
+        const user = await usermodel.findById(userId);
+        if (!user) {
+            throw new Error("user not found");
+        }
+        const data = await courseCreator.find({ advisorId: userId }).populate("advisorId courses");
+
+        if (!data || data.length === 0) {
+            return {
+                _id: user._id,
+                fullname: user.fullname.firstname + ' ' + user.fullname.lastname,
+                email: user.email,
+                courses: "0",
+                avgRating: "0.000",
+                students: "0",
+
+            }
+        }
+
+        let totalStudents = 0;
+        let avgRating = 0;
+        let coursesWithRatings = 0; // Count only courses that have ratings
+
+        for (course1 of data[0].courses) {
+            const enrollments = await UserEnroll.find({ courses: course1._id });
+            totalStudents += enrollments.length;
+
+            // Only include courses with ratings > 0 in average calculation
+            if (course1.averageRating > 0) {
+                avgRating += course1.averageRating;
+                coursesWithRatings++;
+            }
+        }
+
+        // Calculate average only from courses that have ratings
+        avgRating = coursesWithRatings > 0 ? avgRating / coursesWithRatings : 0;
+
+        return {
+            _id: user._id,
+            fullname: user.fullname.firstname + ' ' + user.fullname.lastname,
+            email: user.email,
+            courses: data[0].courses.length.toString(),
+            avgRating: avgRating ? avgRating.toFixed(3) : "0.000",
+            students: totalStudents.toString(),
+        }
+    } catch (error) {
+        throw new Error("Failed to get user card: " + error.message);
+    }
+}
+
+exports.updateUserProfile = async (userId, updateData) => {
+    if (!userId) {
+        throw new Error("User ID is required");
+    }
+
+    try {
+        // Prepare update object
+        const updateObject = {};
+
+        // Handle fullname update (only if provided)
+        if (updateData.fullname) {
+            const { fullname } = updateData;
+            if (!fullname.firstname || !fullname.lastname) {
+                throw new Error("First name and last name are required");
+            }
+            updateObject.fullname = {
+                firstname: fullname.firstname.trim(),
+                lastname: fullname.lastname.trim()
+            };
+        }
+
+        // Add optional fields if provided
+        if (updateData.bio !== undefined) {
+            updateObject.bio = updateData.bio.trim();
+        }
+
+        if (updateData.profilePhoto !== undefined) {
+            updateObject.profilePhoto = updateData.profilePhoto.trim();
+        }
+
+        if (updateData.phone !== undefined) {
+            // Validate phone number if provided and not empty
+            if (updateData.phone && !/^\d{10}$/.test(updateData.phone)) {
+                throw new Error("Phone number must be 10 digits");
+            }
+            updateObject.phone = updateData.phone.trim();
+        }
+
+        const updatedUser = await usermodel.findByIdAndUpdate(
+            userId,
+            updateObject,
+            {
+                new: true,
+                runValidators: false, // Disable validation for partial updates
+                select: '-password' // Exclude password from response
+            }
+        );
+
+        if (!updatedUser) {
+            throw new Error("User not found");
+        }
+
+        return updatedUser;
+    } catch (error) {
+        throw new Error(`Failed to update user profile: ${error.message}`);
+    }
+};

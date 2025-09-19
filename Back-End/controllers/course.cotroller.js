@@ -2,7 +2,8 @@ const course = require('../models/course.model');
 const User = require('../models/users.model');
 const { create } = require('../models/notification.model');
 const courseService = require('../services/course.service');
-
+const coures_creator = require("../models/coures_creator.model");
+const UserEnroll = require('../models/User_enroll.model');
 exports.createCourse = async (req, res) => {
     try {
         const advisor = req.user; // Assuming the user is authenticated and their ID is available in req.user
@@ -59,22 +60,18 @@ exports.createCourse = async (req, res) => {
             advisor: advisor._id
         };
 
-        console.log("Creating course with data:", courseData);
         const savedCourse = await courseService.createCourse(courseData, modules);
 
         if (!savedCourse) {
             return res.status(400).json({ message: "Failed to create course" });
         }
 
-
         const cc = await courseService.createCC({ courseId: savedCourse?._id, advisorId: advisor?._id })
         if (!cc) {
             return res.status(400).json({ message: "Failed to create course creator" });
         }
 
-
         const advisorWithFollowers = await User.findById(advisor._id).populate('followers');
-
 
         const followerNotifications = [];
         if (advisorWithFollowers.followers && advisorWithFollowers.followers.length > 0) {
@@ -254,7 +251,7 @@ exports.answerQuestion = async (req, res) => {
 };
 
 // Get detailed course information for course details page (updated for unified model)
-exports.getCourseDetailsUpdated = async (req, res) => {
+exports.getCourseDetails = async (req, res) => {
     try {
         const { courseId } = req.params;
 
@@ -262,47 +259,88 @@ exports.getCourseDetailsUpdated = async (req, res) => {
             return res.status(400).json({ message: "Course ID is required" });
         }
 
-        // Get course with all details using unified model
+        // Get course with populated data
         const course = await courseService.getCourseDetailsForDisplay(courseId);
 
         if (!course) {
             return res.status(404).json({ message: "Course not found" });
         }
 
-        // Format response for CourseDetails page (simplified structure)
+        // Get modules for this course
+        const ModuleModel = require('../models/module.model');
+        const modules = await ModuleModel.find({ courseId: courseId }).sort({ order: 1 });
+        const data = await coures_creator.find({ advisorId: course.advisor._id }).populate("advisorId courses");
+
+        if (!data || data.length === 0) {
+            return {
+                _id: user._id,
+                fullname: user.fullname.firstname + ' ' + user.fullname.lastname,
+                email: user.email,
+                courses: "0",
+                avgRating: "0.000",
+                students: "0",
+
+            }
+        }
+
+        let avgRating = 0;
+        let coursesWithRatings = 0; // Count only courses that have ratings
+
+        for (course1 of data[0].courses) {
+            const enrollments = await UserEnroll.find({ courses: course1._id });
+
+            // Only include courses with ratings > 0 in average calculation
+            if (course1.averageRating > 0) {
+                avgRating += course1.averageRating;
+                coursesWithRatings++;
+            }
+        }
+
+        // Calculate average only from courses that have ratings
+        avgRating = coursesWithRatings > 0 ? avgRating / coursesWithRatings : 0;
+
+        // Format response for CourseDetails page with correct field names
         const response = {
             course: {
                 id: course._id,
                 title: course.title,
                 description: course.description,
-                skills: course.skills,
+                skills: course.skills || [],
                 duration: course.duration,
                 pricePoints: course.priceInPoints,
                 thumbnail: course.thumbnail,
                 level: course.level,
                 certificate: course.certificate,
-                language: course.language,
+                language: course.language || 'English',
                 category: course.category,
                 students: course.enrollmentCount || 0,
-                modules: course.totalModules,
-                lastUpdated: course.lastUpdated,
-                rating: course.averageRating || 0,
-                totalReviews: course.totalRatings || 0,
-                reviews: course.latestReviews
+                modules: modules.length,
+                lastUpdated: course.updatedAt || course.createdAt,
+                rating: course.averageRating ? course.averageRating.toFixed(3) : "0.000",
+                totalReviews: course.totalRatings || 0
             },
             advisor: {
-                name: course.advisor.username,
-                avatar: course.advisor.profilePicture || 'https://i.pravatar.cc/120?img=47',
+                name: course.advisor.fullname ?
+                    `${course.advisor.fullname.firstname} ${course.advisor.fullname.lastname}` :
+                    course.advisor.username || 'Unknown Advisor',
+                avatar: course.advisor.profilePhoto || course.advisor.profilePicture || 'https://i.pravatar.cc/120?img=47',
                 bio: course.advisor.bio || 'Experienced instructor',
                 experience: course.advisor.experience || '5+ years experience',
-                rating: 4.8
+                rating: avgRating ? parseFloat(avgRating.toFixed(3)) : 0.000
             },
-            modules: course.getOrderedModules()
+            modules: modules.map(module => ({
+                id: module._id,
+                title: module.title,
+                description: module.description,
+                duration: module.duration,
+                order: module.order,
+                videoUrl: module.videoUrl,
+                resources: module.resources || []
+            }))
         };
 
         res.status(200).json(response);
     } catch (error) {
-        console.error('Error getting course details:', error);
         res.status(400).json({ message: error.message });
     }
 };
@@ -314,7 +352,7 @@ exports.addReviewToCourse = async (req, res) => {
         const student = req.user;
         const { courseId } = req.params;
         const { rating, review } = req.body;
-        console.log(courseId, rating, review);
+
         if (!courseId || !rating || !review) {
             return res.status(400).json({ message: "Course ID, rating, and review are required" });
         }
@@ -331,7 +369,6 @@ exports.addReviewToCourse = async (req, res) => {
             totalReviews: updatedCourse.totalRatings
         });
     } catch (error) {
-        console.error('Error adding review:', error);
         res.status(400).json({ message: error.message });
     }
 };
@@ -347,9 +384,32 @@ exports.getCourseReviews = async (req, res) => {
 
         const reviews = await courseService.getCourseReviews(courseId);
 
-        res.status(200).json({ reviews });
+        res.status(200).json({
+            reviews: reviews || [],
+            count: reviews ? reviews.length : 0
+        });
     } catch (error) {
-        console.error('Error getting course reviews:', error);
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Get Q&A for a course
+exports.getCourseQA = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+
+        if (!courseId) {
+            return res.status(400).json({ message: "Course ID is required" });
+        }
+
+        const CourseQA = require('../models/course_qa.model');
+        const questions = await CourseQA.find({ courseId })
+            .populate('studentId', 'fullname username')
+            .populate('answer.answeredBy', 'fullname username')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ questions });
+    } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };

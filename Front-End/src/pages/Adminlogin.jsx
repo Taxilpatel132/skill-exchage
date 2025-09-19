@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
-import axios from 'axios';
 import OTPInput from '../components/OTPInput';
 
 const AdminLogin = () => {
@@ -82,12 +81,22 @@ const AdminLogin = () => {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/';
 
         try {
-            let response = await axios.post(`${apiUrl}/admin/verify-otp`, {
-                email,
-                otp: otpValue
+            const response = await fetch(`${apiUrl}/admin/verify-otp`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    email,
+                    otp: otpValue
+                })
             });
-            if (response.data) {
-                console.log('Admin login successful:', response.data);
+
+            const data = await response.json();
+
+            if (response.ok && data) {
+                console.log('Admin login successful:', data);
                 navigate('/admin/dashboard');
             }
         } catch (error) {

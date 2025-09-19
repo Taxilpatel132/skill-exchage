@@ -36,6 +36,15 @@ const ModulesSection = ({ modules, isEnrolled }) => {
         }
     };
 
+    if (!modules || modules.length === 0) {
+        return (
+            <section className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Modules</h2>
+                <p className="text-gray-600">No modules available for this course.</p>
+            </section>
+        );
+    }
+
     return (
         <section className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between mb-6">
@@ -48,112 +57,113 @@ const ModulesSection = ({ modules, isEnrolled }) => {
             <div className="space-y-4">
                 {modules.map((module, index) => (
                     <div
-                        key={module.id}
-                        className="border border-gray-200 rounded-xl overflow-hidden hover:border-indigo-200 transition-colors duration-200"
+                        key={module.id || module._id || index}
+                        className="border border-gray-200 rounded-xl overflow-hidden hover:border-indigo-300 transition-colors duration-200"
                     >
                         {/* Module Header */}
                         <div
-                            className="p-5 cursor-pointer hover:bg-gray-50 transition-colors duration-200"
-                            onClick={() => toggleModule(module.id)}
+                            className="p-4 cursor-pointer bg-gradient-to-r from-gray-50 to-indigo-50/30 hover:from-indigo-50 hover:to-indigo-100/50 transition-all duration-200"
+                            onClick={() => toggleModule(module.id || module._id || index)}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-indigo-500 to-cyan-400 text-white flex items-center justify-center font-bold text-sm">
-                                        {index + 1}
+                                    <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                                        <span className="text-sm font-bold text-indigo-600">
+                                            {module.order || index + 1}
+                                        </span>
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-gray-900 mb-1">{module.title}</h3>
-                                        <div className="flex items-center gap-3 text-sm text-gray-500">
-                                            <span className="flex items-center gap-1">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                {module.duration}
-                                            </span>
-                                            <span className="text-gray-300">•</span>
-                                            <span>{module.resources.length} Resources</span>
-                                        </div>
+                                        <h3 className="font-semibold text-gray-900 text-lg">
+                                            {module.title || `Module ${index + 1}`}
+                                        </h3>
+                                        <p className="text-sm text-gray-600">
+                                            {module.duration || 'Duration not specified'}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    {isEnrolled && (
-                                        <button className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-medium rounded-lg hover:shadow-md transition-all duration-200">
-                                            Start Module
-                                        </button>
+                                    {!isEnrolled && (
+                                        <div className="flex items-center gap-1 text-amber-600 text-sm">
+                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                            </svg>
+                                            <span className="font-medium">Locked</span>
+                                        </div>
                                     )}
-                                    <div className={`transform transition-transform duration-200 ${expandedModule === module.id ? 'rotate-180' : ''}`}>
-                                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </div>
+                                    <svg
+                                        className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${expandedModule === (module.id || module._id || index) ? 'rotate-180' : ''
+                                            }`}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </div>
                             </div>
                         </div>
 
                         {/* Module Content */}
-                        {expandedModule === module.id && (
-                            <div className="px-5 pb-5 border-t border-gray-100 bg-gray-50/50">
-                                <div className="pt-4">
-                                    <p className="text-gray-600 mb-4">{module.description}</p>
+                        {expandedModule === (module.id || module._id || index) && (
+                            <div className="p-4 border-t border-gray-100 bg-white">
+                                <p className="text-gray-700 mb-4">
+                                    {module.description || 'No description available for this module.'}
+                                </p>
 
-                                    {/* Module Resources */}
-                                    <div className="space-y-2">
-                                        <h4 className="font-medium text-gray-900 mb-3">Resources</h4>
-                                        {module.resources.map((resource, idx) => (
-                                            <div
-                                                key={idx}
-                                                className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-100 hover:border-indigo-200 transition-colors duration-200"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                                                        {getModuleIcon(resource.type)}
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-medium text-gray-900">{resource.title}</div>
-                                                        <div className="text-sm text-gray-500 capitalize">{resource.type}</div>
-                                                    </div>
-                                                </div>
-                                                {isEnrolled ? (
-                                                    <button className="text-indigo-600 hover:text-indigo-700 font-medium text-sm">
-                                                        Open
-                                                    </button>
-                                                ) : (
-                                                    <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center">
-                                                        <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                                        </svg>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Video Player Preview */}
-                                    {module.videoUrl && (
-                                        <div className="mt-4">
-                                            <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video">
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    {isEnrolled ? (
-                                                        <button className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-200">
-                                                            <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                                                <path d="M8 5v14l11-7z" />
+                                {module.resources && module.resources.length > 0 && (
+                                    <div>
+                                        <h4 className="font-semibold text-gray-900 mb-3">Resources</h4>
+                                        <div className="space-y-2">
+                                            {module.resources.map((resource, resourceIndex) => (
+                                                <div
+                                                    key={resource.id || resourceIndex}
+                                                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                                                >
+                                                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                                        {resource.type === 'video' ? (
+                                                            <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                                                             </svg>
+                                                        ) : resource.type === 'pdf' ? (
+                                                            <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                                                            </svg>
+                                                        ) : resource.type === 'quiz' ? (
+                                                            <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                                                            </svg>
+                                                        ) : (
+                                                            <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm5 5a1 1 0 100-2 1 1 0 000 2zm5 1a1 1 0 11-2 0 1 1 0 012 0zm0 4a1 1 0 11-2 0 1 1 0 012 0zm-9 0a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                                                            </svg>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="font-medium text-gray-900">
+                                                            {resource.title || `Resource ${resourceIndex + 1}`}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500 capitalize">
+                                                            {resource.type || 'resource'}
+                                                        </p>
+                                                    </div>
+                                                    {isEnrolled && (
+                                                        <button className="px-3 py-1 text-xs bg-indigo-100 text-indigo-600 rounded-full hover:bg-indigo-200 transition-colors duration-200">
+                                                            Access
                                                         </button>
-                                                    ) : (
-                                                        <div className="text-center">
-                                                            <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-3">
-                                                                <svg className="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                                                </svg>
-                                                            </div>
-                                                            <p className="text-white/80 text-sm">Enroll to access video content</p>
-                                                        </div>
                                                     )}
                                                 </div>
-                                            </div>
+                                            ))}
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
+
+                                {!isEnrolled && (
+                                    <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                        <p className="text-amber-700 text-sm">
+                                            <strong>Enroll in this course</strong> to access module content and resources.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

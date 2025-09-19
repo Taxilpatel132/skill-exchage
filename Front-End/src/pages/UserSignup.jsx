@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 const UserSignup = () => {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -37,15 +39,26 @@ const UserSignup = () => {
         setIsLoading(true);
         console.log("from register user", formData);
 
-        // Get API URL with fallback
+
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/';
-        console.log('url:', `${apiUrl}/users/register`);
+        //console.log('url:', `${apiUrl}/users/register`);
 
         try {
-            let responds = await axios.post(`${apiUrl}/users/register`, formData);
-            if (responds.data) {
-                console.log('Registration successful:', responds.data);
+            const response = await fetch(`${apiUrl}/users/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(formData)
+            });
 
+            const data = await response.json();
+
+            if (response.ok && data) {
+                console.log('Registration successful:', data);
+                localStorage.setItem('token', data.token);
+                navigate('/dashboard');
             }
         } catch (error) {
             console.error('Registration failed:', error);

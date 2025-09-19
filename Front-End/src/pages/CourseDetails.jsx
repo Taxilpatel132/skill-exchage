@@ -4,142 +4,320 @@ import QASection from '../components/QASection';
 import ReviewsSection from '../components/ReviewsSection';
 import CourseNavbar from '../components/CourseNavbar';
 import ModulesSection from '../components/ModulesSection';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const CourseDetails = () => {
-    // Simplified course data with your theme
-    const course = {
-        id: 1,
-        title: 'Full-Stack Web Development Bootcamp',
-        description: 'Master modern web development: React, Node.js, APIs, databases, deployment & best practices.',
-        skills: ['React', 'Node.js', 'REST APIs', 'MongoDB', 'Auth', 'Deployment'],
-        duration: '8 Weeks • ~60 hrs',
-        pricePoints: 450,
-        thumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop',
-        level: 'Intermediate',
-        students: 1200,
-        modules: 12,
-        lastUpdated: '2024-01-15',
-        certificate: true,
-        language: 'English',
-        category: 'Web Development'
-    };
+    const { courseId } = useParams();
 
-    const advisor = {
-        name: 'Aisha Khan',
-        avatar: 'https://i.pravatar.cc/120?img=47',
-        experience: '5+ yrs | 1200+ students',
-        rating: 4.8,
-        bio: 'Full-Stack Developer & Tech Educator with 8+ years of experience. Taught over 500,000 students worldwide.'
-    };
-
+    // State for actual data
+    const [course, setCourse] = useState(null);
+    const [advisor, setAdvisor] = useState(null);
+    const [modules, setModules] = useState([]);
     const [isEnrolled, setIsEnrolled] = useState(false);
-    const [progress, setProgress] = useState(25);
+    const [progress, setProgress] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const [reviews, setReviews] = useState([
-        { id: 1, name: 'Leo', rating: 5, text: 'Super clear explanations and practical projects.' },
-        { id: 2, name: 'Mira', rating: 4, text: 'Great pacing. Wanted a bit more on testing.' }
-    ]);
+    // Q&A and Reviews state
+    const [reviews, setReviews] = useState([]);
     const [reviewForm, setReviewForm] = useState({ name: '', rating: 0, text: '' });
-
-    const [qa, setQa] = useState([
-        { id: 1, asker: 'Sam', question: 'Do we cover JWT authentication?', answer: 'Yes, in module 4 with hands-on labs.' },
-        { id: 2, asker: 'Riya', question: 'Is there a certificate?', answer: 'A shareable completion certificate is issued.' },
-    ]);
+    const [qa, setQa] = useState([]);
     const [questionText, setQuestionText] = useState('');
+    const [reviewLoading, setReviewLoading] = useState(false);
+    const [questionLoading, setQuestionLoading] = useState(false);
 
-    const related = [
-        { id: 101, title: 'Advanced React Patterns', skills: ['Hooks', 'Context'], points: 260 },
-        { id: 102, title: 'API Design with Node & Express', skills: ['REST', 'Middleware'], points: 300 },
-        { id: 103, title: 'DevOps for Beginners', skills: ['CI/CD', 'Docker'], points: 280 },
-    ];
+    // New states for review management - simplified
+    const [myReview, setMyReview] = useState(null);
+    const [otherReviews, setOtherReviews] = useState([]);
 
-    const modules = [
-        {
-            id: 1,
-            title: 'Introduction to Web Development',
-            description: 'Get started with the fundamentals of web development, understanding how the web works, and setting up your development environment.',
-            duration: '2 hours',
-            order: 1,
-            videoUrl: 'https://example.com/video1.mp4',
-            resources: [
-                { title: 'Course Introduction Slides', type: 'pdf', url: '/resources/intro-slides.pdf' },
-                { title: 'Development Setup Guide', type: 'pdf', url: '/resources/setup-guide.pdf' },
-                { title: 'Knowledge Check Quiz', type: 'quiz', url: '/quiz/module1' }
-            ]
-        },
-        {
-            id: 2,
-            title: 'HTML & CSS Fundamentals',
-            description: 'Master the building blocks of web pages with HTML for structure and CSS for styling. Learn responsive design principles.',
-            duration: '4 hours',
-            order: 2,
-            videoUrl: 'https://example.com/video2.mp4',
-            resources: [
-                { title: 'HTML Cheat Sheet', type: 'pdf', url: '/resources/html-cheat-sheet.pdf' },
-                { title: 'CSS Grid & Flexbox Guide', type: 'pdf', url: '/resources/css-guide.pdf' },
-                { title: 'Practice Exercises', type: 'link', url: '/exercises/html-css' },
-                { title: 'Module 2 Assessment', type: 'quiz', url: '/quiz/module2' }
-            ]
-        },
-        {
-            id: 3,
-            title: 'JavaScript Essentials',
-            description: 'Learn JavaScript programming fundamentals, DOM manipulation, and modern ES6+ features that power interactive web applications.',
-            duration: '6 hours',
-            order: 3,
-            videoUrl: 'https://example.com/video3.mp4',
-            resources: [
-                { title: 'JavaScript Reference Guide', type: 'pdf', url: '/resources/js-reference.pdf' },
-                { title: 'Interactive Code Examples', type: 'link', url: '/examples/javascript' },
-                { title: 'DOM Manipulation Lab', type: 'video', url: '/videos/dom-lab.mp4' },
-                { title: 'JavaScript Quiz', type: 'quiz', url: '/quiz/module3' }
-            ]
-        },
-        {
-            id: 4,
-            title: 'React Development',
-            description: 'Build modern user interfaces with React. Learn components, state management, hooks, and best practices for scalable applications.',
-            duration: '8 hours',
-            order: 4,
-            videoUrl: 'https://example.com/video4.mp4',
-            resources: [
-                { title: 'React Components Guide', type: 'pdf', url: '/resources/react-components.pdf' },
-                { title: 'Hooks Reference', type: 'pdf', url: '/resources/react-hooks.pdf' },
-                { title: 'Project Starter Code', type: 'link', url: '/projects/react-starter' },
-                { title: 'React Best Practices', type: 'video', url: '/videos/react-best-practices.mp4' },
-                { title: 'Final Project Assessment', type: 'quiz', url: '/quiz/module4' }
-            ]
+    useEffect(() => {
+        async function fetchCourseData() {
+            try {
+                setLoading(true);
+
+                const courseResponse = await axios.get(`http://localhost:3000/course/details/${courseId}`, { withCredentials: true });
+
+                // Check if user is authenticated
+                const myId = localStorage.getItem('myId');
+                const token = localStorage.getItem('token');
+                const isAuthenticated = (myId && myId !== 'null' && myId !== 'undefined') ||
+                    (token && token !== 'null' && token !== 'undefined');
+
+                let enrollmentsResponse;
+                if (isAuthenticated) {
+                    try {
+                        enrollmentsResponse = await axios.get(`http://localhost:3000/users/my-enrollments`, { withCredentials: true });
+                    } catch (enrollmentError) {
+                        console.log('User not authenticated or enrollment fetch failed:', enrollmentError);
+                    }
+                }
+
+                // Set course data
+                if (courseResponse.data.course) {
+                    setCourse(courseResponse.data.course);
+                    setAdvisor(courseResponse.data.advisor);
+                    setModules(courseResponse.data.modules || []);
+                }
+
+                // Check if user is enrolled
+                if (enrollmentsResponse?.data?.enrollments && Array.isArray(enrollmentsResponse.data.enrollments)) {
+                    const enrolled = enrollmentsResponse.data.enrollments.some(
+                        enrollment => {
+                            const enrollmentId = enrollment._id || enrollment.courseId;
+                            return enrollmentId?.toString() === courseId.toString();
+                        }
+                    );
+                    setIsEnrolled(enrolled);
+
+                    if (enrolled) {
+                        const enrollmentData = enrollmentsResponse.data.enrollments.find(
+                            enrollment => {
+                                const enrollmentId = enrollment._id || enrollment.courseId;
+                                return enrollmentId?.toString() === courseId.toString();
+                            }
+                        );
+                        setProgress(enrollmentData?.progress || 25);
+                    }
+                }
+
+                // Fetch reviews with user-specific logic
+                try {
+                    const reviewsResponse = await axios.get(`http://localhost:3000/course/details/${courseId}/reviews`, { withCredentials: true });
+                    console.log('Reviews response:', reviewsResponse.data);
+
+                    if (reviewsResponse.data.reviews) {
+                        const currentUserId = localStorage.getItem('myId');
+                        const allReviews = reviewsResponse.data.reviews.map(review => ({
+                            id: review._id,
+                            userId: review.userId?._id,
+                            name: review.userId?.fullname ?
+                                `${review.userId.fullname.firstname} ${review.userId.fullname.lastname}` :
+                                review.userId?.username || 'Anonymous',
+                            rating: review.rating,
+                            text: review.review,
+                            createdAt: review.createdAt
+                        }));
+
+                        // Find current user's review
+                        const userReview = allReviews.find(review => review.userId === currentUserId);
+                        const othersReviews = allReviews.filter(review => review.userId !== currentUserId);
+
+                        setMyReview(userReview || null);
+                        setOtherReviews(othersReviews);
+
+                        // Set combined reviews for display (user's review first if exists)
+                        const orderedReviews = userReview ? [userReview, ...othersReviews] : othersReviews;
+                        setReviews(orderedReviews);
+
+                        // If user has a review, populate the form for editing
+                        if (userReview) {
+                            setReviewForm({
+                                name: userReview.name,
+                                rating: userReview.rating,
+                                text: userReview.text
+                            });
+                            // Don't automatically set editing state - let user click edit button
+                        }
+                    }
+                } catch (reviewError) {
+                    console.log('Failed to fetch reviews:', reviewError);
+                }
+
+                // Fetch Q&A
+                try {
+                    const qaResponse = await axios.get(`http://localhost:3000/course/details/${courseId}/qa`, { withCredentials: true });
+                    if (qaResponse.data.questions) {
+                        setQa(qaResponse.data.questions.map(question => ({
+                            id: question._id,
+                            asker: question.studentId?.fullname ?
+                                `${question.studentId.fullname.firstname} ${question.studentId.fullname.lastname}` :
+                                question.studentId?.username || 'Student',
+                            question: question.question,
+                            answer: question.answer?.text || 'Pending answer...',
+                            answeredBy: question.answer?.answeredBy,
+                            status: question.status,
+                            createdAt: question.createdAt
+                        })));
+                    }
+                } catch (qaError) {
+                    console.log('Failed to fetch Q&A:', qaError);
+                }
+
+            } catch (error) {
+                console.error('Error fetching course data:', error);
+                setError(error.response?.data?.message || 'Failed to load course data');
+            } finally {
+                setLoading(false);
+            }
         }
-    ];
 
-    const handleAddReview = (e) => {
-        e.preventDefault();
-        if (!reviewForm.name || !reviewForm.rating || !reviewForm.text) return;
-        setReviews(prev => [
-            { id: Date.now(), ...reviewForm },
-            ...prev
-        ]);
-        setReviewForm({ name: '', rating: 0, text: '' });
+        if (courseId) {
+            fetchCourseData();
+        }
+    }, [courseId]);
+
+    const handleEnrollment = async () => {
+        const myId = localStorage.getItem('myId');
+        const token = localStorage.getItem('token');
+        const isAuthenticated = (myId && myId !== 'null' && myId !== 'undefined') ||
+            (token && token !== 'null' && token !== 'undefined');
+
+        if (!isAuthenticated) {
+            alert('Please log in to enroll in this course');
+            return;
+        }
+
+        try {
+            const response = await axios.get(`http://localhost:3000/course/search/${courseId}/enroll`, { withCredentials: true });
+            if (response.status === 201) {
+                setIsEnrolled(true);
+                setProgress(0);
+                alert('Successfully enrolled in the course!');
+            }
+        } catch (error) {
+            console.error('Enrollment error:', error);
+            if (error.response?.status === 401) {
+                alert('Please log in to enroll in this course');
+            } else {
+                alert(error.response?.data?.message || 'Failed to enroll in course');
+            }
+        }
     };
 
-    const handleAddQuestion = (e) => {
+    const handleAddReview = async (e) => {
         e.preventDefault();
-        if (!questionText.trim()) return;
-        setQa(prev => [
-            { id: Date.now(), asker: 'You', question: questionText.trim(), answer: 'Pending answer...' },
-            ...prev
-        ]);
-        setQuestionText('');
+
+        const myId = localStorage.getItem('myId');
+        const token = localStorage.getItem('token');
+        const isAuthenticated = (myId && myId !== 'null' && myId !== 'undefined') ||
+            (token && token !== 'null' && token !== 'undefined');
+
+        if (!isAuthenticated) {
+            alert('Please log in to add a review');
+            return;
+        }
+
+        if (!reviewForm.rating || !reviewForm.text) {
+            alert('Please provide both rating and review text');
+            return;
+        }
+
+        setReviewLoading(true);
+        try {
+            const response = await axios.post(`http://localhost:3000/course/details/${courseId}/rate`, {
+                rating: reviewForm.rating,
+                review: reviewForm.text
+            }, { withCredentials: true });
+
+            if (response.status === 201) {
+                const newReview = {
+                    id: Date.now(),
+                    userId: myId,
+                    name: reviewForm.name || 'You',
+                    rating: reviewForm.rating,
+                    text: reviewForm.text,
+                    createdAt: new Date()
+                };
+
+                // Update myReview and reorder reviews
+                setMyReview(newReview);
+                const orderedReviews = [newReview, ...otherReviews];
+                setReviews(orderedReviews);
+
+                // Clear form
+                setReviewForm({ name: '', rating: 0, text: '' });
+                alert('Review submitted successfully!');
+
+                // Refresh reviews from server
+                try {
+                    const reviewsResponse = await axios.get(`http://localhost:3000/course/details/${courseId}/reviews`, { withCredentials: true });
+                    if (reviewsResponse.data.reviews) {
+                        const allReviews = reviewsResponse.data.reviews.map(review => ({
+                            id: review._id,
+                            userId: review.userId?._id,
+                            name: review.userId?.fullname ?
+                                `${review.userId.fullname.firstname} ${review.userId.fullname.lastname}` :
+                                review.userId?.username || 'Anonymous',
+                            rating: review.rating,
+                            text: review.review,
+                            createdAt: review.createdAt
+                        }));
+
+                        const userReview = allReviews.find(review => review.userId === myId);
+                        const othersReviews = allReviews.filter(review => review.userId !== myId);
+
+                        setMyReview(userReview || null);
+                        setOtherReviews(othersReviews);
+
+                        const orderedReviews = userReview ? [userReview, ...othersReviews] : othersReviews;
+                        setReviews(orderedReviews);
+                    }
+                } catch (refreshError) {
+                    console.log('Failed to refresh reviews:', refreshError);
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            alert(error.response?.data?.message || 'Failed to submit review');
+        } finally {
+            setReviewLoading(false);
+        }
     };
 
-    // References for each section for navigation
+    const handleAddQuestion = async (e) => {
+        e.preventDefault();
+
+        const myId = localStorage.getItem('myId');
+        const token = localStorage.getItem('token');
+        const isAuthenticated = (myId && myId !== 'null' && myId !== 'undefined') ||
+            (token && token !== 'null' && token !== 'undefined');
+
+        if (!isAuthenticated) {
+            alert('Please log in to ask a question');
+            return;
+        }
+
+        if (!questionText.trim()) {
+            alert('Please enter a question');
+            return;
+        }
+
+        setQuestionLoading(true);
+        try {
+            const response = await axios.post(`http://localhost:3000/course/details/${courseId}/question`, {
+                question: questionText.trim()
+            }, { withCredentials: true });
+
+            if (response.status === 201) {
+                // Add new question to the list
+                const newQuestion = {
+                    id: response.data.question._id,
+                    asker: 'You',
+                    question: questionText.trim(),
+                    answer: 'Pending answer...',
+                    status: 'pending',
+                    createdAt: new Date()
+                };
+                setQa(prev => [newQuestion, ...prev]);
+                setQuestionText('');
+                alert('Question submitted successfully!');
+            }
+        } catch (error) {
+            console.error('Error submitting question:', error);
+            alert(error.response?.data?.message || 'Failed to submit question');
+        } finally {
+            setQuestionLoading(false);
+        }
+    };
+
+    // References for navigation
     const overviewRef = useRef(null);
     const modulesRef = useRef(null);
     const advisorRef = useRef(null);
     const qaRef = useRef(null);
     const reviewsRef = useRef(null);
 
-    // Define sections for the navigation bar
     const sections = [
         { id: 'overview', label: 'Overview', ref: overviewRef },
         { id: 'modules', label: 'Modules', ref: modulesRef },
@@ -148,13 +326,50 @@ const CourseDetails = () => {
         { id: 'reviews', label: 'Reviews', ref: reviewsRef },
     ];
 
+    // Loading state
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F9FAFB' }}>
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading course details...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F9FAFB' }}>
+                <div className="text-center">
+                    <div className="text-red-500 text-xl mb-4">Error loading course</div>
+                    <p className="text-gray-600">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // No course data
+    if (!course) {
+        return (
+            <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F9FAFB' }}>
+                <div className="text-center">
+                    <p className="text-gray-600">Course not found</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen" style={{ backgroundColor: '#F9FAFB', color: '#111827', fontFamily: "'Inter','Poppins',sans-serif" }}>
-            {/* Course Navbar Component */}
-            <CourseNavbar
-                title={course.title}
-                sections={sections}
-            />
+            <CourseNavbar title={course.title} sections={sections} />
 
             {/* Header Section */}
             <div
@@ -189,8 +404,8 @@ const CourseDetails = () => {
                             <div className="flex items-center gap-6">
                                 <div className="relative">
                                     <img
-                                        src={advisor.avatar}
-                                        alt={advisor.name}
+                                        src={advisor?.avatar || 'https://i.pravatar.cc/120?img=47'}
+                                        alt={advisor?.name || 'Advisor'}
                                         className="w-20 h-20 rounded-2xl object-cover shadow-md"
                                     />
                                     <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-white flex items-center justify-center">
@@ -198,43 +413,43 @@ const CourseDetails = () => {
                                     </div>
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="text-xl font-bold text-gray-900">{advisor.name}</h3>
-                                    <p className="text-gray-600 mt-1">{advisor.bio}</p>
+                                    <h3 className="text-xl font-bold text-gray-900">{advisor?.name || 'Unknown Advisor'}</h3>
+                                    <p className="text-gray-600 mt-1">{advisor?.bio || 'Experienced instructor'}</p>
                                     <div className="flex items-center gap-3 mt-2">
-                                        <StarRating value={Math.round(advisor.rating)} size={16} />
-                                        <span className="text-sm font-medium text-gray-600">{advisor.rating} rating</span>
+                                        <StarRating value={Math.round(advisor?.rating)} size={16} />
+                                        <span className="text-sm font-medium text-gray-600">{advisor?.rating ? parseFloat(advisor.rating).toFixed(3) : "0.000"} rating</span>
                                         <span className="text-gray-300">•</span>
-                                        <span className="text-sm font-medium text-gray-600">{advisor.experience}</span>
+                                        <span className="text-sm font-medium text-gray-600">{advisor?.experience || '5+ years experience'}</span>
                                     </div>
-                                    <button className="mt-4 px-6 py-3 bg-indigo-50 text-indigo-600 rounded-xl font-semibold hover:bg-indigo-100 transition-colors duration-200">
-                                        View Full Profile
-                                    </button>
                                 </div>
                             </div>
                         </section>
 
-                        {/* Modules Section Component */}
                         <div id="modules" ref={modulesRef}>
                             <ModulesSection modules={modules} isEnrolled={isEnrolled} />
                         </div>
 
-                        {/* Q&A Section Component */}
                         <div id="qa" ref={qaRef}>
                             <QASection
                                 qa={qa}
                                 questionText={questionText}
                                 setQuestionText={setQuestionText}
                                 handleAddQuestion={handleAddQuestion}
+                                questionLoading={questionLoading}
+                                isEnrolled={isEnrolled}
                             />
                         </div>
 
-                        {/* Reviews Section Component */}
                         <div id="reviews" ref={reviewsRef}>
                             <ReviewsSection
                                 reviews={reviews}
                                 reviewForm={reviewForm}
                                 setReviewForm={setReviewForm}
                                 handleAddReview={handleAddReview}
+                                reviewLoading={reviewLoading}
+                                isEnrolled={isEnrolled}
+                                myReview={myReview}
+                                currentUserId={localStorage.getItem('myId')}
                             />
                         </div>
                     </div>
@@ -251,7 +466,7 @@ const CourseDetails = () => {
                                 />
                                 <div className="absolute inset-0 shadow-inner border border-white/10 rounded-xl"></div>
                                 <div className="absolute bottom-3 left-3 bg-black/60 text-white text-xs font-medium px-2.5 py-1 rounded-full">
-                                    {course.modules} Modules
+                                    {course.modules || 0} Modules
                                 </div>
                             </div>
 
@@ -266,7 +481,7 @@ const CourseDetails = () => {
                             {/* Enrollment CTA */}
                             {!isEnrolled ? (
                                 <button
-                                    onClick={() => setIsEnrolled(true)}
+                                    onClick={handleEnrollment}
                                     className="w-full py-3.5 px-6 mb-4 rounded-xl text-white font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
                                     style={{ background: 'linear-gradient(90deg, #4F46E5, #22D3EE)' }}
                                 >
@@ -315,7 +530,7 @@ const CourseDetails = () => {
                                     </div>
                                     <div>
                                         <div className="text-sm font-medium text-gray-500">Students</div>
-                                        <div className="text-sm font-semibold text-gray-900">{course.students.toLocaleString()}</div>
+                                        <div className="text-sm font-semibold text-gray-900">{(course.students || 0).toLocaleString()}</div>
                                     </div>
                                 </div>
 
@@ -348,48 +563,13 @@ const CourseDetails = () => {
                             <div className="mt-6 border-t border-gray-100 pt-6">
                                 <h3 className="text-base font-bold text-gray-900 mb-3">Skills You'll Gain</h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {course.skills.map((skill, idx) => (
+                                    {(course.skills || []).map((skill, idx) => (
                                         <span
                                             key={idx}
                                             className="px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-cyan-50 text-indigo-700 text-xs font-medium rounded-full border border-indigo-100"
                                         >
                                             {skill}
                                         </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Related Courses - Compact Version */}
-                            <div className="mt-6 border-t border-gray-100 pt-6">
-                                <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center">
-                                    <span className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-cyan-400 rounded-full mr-2 inline-block"></span>
-                                    You May Also Like
-                                </h3>
-                                <div className="space-y-4">
-                                    {related.map(course => (
-                                        <div
-                                            key={course.id}
-                                            className="bg-gradient-to-r from-white to-indigo-50/30 border border-gray-100 rounded-xl p-3.5 hover:shadow-md transition-all duration-300 hover:border-indigo-200 group relative overflow-hidden"
-                                        >
-                                            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-indigo-500 to-cyan-400 opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                                            <h4 className="font-semibold text-gray-900 mb-2 pl-2.5 line-clamp-1 group-hover:text-indigo-700 transition-colors">{course.title}</h4>
-                                            <div className="flex flex-wrap gap-1.5 mb-3 pl-2.5">
-                                                {course.skills.map((skill, idx) => (
-                                                    <span
-                                                        key={idx}
-                                                        className="px-2.5 py-0.5 bg-white shadow-sm text-indigo-600 text-xs font-medium rounded-full border border-indigo-100/50"
-                                                    >
-                                                        {skill}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                            <div className="flex items-center justify-between pl-2.5 pt-1 border-t border-gray-100">
-                                                <div className="text-sm font-bold text-indigo-600">{course.points} Points</div>
-                                                <button className="text-xs px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg font-medium hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
-                                                    View
-                                                </button>
-                                            </div>
-                                        </div>
                                     ))}
                                 </div>
                             </div>
