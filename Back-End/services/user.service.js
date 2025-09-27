@@ -5,7 +5,6 @@ const courseService = require("../services/course.service");
 const NotificationService = require("../services/notification.service");
 const UserEnroll = require("../models/User_enroll.model");
 const course = require("../models/course.model");
-const UserProgress = require("../models/User_progress.model");
 const ModuleModel = require("../models/module.model");
 
 exports.createuser = async (userData) => {
@@ -420,20 +419,16 @@ exports.mycard = async (userId) => {
 
         let totalStudents = 0;
         let avgRating = 0;
-        let coursesWithRatings = 0; // Count only courses that have ratings
-
-        for (course1 of data[0].courses) {
-            const enrollments = await UserEnroll.find({ courses: course1._id });
-            totalStudents += enrollments.length;
-
-            // Only include courses with ratings > 0 in average calculation
+        let coursesWithRatings = 0;
+        for (const course1 of data[0].courses) {
+            totalStudents += course1.enrollmentCount;
             if (course1.averageRating > 0) {
                 avgRating += course1.averageRating;
                 coursesWithRatings++;
             }
         }
 
-        // Calculate average only from courses that have ratings
+
         avgRating = coursesWithRatings > 0 ? avgRating / coursesWithRatings : 0;
 
         return {
@@ -443,6 +438,7 @@ exports.mycard = async (userId) => {
             courses: data[0].courses.length.toString(),
             avgRating: avgRating ? avgRating.toFixed(3) : "0.000",
             students: totalStudents.toString(),
+            points: user.points.toString()
         }
     } catch (error) {
         throw new Error("Failed to get user card: " + error.message);
@@ -455,10 +451,10 @@ exports.updateUserProfile = async (userId, updateData) => {
     }
 
     try {
-        // Prepare update object
+
         const updateObject = {};
 
-        // Handle fullname update (only if provided)
+
         if (updateData.fullname) {
             const { fullname } = updateData;
             if (!fullname.firstname || !fullname.lastname) {
@@ -504,5 +500,104 @@ exports.updateUserProfile = async (userId, updateData) => {
         return updatedUser;
     } catch (error) {
         throw new Error(`Failed to update user profile: ${error.message}`);
+    }
+};
+
+// Advanced user search with filters
+exports.searchUsersWithFilters = async (filters) => {
+    try {
+        let query = {};
+
+
+        if (filters.searchQuery && filters.searchQuery.trim()) {
+            const searchRegex = new RegExp(filters.searchQuery.trim(), 'i');
+            query.$or = [
+                { 'fullname.firstname': searchRegex },
+                { 'fullname.lastname': searchRegex },
+                { username: searchRegex },
+                { bio: searchRegex },
+                { experience: searchRegex }
+            ];
+        }
+
+
+        if (filters.author && filters.author.trim()) {
+            const authorRegex = new RegExp(filters.author.trim(), 'i');
+            if (!query.$or) {
+                query.$or = [];
+            }
+            query.$or.push(
+                { 'fullname.firstname': authorRegex },
+                { 'fullname.lastname': authorRegex },
+                { username: authorRegex }
+            );
+        }
+
+
+        if (filters.userType && filters.userType.trim() && filters.userType !== '') {
+            const typeRegex = new RegExp(filters.userType.trim(), 'i');
+            query.experience = typeRegex;
+        }
+
+
+
+        const users = await usermodel.find(query)
+            .select('fullname username profilePhoto bio experience followers email createdAt')
+            .sort({ followers: -1, createdAt: -1 })
+            .limit(50);
+
+
+        const transformedUsers = await Promise.all(users.map(async user => {
+
+            const courseCount = await courseCreator.countDocuments({ advisorId: user._id }).populate('courses');
+            let totalRating = 0;
+            let avgRating = 0;
+            for (const course of courses) {
+                //calculate average rating
+                totalRating += course.averageRating;
+                if (course.averageRating > 0) {
+                    coursesWithRatings++;
+                }
+                avgRating = coursesWithRatings > 0 ? totalRating / coursesWithRatings : 0;
+            }
+
+            //cal the experience
+            let day = user.createdAt;
+            let today = new Date();
+            let diffInMs = today - day;
+            let diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+            let experienceText;
+            if (diffInDays < 30) {
+                experienceText = "newbie";
+            } else if (diffInDays < 365) {
+                let months = Math.floor(diffInDays / 30);
+                experienceText = `${months} month${months > 1 ? 's' : ''}+`;
+            } else {
+                let years = Math.floor(diffInDays / 365);
+                experienceText = `${years} year${years > 1 ? 's' : ''}+`;
+            }
+
+
+            return {
+                _id: user._id,
+                name: user.fullname ? `${user.fullname.firstname} ${user.fullname.lastname}` : user.username,
+                username: user.username,
+                profileImage: user.profilePhoto,
+                bio: user.bio,
+                experience: user.experience,
+                followers: user.followers || 0,
+                expertise: user.experience || 'General',
+                totalCourses: courseCount,
+                averageRating: avgRating, // This would need to be calculated from reviews if needed
+                createdAt: user.createdAt,
+                accountAge: experienceText
+            };
+        }));
+
+        return transformedUsers;
+    } catch (error) {
+        console.error('Error searching users with filters:', error);
+        throw new Error(`Failed to search users: ${error.message}`);
     }
 };

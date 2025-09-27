@@ -11,7 +11,32 @@ const courseSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        maxLength: 150 // Short description for course cards
+    },
+    fullDescription: {
+        type: String,
+        required: true // Detailed description for course page
+    },
+    learningObjectives: {
+        type: [String],
+        default: []
+    },
+    prerequisites: {
+        type: [String],
+        default: []
+    },
+    courseHighlights: {
+        type: [String],
+        default: []
+    },
+    tools: {
+        type: [String],
+        default: []
+    },
+    targetAudience: {
+        type: [String],
+        default: []
     },
     skills: {
         type: [String],
@@ -48,23 +73,7 @@ const courseSchema = new mongoose.Schema({
         required: true,
         enum: ["Programming", "Design", "Marketing", "Business", "Other"]
     },
-    tools: [{
-        name: String,
-        version: String
-    }],
-    targetAudience: {
-        type: [String],
-        default: []
-    },
-    prerequisites: {
-        type: [String],
-        default: []
-    },
 
-    learingobjectives: {
-        type: [String],
-        default: []
-    },
 
     modules: [{
         type: mongoose.Schema.Types.ObjectId,

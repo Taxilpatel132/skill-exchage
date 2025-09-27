@@ -266,6 +266,38 @@ exports.getUsersByName = async (req, res) => {
         });
     }
 }
+
+// Advanced user search with filters
+exports.searchUsersWithFilters = async (req, res) => {
+    try {
+        const {
+            searchQuery,
+            author,
+            userType
+        } = req.query;
+
+        // Build filter object
+        const filters = {
+            searchQuery: searchQuery || '',
+            author: author || '',
+            userType: userType || ''
+        };
+
+        const users = await userservice.searchUsersWithFilters(filters);
+
+        return res.status(200).json({
+            message: "User search completed successfully",
+            filters: filters,
+            count: users.length,
+            users: users
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Failed to search users with filters",
+            error: error.message
+        });
+    }
+}
 exports.getUserHistory = async (req, res) => {
     const user = req.user;
     if (!user) {
@@ -294,7 +326,6 @@ exports.getMyEnrollments = async (req, res) => {
                 enrollments: [],
                 stats: {
                     totalCourses: 0,
-                    inProgress: 0,
                     completed: 0,
                     totalHours: 0,
                     actualHoursSpent: 0
@@ -314,43 +345,6 @@ exports.getMyEnrollments = async (req, res) => {
         });
     }
 }
-
-// Add endpoint to update progress
-exports.updateCourseProgress = async (req, res) => {
-    const user = req.user;
-    if (!user) {
-        return res.status(401).json({ message: "User not authenticated" });
-    }
-
-    try {
-        const { courseId, moduleId, timeSpent } = req.body;
-
-        if (!courseId || !moduleId) {
-            return res.status(400).json({
-                message: "Course ID and Module ID are required"
-            });
-        }
-
-        const progressRecord = await userservice.updateCourseProgress(
-            user._id,
-            courseId,
-            moduleId,
-            timeSpent || 0
-        );
-
-        return res.status(200).json({
-            message: "Progress updated successfully",
-            progress: progressRecord.progressPercentage,
-            isCompleted: progressRecord.isCompleted,
-            totalTimeSpent: progressRecord.totalTimeSpent
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Failed to update progress",
-            error: error.message
-        });
-    }
-};
 
 exports.followUser = async (req, res) => {
     const user = req.user;
@@ -401,6 +395,31 @@ exports.unfollowUser = async (req, res) => {
     }
 }
 
+// Check follow status
+exports.checkFollowStatus = async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ message: "User not authenticated" });
+        }
+
+        const { targetUserId } = req.params;
+        if (!targetUserId) {
+            return res.status(400).json({ message: "Target user ID is required" });
+        }
+
+        if (user._id.toString() === targetUserId) {
+            return res.status(400).json({ message: "Cannot check follow status for yourself" });
+        }
+
+        const isFollowing = user.following && user.following.includes(targetUserId);
+        return res.status(200).json({ isFollowing: !!isFollowing });
+    } catch (error) {
+        console.error('Error checking follow status:', error);
+        return res.status(500).json({ message: "Failed to check follow status", error: error.message });
+    }
+}
+
 // Check if user is authenticated (for persistent login)
 
 
@@ -408,14 +427,13 @@ exports.mycard = async (req, res) => {
 
     const user = req.user;
     if (!user) {
-        res.status(200).json({ message: "you are not login", isLogin: false });
+        return res.status(200).json({ message: "you are not login", isLogin: false });
     }
 
     try {
         const usercard = await userservice.mycard(user._id);
         res.status(200).json({ message: "hello", usercard, isLogin: true });
     } catch (error) {
-
         res.status(400).json({ message: error.message });
     }
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import ModuleCreationSection from '../components/CreateCourse/ModuleCreationSection';
 
 const CreateCourse = () => {
     const navigate = useNavigate();
@@ -127,24 +128,42 @@ const CreateCourse = () => {
         setUploadProgress(`Uploading ${fileType}...`);
 
         try {
-            // Dynamically import the upload function
-            const { uploadToCloudinary } = await import('../utils/cloudinary');
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'skill_exchange'); // Use your unsigned preset
 
-            const result = await uploadToCloudinary(file, `course-${fileType}s`);
+            // Fix: Use correct folder structure that matches your Cloudinary
+            let folder = 'skill-exchange';
+            if (fileType === 'thumbnail') {
+                folder = 'skill-exchange/course-thumbnails';
+            }
+            formData.append('folder', folder);
+
+            // Your actual Cloudinary cloud name
+            const cloudName = 'dwbup2vci';
+
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || 'Upload failed');
+            }
+
+            const result = await response.json();
 
             // Update form data with the Cloudinary URL
             if (fileType === 'thumbnail') {
-                setFormData(prev => ({ ...prev, thumbnail: result.url }));
+                setFormData(prev => ({ ...prev, thumbnail: result.secure_url }));
             }
 
-            console.log(`${fileType} uploaded:`, result.url);
+            console.log(`${fileType} uploaded:`, result.secure_url);
             setUploadProgress(`${fileType} uploaded successfully! ✓`);
 
             // Clear the file selection after successful upload
             setSelectedFiles(prev => ({ ...prev, [fileType]: null }));
-
-            // Show success message
-            alert(`${fileType} uploaded successfully!`);
 
         } catch (error) {
             console.error(`${fileType} upload failed:`, error);
@@ -167,7 +186,21 @@ const CreateCourse = () => {
                 learningObjectives: formData.learningObjectives.filter(obj => obj.trim()),
                 prerequisites: formData.prerequisites.filter(req => req.trim()),
                 courseHighlights: formData.courseHighlights.filter(highlight => highlight.trim()),
-                targetAudience: formData.targetAudience.filter(audience => audience.trim())
+                targetAudience: formData.targetAudience.filter(audience => audience.trim()),
+                // Format modules for backend
+                modules: formData.modules.map(module => ({
+                    title: module.title,
+                    description: module.description,
+                    duration: module.duration,
+                    order: module.order,
+                    videoUrl: module.videoUrl || '',
+                    resources: module.resources.map(resource => ({
+                        title: resource.title,
+                        url: resource.url,
+                        type: resource.type
+                    })),
+                    isActive: module.isActive
+                }))
             };
 
             // Remove the old field name
@@ -176,7 +209,7 @@ const CreateCourse = () => {
             console.log('Sending course data:', courseData);
 
             // Send to your backend API using fetch
-            const response = await fetch('http://localhost:3000/courses', {
+            const response = await fetch('http://localhost:3000/course/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -343,70 +376,7 @@ const CreateCourse = () => {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Course Thumbnail</label>
 
-                                    {/* URL Input */}
-                                    <input
-                                        type="url"
-                                        name="thumbnail"
-                                        value={formData.thumbnail}
-                                        onChange={handleInputChange}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 mb-3"
-                                        placeholder="https://example.com/image.jpg"
-                                        required
-                                    />
-
-                                    {/* Cloudinary Upload Section */}
-                                    <div className="p-4 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50">
-                                        <div className="text-center">
-                                            <p className="text-sm font-medium text-blue-700 mb-3">☁️ Or upload to Cloudinary</p>
-
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => handleFileSelect(e, 'thumbnail')}
-                                                className="mb-3 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                                disabled={uploading}
-                                            />
-
-                                            {selectedFiles.thumbnail && (
-                                                <div className="mb-3">
-                                                    <p className="text-sm text-green-600 mb-2">✓ Selected: {selectedFiles.thumbnail.name}</p>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => uploadFile('thumbnail')}
-                                                        disabled={uploading}
-                                                        className={`px-4 py-2 rounded-lg text-white font-medium ${uploading
-                                                            ? 'bg-gray-400 cursor-not-allowed'
-                                                            : 'bg-blue-500 hover:bg-blue-600'
-                                                            }`}
-                                                    >
-                                                        {uploading ? 'Uploading...' : 'Upload to Cloudinary'}
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                            {uploadProgress && (
-                                                <p className={`text-sm ${uploadProgress.includes('failed') ? 'text-red-600' : 'text-green-600'
-                                                    }`}>
-                                                    {uploadProgress}
-                                                </p>
-                                            )}
-
-                                            {formData.thumbnail && formData.thumbnail.includes('cloudinary') && (
-                                                <div className="mt-3">
-                                                    <p className="text-xs text-green-600 mb-2">Uploaded to Cloudinary ✓</p>
-                                                    <img
-                                                        src={formData.thumbnail}
-                                                        alt="Thumbnail preview"
-                                                        className="mx-auto w-24 h-16 object-cover rounded-lg border border-gray-200"
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <div className="md:col-span-2">
                                     <label className="flex items-center">
@@ -420,6 +390,42 @@ const CreateCourse = () => {
                                         <span className="ml-2 text-sm font-medium text-gray-700">Include completion certificate</span>
                                     </label>
                                 </div>
+                            </div>
+
+                            {/* Thumbnail Upload Section */}
+                            <div className="md:col-span-2 mt-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Course Thumbnail</label>
+                                <div className="flex gap-4 items-start">
+                                    <div className="flex-1">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleFileSelect(e, 'thumbnail')}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => uploadFile('thumbnail')}
+                                        disabled={!selectedFiles.thumbnail || uploading}
+                                        className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50"
+                                    >
+                                        Upload
+                                    </button>
+                                </div>
+                                {formData.thumbnail && (
+                                    <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                        <p className="text-green-800 text-sm">✓ Thumbnail uploaded successfully</p>
+                                        <img
+                                            src={formData.thumbnail}
+                                            alt="Course thumbnail"
+                                            className="mt-2 w-32 h-20 object-cover rounded"
+                                        />
+                                    </div>
+                                )}
+                                {uploadProgress && (
+                                    <p className="text-sm text-blue-600 mt-2">{uploadProgress}</p>
+                                )}
                             </div>
                         </div>
 
@@ -467,201 +473,34 @@ const CreateCourse = () => {
                             </div>
                         </div>
 
-                        {/* Learning Objectives */}
-                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                                <div className="w-2 h-6 bg-gradient-to-b from-blue-500 to-purple-400 rounded-full mr-3"></div>
-                                Learning Objectives
-                            </h2>
-
-                            <div className="space-y-4">
-                                {formData.learningObjectives.map((objective, idx) => (
-                                    <div key={idx} className="flex gap-3">
-                                        <input
-                                            type="text"
-                                            value={objective}
-                                            onChange={(e) => handleArrayInputChange(idx, 'learningObjectives', e.target.value)}
-                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                            placeholder="What will students learn?"
-                                        />
-                                        {formData.learningObjectives.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => removeArrayItem(idx, 'learningObjectives')}
-                                                className="px-3 py-3 text-red-500 hover:text-red-700"
-                                            >
-                                                ×
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    onClick={() => addArrayItem('learningObjectives')}
-                                    className="text-blue-600 hover:text-blue-700 font-medium text-sm"
-                                >
-                                    + Add Learning Objective
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Prerequisites */}
-                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                                <div className="w-2 h-6 bg-gradient-to-b from-orange-500 to-red-400 rounded-full mr-3"></div>
-                                Prerequisites
-                            </h2>
-
-                            <div className="space-y-4">
-                                {formData.prerequisites.map((prereq, idx) => (
-                                    <div key={idx} className="flex gap-3">
-                                        <input
-                                            type="text"
-                                            value={prereq}
-                                            onChange={(e) => handleArrayInputChange(idx, 'prerequisites', e.target.value)}
-                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                            placeholder="What should students know beforehand?"
-                                        />
-                                        {formData.prerequisites.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => removeArrayItem(idx, 'prerequisites')}
-                                                className="px-3 py-3 text-red-500 hover:text-red-700"
-                                            >
-                                                ×
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    onClick={() => addArrayItem('prerequisites')}
-                                    className="text-orange-600 hover:text-orange-700 font-medium text-sm"
-                                >
-                                    + Add Prerequisite
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Course Highlights */}
+                        {/* Course Modules Section */}
                         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
                             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
                                 <div className="w-2 h-6 bg-gradient-to-b from-purple-500 to-pink-400 rounded-full mr-3"></div>
-                                Course Highlights
+                                Course Modules
                             </h2>
 
-                            <div className="space-y-4">
-                                {formData.courseHighlights.map((highlight, idx) => (
-                                    <div key={idx} className="flex gap-3">
-                                        <input
-                                            type="text"
-                                            value={highlight}
-                                            onChange={(e) => handleArrayInputChange(idx, 'courseHighlights', e.target.value)}
-                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                            placeholder="Special features or benefits"
-                                        />
-                                        {formData.courseHighlights.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => removeArrayItem(idx, 'courseHighlights')}
-                                                className="px-3 py-3 text-red-500 hover:text-red-700"
-                                            >
-                                                ×
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    onClick={() => addArrayItem('courseHighlights')}
-                                    className="text-purple-600 hover:text-purple-700 font-medium text-sm"
-                                >
-                                    + Add Highlight
-                                </button>
-                            </div>
+                            <ModuleCreationSection
+                                modules={formData.modules || []}
+                                setModules={(modules) => {
+                                    console.log('Setting modules in parent:', modules);
+                                    // Ensure we're always setting an array
+                                    const safeModules = Array.isArray(modules) ? modules :
+                                        typeof modules === 'function' ? modules(formData.modules || []) : [];
+                                    setFormData(prev => ({ ...prev, modules: safeModules }));
+                                }}
+                                errors={errors}
+                            />
                         </div>
 
-                        {/* Tools */}
-                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                                <div className="w-2 h-6 bg-gradient-to-b from-cyan-500 to-blue-400 rounded-full mr-3"></div>
-                                Tools & Technologies
-                            </h2>
 
-                            <div className="flex gap-3 mb-4">
-                                <input
-                                    type="text"
-                                    value={currentTool}
-                                    onChange={(e) => setCurrentTool(e.target.value)}
-                                    className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                    placeholder="Add a tool (e.g., VS Code, Git)"
-                                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTool())}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={addTool}
-                                    className="px-6 py-3 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-colors duration-200"
-                                >
-                                    Add
-                                </button>
-                            </div>
 
-                            <div className="flex flex-wrap gap-2">
-                                {formData.tools.map((tool, idx) => (
-                                    <span
-                                        key={idx}
-                                        className="inline-flex items-center gap-2 px-3 py-2 bg-cyan-100 text-cyan-700 rounded-full text-sm font-medium"
-                                    >
-                                        {tool}
-                                        <button
-                                            type="button"
-                                            onClick={() => removeTool(tool)}
-                                            className="text-cyan-500 hover:text-cyan-700"
-                                        >
-                                            ×
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
 
-                        {/* Target Audience */}
-                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                                <div className="w-2 h-6 bg-gradient-to-b from-emerald-500 to-teal-400 rounded-full mr-3"></div>
-                                Target Audience
-                            </h2>
 
-                            <div className="space-y-4">
-                                {formData.targetAudience.map((audience, idx) => (
-                                    <div key={idx} className="flex gap-3">
-                                        <input
-                                            type="text"
-                                            value={audience}
-                                            onChange={(e) => handleArrayInputChange(idx, 'targetAudience', e.target.value)}
-                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                            placeholder="Who is this course for?"
-                                        />
-                                        {formData.targetAudience.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => removeArrayItem(idx, 'targetAudience')}
-                                                className="px-3 py-3 text-red-500 hover:text-red-700"
-                                            >
-                                                ×
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    onClick={() => addArrayItem('targetAudience')}
-                                    className="text-emerald-600 hover:text-emerald-700 font-medium text-sm"
-                                >
-                                    + Add Target Audience
-                                </button>
-                            </div>
-                        </div>
+
+
+
+
 
                         {/* Submit Button */}
                         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">

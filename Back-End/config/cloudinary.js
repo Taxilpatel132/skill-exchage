@@ -21,8 +21,8 @@ const testCloudinaryConnection = async () => {
 
 testCloudinaryConnection();
 
-// Configure multer storage for Cloudinary
-const storage = new CloudinaryStorage({
+// Configure multer storage for profile photos
+const profileStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'skill-exchange/profile-photos',
@@ -34,8 +34,39 @@ const storage = new CloudinaryStorage({
     }
 });
 
-const upload = multer({
-    storage: storage,
+// Configure multer storage for course content
+const courseStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: (req, file) => {
+        let folder = 'skill-exchange/courses';
+        let resourceType = 'auto';
+
+        // Determine folder and resource type based on file type
+        if (file.fieldname === 'thumbnail') {
+            folder = 'skill-exchange/course-thumbnails';
+            resourceType = 'image';
+        } else if (file.fieldname === 'moduleVideo' || file.mimetype.startsWith('video/')) {
+            folder = 'skill-exchange/course-videos';
+            resourceType = 'video';
+        } else if (file.mimetype === 'application/pdf') {
+            folder = 'skill-exchange/course-documents';
+            resourceType = 'raw';
+        }
+
+        return {
+            folder: folder,
+            resource_type: resourceType,
+            allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'avi', 'mov', 'pdf', 'doc', 'docx', 'ppt', 'pptx'],
+            transformation: resourceType === 'image' ? [
+                { width: 800, height: 600, crop: 'limit' },
+                { quality: 'auto' }
+            ] : undefined
+        };
+    }
+});
+
+const profileUpload = multer({
+    storage: profileStorage,
     limits: {
         fileSize: 5 * 1024 * 1024 // 5MB limit
     },
@@ -49,4 +80,33 @@ const upload = multer({
     }
 });
 
-module.exports = { cloudinary, upload };
+const courseUpload = multer({
+    storage: courseStorage,
+    limits: {
+        fileSize: 100 * 1024 * 1024 // 100MB limit for course content
+    },
+    fileFilter: (req, file, cb) => {
+        console.log('Course file filter - mimetype:', file.mimetype);
+        const allowedTypes = [
+            'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+            'video/mp4', 'video/avi', 'video/quicktime',
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        ];
+
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('File type not allowed!'), false);
+        }
+    }
+});
+
+module.exports = {
+    cloudinary,
+    upload: profileUpload,
+    courseUpload
+};

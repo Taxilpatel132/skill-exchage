@@ -10,16 +10,18 @@ router.post('/login', usercontroller.loginUser);
 router.get('/logout', authmiddleware.authUser, usercontroller.logout);
 
 router.get('/my-enrollments', authmiddleware.authUser, usercontroller.getMyEnrollments);
-router.post('/update-progress', authmiddleware.authUser, usercontroller.updateCourseProgress);
 router.get('/follow/:followId', authmiddleware.authUser, usercontroller.followUser);
 router.get('/unfollow/:unfollowId', authmiddleware.authUser, usercontroller.unfollowUser);
+router.get('/follow-status/:targetUserId', authmiddleware.authUser, usercontroller.checkFollowStatus);
 //router.get('/my-notifications', authmiddleware.authUser, usercontroller.getMyNotifications);
 router.get('/mycard', authmiddleware.optionalAuthUser, usercontroller.mycard)
 
 router.get('/profile/:userId', authmiddleware.optionalAuthUser, usercontroller.getOtherUserProfile);
-router.get('/search/filtter/usercard', authmiddleware.optionalAuthUser, usercontroller.getUsersByName);
+//router.get('/search/filtter/usercard', authmiddleware.optionalAuthUser, usercontroller.getUsersByName);
+router.get('/search/advanced', authmiddleware.optionalAuthUser, usercontroller.searchUsersWithFilters);
 router.put('/profile/edit', authmiddleware.authUser, usercontroller.updateUserProfile);
 router.post('/profile/upload-photo', authmiddleware.authUser, upload.single('profilePhoto'), usercontroller.uploadProfilePhoto);
 router.get('/history', authmiddleware.authUser, usercontroller.getUserHistory);
+
 
 module.exports = router;
