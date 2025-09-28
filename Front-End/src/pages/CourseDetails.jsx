@@ -394,6 +394,14 @@ const CourseDetails = () => {
                 <div className="grid lg:grid-cols-3 gap-2">
                     {/* Left Side - Main Content */}
                     <div className="lg:col-span-2 space-y-12">
+                        {/* Course Overview Section */}
+                        {course.fullDescription && (
+                            <section className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Overview</h2>
+                                <p className="text-gray-700 leading-relaxed">{course.fullDescription}</p>
+                            </section>
+                        )}
+
                         {/* Advisor Section */}
                         <section
                             id="advisor"
@@ -426,7 +434,11 @@ const CourseDetails = () => {
                         </section>
 
                         <div id="modules" ref={modulesRef}>
-                            <ModulesSection modules={modules} isEnrolled={isEnrolled} />
+                            <ModulesSection
+                                modules={modules}
+                                isEnrolled={isEnrolled}
+                                course={course}
+                            />
                         </div>
 
                         <div id="qa" ref={qaRef}>
@@ -457,17 +469,55 @@ const CourseDetails = () => {
                     {/* Right Side - Course Card & Enrollment */}
                     <div className="lg:col-span-1">
                         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sticky top-6">
-                            {/* Course Thumbnail */}
+                            {/* Course Thumbnail/Trailer Video */}
                             <div className="relative rounded-xl overflow-hidden mb-5">
-                                <img
-                                    src={course.thumbnail}
-                                    alt={course.title}
-                                    className="w-full h-60 object-cover"
-                                />
-                                <div className="absolute inset-0 shadow-inner border border-white/10 rounded-xl"></div>
-                                <div className="absolute bottom-3 left-3 bg-black/60 text-white text-xs font-medium px-2.5 py-1 rounded-full">
-                                    {course.modules || 0} Modules
-                                </div>
+                                {course.trailerVideo ? (
+                                    <div className="relative">
+                                        {course.trailerVideo.includes('youtube.com') || course.trailerVideo.includes('youtu.be') ? (
+                                            // YouTube Video Embed
+                                            <div className="w-full h-60">
+                                                <iframe
+                                                    src={course.trailerVideo.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                                                    title="Course Trailer"
+                                                    className="w-full h-full rounded-xl"
+                                                    frameBorder="0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowFullScreen
+                                                ></iframe>
+                                            </div>
+                                        ) : (
+                                            // Direct Video File
+                                            <video
+                                                src={course.trailerVideo}
+                                                poster={course.thumbnail}
+                                                controls
+                                                className="w-full h-60 object-cover rounded-xl"
+                                                preload="metadata"
+                                            >
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        )}
+                                        <div className="absolute bottom-3 left-3 bg-black/60 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                                            🎥 Course Trailer
+                                        </div>
+                                        <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                                            {course.modules || 0} Modules
+                                        </div>
+                                    </div>
+                                ) : (
+                                    // Fallback to thumbnail
+                                    <div className="relative">
+                                        <img
+                                            src={course.thumbnail}
+                                            alt={course.title}
+                                            className="w-full h-60 object-cover"
+                                        />
+                                        <div className="absolute inset-0 shadow-inner border border-white/10 rounded-xl"></div>
+                                        <div className="absolute bottom-3 left-3 bg-black/60 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                                            {course.modules || 0} Modules
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Price */}

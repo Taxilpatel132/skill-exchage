@@ -34,8 +34,8 @@ const CourseRedirect = () => {
 function App() {
   return (
     <Routes>
-      {/* Landing/Start Page */}
-      <Route path="/" element={<Start />} />
+
+
 
       {/* Authentication Routes */}
       <Route path="/auth/login" element={<UserLogin />} />
@@ -54,7 +54,7 @@ function App() {
       {/* Main App Routes */}
       <Route path="/home" element={<Home />} />
       <Route path="/history" element={<History />} />
-
+      <Route path="/" element={<Navigate to="/home" replace />} />
       {/* User Profile Routes */}
       <Route path="/profile/:userId" element={<Profile />} />
       <Route path="/profile/edit" element={<EditProfile />} />

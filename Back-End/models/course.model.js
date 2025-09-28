@@ -18,6 +18,10 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: true // Detailed description for course page
     },
+    trailerVideo: {
+        type: String,
+        default: '' // URL for course trailer video
+    },
     learningObjectives: {
         type: [String],
         default: []

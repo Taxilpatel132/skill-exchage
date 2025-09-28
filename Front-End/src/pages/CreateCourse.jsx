@@ -1,9 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ModuleCreationSection from '../components/CreateCourse/ModuleCreationSection';
-
+import axios from 'axios';
 const CreateCourse = () => {
+    const [myData, setMyData] = React.useState(null);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+    useEffect(() => {
+        async function fetchData() {
+            const response = await axios.get('http://localhost:3000/users/mycard', { withCredentials: true });
+
+            setMyData(response.data.usercard);
+
+            setIsLoggedIn(response.data.isLogin);
+
+            localStorage.setItem('myId', response.data?.usercard?._id);
+
+        }
+        fetchData();
+    }, []);
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         title: '',
@@ -15,6 +31,7 @@ const CreateCourse = () => {
         duration: '',
         language: 'English',
         thumbnail: '',
+        trailerVideo: '',
         skills: [],
         learningObjectives: [''],
         prerequisites: [''],
@@ -32,6 +49,7 @@ const CreateCourse = () => {
     // Cloudinary file upload states
     const [selectedFiles, setSelectedFiles] = useState({
         thumbnail: null,
+        trailerVideo: null,
         video: null,
         materials: []
     });
@@ -130,12 +148,14 @@ const CreateCourse = () => {
         try {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('upload_preset', 'skill_exchange'); // Use your unsigned preset
+            formData.append('upload_preset', 'skill_exchange');
 
             // Fix: Use correct folder structure that matches your Cloudinary
             let folder = 'skill-exchange';
             if (fileType === 'thumbnail') {
                 folder = 'skill-exchange/course-thumbnails';
+            } else if (fileType === 'trailerVideo') {
+                folder = 'skill-exchange/course-videos';
             }
             formData.append('folder', folder);
 
@@ -157,6 +177,8 @@ const CreateCourse = () => {
             // Update form data with the Cloudinary URL
             if (fileType === 'thumbnail') {
                 setFormData(prev => ({ ...prev, thumbnail: result.secure_url }));
+            } else if (fileType === 'trailerVideo') {
+                setFormData(prev => ({ ...prev, trailerVideo: result.secure_url }));
             }
 
             console.log(`${fileType} uploaded:`, result.secure_url);
@@ -247,7 +269,7 @@ const CreateCourse = () => {
 
     return (
         <>
-            <Navbar />
+            <Navbar IsLoggedIn={isLoggedIn} myData={myData} />
             <div className="min-h-screen bg-gray-50 py-8">
                 <div className="max-w-4xl mx-auto px-6">
                     {/* Header */}
@@ -425,6 +447,82 @@ const CreateCourse = () => {
                                 )}
                                 {uploadProgress && (
                                     <p className="text-sm text-blue-600 mt-2">{uploadProgress}</p>
+                                )}
+                            </div>
+
+                            {/* Trailer Video Upload Section */}
+                            <div className="md:col-span-2 mt-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Course Trailer Video (Optional)</label>
+
+                                {/* Video URL Input */}
+                                <div className="mb-4">
+                                    <label className="block text-sm text-gray-600 mb-2">Video URL</label>
+                                    <input
+                                        type="url"
+                                        name="trailerVideo"
+                                        value={formData.trailerVideo}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        placeholder="https://youtube.com/watch?v=... or direct video URL"
+                                    />
+                                </div>
+
+                                {/* OR Divider */}
+                                <div className="flex items-center my-4">
+                                    <div className="flex-1 border-t border-gray-300"></div>
+                                    <span className="px-4 text-sm text-gray-500 bg-white">OR</span>
+                                    <div className="flex-1 border-t border-gray-300"></div>
+                                </div>
+
+                                {/* File Upload */}
+                                <div className="flex gap-4 items-start">
+                                    <div className="flex-1">
+                                        <label className="block text-sm text-gray-600 mb-2">Upload Video File</label>
+                                        <input
+                                            type="file"
+                                            accept="video/*"
+                                            onChange={(e) => handleFileSelect(e, 'trailerVideo')}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => uploadFile('trailerVideo')}
+                                        disabled={!selectedFiles.trailerVideo || uploading}
+                                        className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 mt-7"
+                                    >
+                                        Upload
+                                    </button>
+                                </div>
+
+                                {/* Video Preview */}
+                                {formData.trailerVideo && (
+                                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                        <p className="text-green-800 text-sm mb-2">✓ Trailer video added successfully</p>
+                                        <div className="bg-white rounded-lg p-2">
+                                            {formData.trailerVideo.includes('youtube.com') || formData.trailerVideo.includes('youtu.be') ? (
+                                                <div className="text-sm text-gray-600">
+                                                    <strong>YouTube Video:</strong> {formData.trailerVideo}
+                                                </div>
+                                            ) : (
+                                                <video
+                                                    src={formData.trailerVideo}
+                                                    controls
+                                                    className="w-full max-w-md h-32 object-cover rounded"
+                                                    preload="metadata"
+                                                >
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            )}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, trailerVideo: '' }))}
+                                            className="mt-2 text-red-600 hover:text-red-800 text-sm"
+                                        >
+                                            Remove Video
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         </div>
