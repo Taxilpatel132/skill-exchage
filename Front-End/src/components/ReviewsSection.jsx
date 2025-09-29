@@ -9,7 +9,8 @@ const ReviewsSection = ({
     reviewLoading,
     isEnrolled,
     myReview,
-    currentUserId
+    currentUserId,
+    isAdvisor
 }) => {
     return (
         <section className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
@@ -69,8 +70,8 @@ const ReviewsSection = ({
                 )}
             </div>
 
-            {/* Add Review Form - Only show if enrolled */}
-            {isEnrolled ? (
+            {/* Add Review Form - Only show if enrolled and not advisor */}
+            {isEnrolled && !isAdvisor ? (
                 <form onSubmit={handleAddReview} className="space-y-6 pt-6 border-t border-gray-200">
                     <h3 className="text-lg font-bold text-gray-900">
                         {myReview ? 'Update Your Review' : 'Add Your Review'}
@@ -142,6 +143,14 @@ const ReviewsSection = ({
                         </div>
                     )}
                 </form>
+            ) : isAdvisor ? (
+                <div className="pt-6 border-t border-gray-200">
+                    <div className="text-center p-6 bg-blue-50 rounded-lg border border-blue-200">
+                        <p className="text-blue-700">
+                            <strong>As the course advisor</strong>, you can view student reviews and feedback.
+                        </p>
+                    </div>
+                </div>
             ) : (
                 <div className="pt-6 border-t border-gray-200">
                     <div className="text-center p-6 bg-amber-50 rounded-lg border border-amber-200">

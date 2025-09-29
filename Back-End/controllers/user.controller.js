@@ -70,6 +70,7 @@ exports.getOtherUserProfile = async (req, res) => {
     if (!userProfile) {
         return res.status(404).json({ message: "User profile not found" });
     }
+
     if (user && user._id.toString() === userId) {
         const yourProfile = {
             ...userProfile,
@@ -77,9 +78,11 @@ exports.getOtherUserProfile = async (req, res) => {
         }
         return res.status(200).json({ message: "User profile retrieved successfully", yourProfile });
     }
+    const isFollowing = await userservice.Isfollow(user._id, userId);
     const OtherUserProfile = {
         ...userProfile,
-        other: true // Indicating this is a profile of another user
+        other: true, // Indicating this is a profile of another user
+        isFollowing: isFollowing
 
     }
     return res.status(200).json({ message: "User profile retrieved successfully", OtherUserProfile });
@@ -499,3 +502,18 @@ exports.uploadProfilePhoto = async (req, res) => {
         });
     }
 };
+
+exports.getEnrollment = async (req, res) => {
+    const user = req.user;
+    const { courseId } = req.params;
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!courseId) {
+        return res.status(400).json({ message: "Course ID is required" });
+    }
+    const enrollment = await userservice.getEnrollment(user._id, courseId);
+    return res.status(200).json({ message: "Enrollment retrieved successfully", enrollment });
+}
+

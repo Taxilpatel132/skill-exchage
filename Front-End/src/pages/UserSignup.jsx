@@ -58,7 +58,7 @@ const UserSignup = () => {
             if (response.ok && data) {
                 console.log('Registration successful:', data);
                 localStorage.setItem('token', data.token);
-                navigate('/dashboard');
+                navigate('/auth/login');
             }
         } catch (error) {
             console.error('Registration failed:', error);

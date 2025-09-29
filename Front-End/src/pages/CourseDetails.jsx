@@ -4,11 +4,12 @@ import QASection from '../components/QASection';
 import ReviewsSection from '../components/ReviewsSection';
 import CourseNavbar from '../components/CourseNavbar';
 import ModulesSection from '../components/ModulesSection';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const CourseDetails = () => {
     const { courseId } = useParams();
+    const navigate = useNavigate();
 
     // State for actual data
     const [course, setCourse] = useState(null);
@@ -18,6 +19,7 @@ const CourseDetails = () => {
     const [progress, setProgress] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isAdvisor, setIsAdvisor] = useState(false);
 
     // Q&A and Reviews state
     const [reviews, setReviews] = useState([]);
@@ -31,132 +33,122 @@ const CourseDetails = () => {
     const [myReview, setMyReview] = useState(null);
     const [otherReviews, setOtherReviews] = useState([]);
 
+    // Advisor answer states
+    const [expandedQuestionId, setExpandedQuestionId] = useState(null);
+    const [answerText, setAnswerText] = useState('');
+    const [answerLoading, setAnswerLoading] = useState(false);
+
     useEffect(() => {
-        async function fetchCourseData() {
+        async function fetchCourse() {
             try {
+                console.log('🔄 Fetching course for courseId:', courseId);
                 setLoading(true);
 
-                const courseResponse = await axios.get(`http://localhost:3000/course/details/${courseId}`, { withCredentials: true });
+                const courseResponse = await axios.get(
+                    `http://localhost:3000/course/details/${courseId}`,
+                    { withCredentials: true }
+                );
 
-                // Check if user is authenticated
-                const myId = localStorage.getItem('myId');
-                const token = localStorage.getItem('token');
-                const isAuthenticated = (myId && myId !== 'null' && myId !== 'undefined') ||
-                    (token && token !== 'null' && token !== 'undefined');
-
-                let enrollmentsResponse;
-                if (isAuthenticated) {
-                    try {
-                        enrollmentsResponse = await axios.get(`http://localhost:3000/users/my-enrollments`, { withCredentials: true });
-                    } catch (enrollmentError) {
-                        console.log('User not authenticated or enrollment fetch failed:', enrollmentError);
-                    }
-                }
-
-                // Set course data
                 if (courseResponse.data.course) {
                     setCourse(courseResponse.data.course);
                     setAdvisor(courseResponse.data.advisor);
                     setModules(courseResponse.data.modules || []);
                 }
-
-                // Check if user is enrolled
-                if (enrollmentsResponse?.data?.enrollments && Array.isArray(enrollmentsResponse.data.enrollments)) {
-                    const enrolled = enrollmentsResponse.data.enrollments.some(
-                        enrollment => {
-                            const enrollmentId = enrollment._id || enrollment.courseId;
-                            return enrollmentId?.toString() === courseId.toString();
-                        }
-                    );
-                    setIsEnrolled(enrolled);
-
-                    if (enrolled) {
-                        const enrollmentData = enrollmentsResponse.data.enrollments.find(
-                            enrollment => {
-                                const enrollmentId = enrollment._id || enrollment.courseId;
-                                return enrollmentId?.toString() === courseId.toString();
-                            }
-                        );
-                        setProgress(enrollmentData?.progress || 25);
-                    }
-                }
-
-                // Fetch reviews with user-specific logic
-                try {
-                    const reviewsResponse = await axios.get(`http://localhost:3000/course/details/${courseId}/reviews`, { withCredentials: true });
-                    console.log('Reviews response:', reviewsResponse.data);
-
-                    if (reviewsResponse.data.reviews) {
-                        const currentUserId = localStorage.getItem('myId');
-                        const allReviews = reviewsResponse.data.reviews.map(review => ({
-                            id: review._id,
-                            userId: review.userId?._id,
-                            name: review.userId?.fullname ?
-                                `${review.userId.fullname.firstname} ${review.userId.fullname.lastname}` :
-                                review.userId?.username || 'Anonymous',
-                            rating: review.rating,
-                            text: review.review,
-                            createdAt: review.createdAt
-                        }));
-
-                        // Find current user's review
-                        const userReview = allReviews.find(review => review.userId === currentUserId);
-                        const othersReviews = allReviews.filter(review => review.userId !== currentUserId);
-
-                        setMyReview(userReview || null);
-                        setOtherReviews(othersReviews);
-
-                        // Set combined reviews for display (user's review first if exists)
-                        const orderedReviews = userReview ? [userReview, ...othersReviews] : othersReviews;
-                        setReviews(orderedReviews);
-
-                        // If user has a review, populate the form for editing
-                        if (userReview) {
-                            setReviewForm({
-                                name: userReview.name,
-                                rating: userReview.rating,
-                                text: userReview.text
-                            });
-                            // Don't automatically set editing state - let user click edit button
-                        }
-                    }
-                } catch (reviewError) {
-                    console.log('Failed to fetch reviews:', reviewError);
-                }
-
-                // Fetch Q&A
-                try {
-                    const qaResponse = await axios.get(`http://localhost:3000/course/details/${courseId}/qa`, { withCredentials: true });
-                    if (qaResponse.data.questions) {
-                        setQa(qaResponse.data.questions.map(question => ({
-                            id: question._id,
-                            asker: question.studentId?.fullname ?
-                                `${question.studentId.fullname.firstname} ${question.studentId.fullname.lastname}` :
-                                question.studentId?.username || 'Student',
-                            question: question.question,
-                            answer: question.answer?.text || 'Pending answer...',
-                            answeredBy: question.answer?.answeredBy,
-                            status: question.status,
-                            createdAt: question.createdAt
-                        })));
-                    }
-                } catch (qaError) {
-                    console.log('Failed to fetch Q&A:', qaError);
-                }
-
             } catch (error) {
-                console.error('Error fetching course data:', error);
-                setError(error.response?.data?.message || 'Failed to load course data');
+                console.error('❌ Error fetching course:', error);
+                setError(error.response?.data?.message || 'Failed to load course');
             } finally {
                 setLoading(false);
             }
         }
 
         if (courseId) {
-            fetchCourseData();
+            fetchCourse();
         }
     }, [courseId]);
 
+    // Fetch Q&A and Reviews data
+    useEffect(() => {
+        async function fetchQAData() {
+            if (!courseId) return;
+
+            try {
+                // Fetch Q&A questions
+                const qaResponse = await axios.get(
+                    `http://localhost:3000/course/details/${courseId}/qa`,
+                    { withCredentials: true }
+                );
+
+                if (qaResponse.data.questions) {
+                    const formattedQA = qaResponse.data.questions.map(q => ({
+                        id: q._id,
+                        asker: q.studentId?.fullname ?
+                            `${q.studentId.fullname.firstname} ${q.studentId.fullname.lastname}` :
+                            q.studentId?.username || 'Anonymous',
+                        question: q.question,
+                        answer: q.answer?.text || 'Pending answer...',
+                        status: q.status,
+                        createdAt: q.createdAt,
+                        studentId: q.studentId?._id
+                    }));
+                    setQa(formattedQA);
+                }
+
+                // Fetch Reviews
+                const reviewsResponse = await axios.get(
+                    `http://localhost:3000/course/details/${courseId}/reviews`,
+                    { withCredentials: true }
+                );
+
+                if (reviewsResponse.data.reviews) {
+                    const allReviews = reviewsResponse.data.reviews.map(review => ({
+                        id: review._id,
+                        userId: review.userId?._id,
+                        name: review.userId?.fullname ?
+                            `${review.userId.fullname.firstname} ${review.userId.fullname.lastname}` :
+                            review.userId?.username || 'Anonymous',
+                        rating: review.rating,
+                        text: review.review,
+                        createdAt: review.createdAt
+                    }));
+
+                    const currentUserId = localStorage.getItem('myId');
+                    const userReview = allReviews.find(review => review.userId === currentUserId);
+                    const othersReviews = allReviews.filter(review => review.userId !== currentUserId);
+
+                    setMyReview(userReview || null);
+                    setOtherReviews(othersReviews);
+
+                    const orderedReviews = userReview ? [userReview, ...othersReviews] : othersReviews;
+                    setReviews(orderedReviews);
+                }
+            } catch (error) {
+                console.error('Error fetching Q&A and Reviews:', error);
+            }
+        }
+
+        fetchQAData();
+    }, [courseId]);
+
+    useEffect(() => {
+        if (!advisor) return;
+
+        const currentUserId = localStorage.getItem('myId');
+        const courseAdvisorId = advisor?._id || advisor;
+
+        const check = currentUserId && courseAdvisorId && (currentUserId === courseAdvisorId);
+        setIsAdvisor(check);
+
+
+    }, [advisor, courseId]);
+
+    useEffect(() => {
+        const fetchEnrollment = async () => {
+            const enrollment = await axios.get(`http://localhost:3000/users/enrollment/${courseId}`, { withCredentials: true });
+            setIsEnrolled(enrollment.data.enrollment);
+        }
+        fetchEnrollment();
+    }, [courseId]);
     const handleEnrollment = async () => {
         const myId = localStorage.getItem('myId');
         const token = localStorage.getItem('token');
@@ -232,6 +224,7 @@ const CourseDetails = () => {
                 // Refresh reviews from server
                 try {
                     const reviewsResponse = await axios.get(`http://localhost:3000/course/details/${courseId}/reviews`, { withCredentials: true });
+
                     if (reviewsResponse.data.reviews) {
                         const allReviews = reviewsResponse.data.reviews.map(review => ({
                             id: review._id,
@@ -290,16 +283,31 @@ const CourseDetails = () => {
             }, { withCredentials: true });
 
             if (response.status === 201) {
-                // Add new question to the list
-                const newQuestion = {
-                    id: response.data.question._id,
-                    asker: 'You',
-                    question: questionText.trim(),
-                    answer: 'Pending answer...',
-                    status: 'pending',
-                    createdAt: new Date()
-                };
-                setQa(prev => [newQuestion, ...prev]);
+                // Refresh Q&A data from server
+                try {
+                    const qaResponse = await axios.get(
+                        `http://localhost:3000/course/details/${courseId}/qa`,
+                        { withCredentials: true }
+                    );
+
+                    if (qaResponse.data.questions) {
+                        const formattedQA = qaResponse.data.questions.map(q => ({
+                            id: q._id,
+                            asker: q.studentId?.fullname ?
+                                `${q.studentId.fullname.firstname} ${q.studentId.fullname.lastname}` :
+                                q.studentId?.username || 'Anonymous',
+                            question: q.question,
+                            answer: q.answer?.text || 'Pending answer...',
+                            status: q.status,
+                            createdAt: q.createdAt,
+                            studentId: q.studentId?._id
+                        }));
+                        setQa(formattedQA);
+                    }
+                } catch (refreshError) {
+                    console.log('Failed to refresh Q&A:', refreshError);
+                }
+
                 setQuestionText('');
                 alert('Question submitted successfully!');
             }
@@ -308,6 +316,67 @@ const CourseDetails = () => {
             alert(error.response?.data?.message || 'Failed to submit question');
         } finally {
             setQuestionLoading(false);
+        }
+    };
+
+    // Advisor answer handler
+    const handleAnswerQuestion = async (questionId) => {
+        if (!answerText.trim()) {
+            alert('Please enter an answer');
+            return;
+        }
+
+        setAnswerLoading(true);
+        try {
+            const response = await axios.post(
+                `http://localhost:3000/course/details/${courseId}/question/${questionId}/answer`,
+                { answer: answerText.trim() },
+                { withCredentials: true }
+            );
+
+            if (response.status === 201) {
+                // Refresh Q&A data from server
+                try {
+                    const qaResponse = await axios.get(
+                        `http://localhost:3000/course/details/${courseId}/qa`,
+                        { withCredentials: true }
+                    );
+
+                    if (qaResponse.data.questions) {
+                        const formattedQA = qaResponse.data.questions.map(q => ({
+                            id: q._id,
+                            asker: q.studentId?.fullname ?
+                                `${q.studentId.fullname.firstname} ${q.studentId.fullname.lastname}` :
+                                q.studentId?.username || 'Anonymous',
+                            question: q.question,
+                            answer: q.answer?.text || 'Pending answer...',
+                            status: q.status,
+                            createdAt: q.createdAt,
+                            studentId: q.studentId?._id
+                        }));
+                        setQa(formattedQA);
+                    }
+                } catch (refreshError) {
+                    console.log('Failed to refresh Q&A:', refreshError);
+                }
+
+                setAnswerText('');
+                setExpandedQuestionId(null);
+                alert('Answer submitted successfully!');
+            }
+        } catch (error) {
+            console.error('Error submitting answer:', error);
+            alert(error.response?.data?.message || 'Failed to submit answer');
+        } finally {
+            setAnswerLoading(false);
+        }
+    };
+
+    // Toggle question expansion for advisor
+    const toggleQuestionExpansion = (questionId) => {
+        setExpandedQuestionId(expandedQuestionId === questionId ? null : questionId);
+        if (expandedQuestionId !== questionId) {
+            setAnswerText('');
         }
     };
 
@@ -429,6 +498,18 @@ const CourseDetails = () => {
                                         <span className="text-gray-300">•</span>
                                         <span className="text-sm font-medium text-gray-600">{advisor?.experience || '5+ years experience'}</span>
                                     </div>
+                                    {/* Advisor Profile Link */}
+                                    {advisor?._id && (
+                                        <button
+                                            onClick={() => navigate(`/profile/${advisor._id}`)}
+                                            className="mt-3 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 flex items-center gap-2"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                            View Advisor Profile
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </section>
@@ -436,8 +517,9 @@ const CourseDetails = () => {
                         <div id="modules" ref={modulesRef}>
                             <ModulesSection
                                 modules={modules}
-                                isEnrolled={isEnrolled}
+                                isEnrolled={isEnrolled || isAdvisor}
                                 course={course}
+                                isAdvisor={isAdvisor}
                             />
                         </div>
 
@@ -449,6 +531,13 @@ const CourseDetails = () => {
                                 handleAddQuestion={handleAddQuestion}
                                 questionLoading={questionLoading}
                                 isEnrolled={isEnrolled}
+                                isAdvisor={isAdvisor}
+                                expandedQuestionId={expandedQuestionId}
+                                answerText={answerText}
+                                setAnswerText={setAnswerText}
+                                handleAnswerQuestion={handleAnswerQuestion}
+                                toggleQuestionExpansion={toggleQuestionExpansion}
+                                answerLoading={answerLoading}
                             />
                         </div>
 
@@ -462,6 +551,7 @@ const CourseDetails = () => {
                                 isEnrolled={isEnrolled}
                                 myReview={myReview}
                                 currentUserId={localStorage.getItem('myId')}
+                                isAdvisor={isAdvisor}
                             />
                         </div>
                     </div>
@@ -528,8 +618,16 @@ const CourseDetails = () => {
                                 </div>
                             </div>
 
-                            {/* Enrollment CTA */}
-                            {!isEnrolled ? (
+                            {/* Enrollment CTA or Edit Button */}
+                            {isAdvisor ? (
+                                <button
+                                    onClick={() => navigate(`/courses/edit/${courseId}`)}
+                                    className="w-full py-3.5 px-6 mb-4 rounded-xl text-white font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
+                                    style={{ background: 'linear-gradient(90deg, #10B981, #059669)' }}
+                                >
+                                    Edit Course
+                                </button>
+                            ) : !isEnrolled ? (
                                 <button
                                     onClick={handleEnrollment}
                                     className="w-full py-3.5 px-6 mb-4 rounded-xl text-white font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"

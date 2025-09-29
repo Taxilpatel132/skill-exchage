@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ModulesSection = ({ modules, isEnrolled, course }) => {
+const ModulesSection = ({ modules, isEnrolled, course, isAdvisor }) => {
     const [expandedModule, setExpandedModule] = useState(null);
     const [currentVideo, setCurrentVideo] = useState(null);
 
@@ -9,7 +9,7 @@ const ModulesSection = ({ modules, isEnrolled, course }) => {
     };
 
     const openVideoModal = (videoUrl, title) => {
-        if (isEnrolled && videoUrl) {
+        if ((isEnrolled || isAdvisor) && videoUrl) {
             setCurrentVideo({ url: videoUrl, title });
         }
     };
@@ -86,16 +86,16 @@ const ModulesSection = ({ modules, isEnrolled, course }) => {
                                                     <h4 className="font-medium text-gray-900 flex items-center">
                                                         <span className="mr-2">🎥</span>Module Video
                                                     </h4>
-                                                    {isEnrolled && (
+                                                    {(isEnrolled || isAdvisor) && (
                                                         <button
                                                             onClick={() => openVideoModal(module.videoUrl, module.title)}
                                                             className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors duration-200"
                                                         >
-                                                            Watch Video
+                                                            {isAdvisor ? 'Preview Video' : 'Watch Video'}
                                                         </button>
                                                     )}
                                                 </div>
-                                                {!isEnrolled && (
+                                                {!isEnrolled && !isAdvisor && (
                                                     <div className="bg-gray-100 rounded-lg p-4 text-center">
                                                         <p className="text-gray-600 text-sm">
                                                             🔒 Enroll in this course to access module videos
@@ -123,14 +123,14 @@ const ModulesSection = ({ modules, isEnrolled, course }) => {
                                                                     {resource.type.toUpperCase()}
                                                                 </span>
                                                             </div>
-                                                            {isEnrolled ? (
+                                                            {(isEnrolled || isAdvisor) ? (
                                                                 <a
                                                                     href={resource.url}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                                                                 >
-                                                                    Access
+                                                                    {isAdvisor ? 'Preview' : 'Access'}
                                                                 </a>
                                                             ) : (
                                                                 <span className="text-gray-400 text-sm">🔒 Locked</span>

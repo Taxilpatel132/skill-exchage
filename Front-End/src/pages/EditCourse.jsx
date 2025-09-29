@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ModuleCreationSection from '../components/CreateCourse/ModuleCreationSection';
 import axios from 'axios';
-const CreateCourse = () => {
+
+const EditCourse = () => {
+    const { courseId } = useParams();
+    const navigate = useNavigate();
+
     const [myData, setMyData] = React.useState(null);
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         async function fetchData() {
             const response = await axios.get('http://localhost:3000/users/mycard', { withCredentials: true });
-
             setMyData(response.data.usercard);
-
             setIsLoggedIn(response.data.isLogin);
-
             localStorage.setItem('myId', response.data?.usercard?._id);
-            if (localStorage.getItem('myId') === 'null' || localStorage.getItem('myId') === 'undefined') {
+
+            if (localStorage.getItem('myId') === null || localStorage.getItem('myId') === 'undefined') {
                 navigate('/login');
                 return;
             }
         }
         fetchData();
     }, []);
-    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -61,6 +65,60 @@ const CreateCourse = () => {
 
     const categories = ['Programming', 'Design', 'Marketing', 'Business', 'Other'];
     const levels = ['Beginner', 'Intermediate', 'Advanced'];
+
+    // Fetch existing course data
+    useEffect(() => {
+        async function fetchCourseData() {
+            try {
+                setLoading(true);
+                const response = await axios.get(`http://localhost:3000/course/details/${courseId}`, { withCredentials: true });
+
+                if (response.data.course) {
+                    const course = response.data.course;
+                    const modules = response.data.modules || [];
+
+                    // Populate form with existing course data
+                    setFormData({
+                        title: course.title || '',
+                        description: course.description || '',
+                        fullDescription: course.fullDescription || '',
+                        category: course.category || '',
+                        level: course.level || '',
+                        pricePoints: course.pricePoints || course.priceInPoints || '',
+                        duration: course.duration || '',
+                        language: course.language || 'English',
+                        thumbnail: course.thumbnail || '',
+                        trailerVideo: course.trailerVideo || '',
+                        skills: course.skills || [],
+                        learningObjectives: course.learningObjectives && course.learningObjectives.length > 0 ? course.learningObjectives : [''],
+                        prerequisites: course.prerequisites && course.prerequisites.length > 0 ? course.prerequisites : [''],
+                        courseHighlights: course.courseHighlights && course.courseHighlights.length > 0 ? course.courseHighlights : [''],
+                        tools: course.tools || [],
+                        targetAudience: course.targetAudience && course.targetAudience.length > 0 ? course.targetAudience : [''],
+                        certificate: course.certificate !== undefined ? course.certificate : true,
+                        modules: modules.map(module => ({
+                            title: module.title || '',
+                            description: module.description || '',
+                            duration: module.duration || '',
+                            order: module.order || 0,
+                            videoUrl: module.videoUrl || '',
+                            resources: module.resources || [],
+                            isActive: true
+                        }))
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching course data:', error);
+                setError('Failed to load course data');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        if (courseId) {
+            fetchCourseData();
+        }
+    }, [courseId]);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -231,11 +289,11 @@ const CreateCourse = () => {
             // Remove the old field name
             delete courseData.pricePoints;
 
-            console.log('Sending course data:', courseData);
+            console.log('Sending updated course data:', courseData);
 
             // Send to your backend API using fetch
-            const response = await fetch('http://localhost:3000/course/create', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:3000/course/update/${courseId}`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer dummy-jwt-token-12345'
@@ -247,28 +305,56 @@ const CreateCourse = () => {
             const result = await response.json();
 
             if (response.ok) {
-                console.log('Course created successfully:', result);
-                alert('Course created successfully!');
-                navigate('/courses'); // Redirect to courses page
+                console.log('Course updated successfully:', result);
+                alert('Course updated successfully!');
+                navigate(`/courses/${courseId}`); // Redirect to course details page
             } else {
-                console.error('Failed to create course:', response.data);
-                alert(`Failed to create course: ${response.data.message}`);
+                console.error('Failed to update course:', result);
+                alert(`Failed to update course: ${result.message}`);
             }
         } catch (error) {
-            console.error('Error creating course:', error);
+            console.error('Error updating course:', error);
 
             if (error.response) {
                 // Server responded with error status
-                alert(`Failed to create course: ${error.response.data.message || 'Server error'}`);
+                alert(`Failed to update course: ${error.response.data.message || 'Server error'}`);
             } else if (error.request) {
                 // Request was made but no response received
                 alert('Network error. Please check your connection.');
             } else {
                 // Something else happened
-                alert('Error creating course. Please try again.');
+                alert('Error updating course. Please try again.');
             }
         }
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F9FAFB' }}>
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading course data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F9FAFB' }}>
+                <div className="text-center">
+                    <div className="text-red-500 text-xl mb-4">Error loading course</div>
+                    <p className="text-gray-600">{error}</p>
+                    <button
+                        onClick={() => navigate('/home')}
+                        className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                    >
+                        Go Home
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -277,8 +363,8 @@ const CreateCourse = () => {
                 <div className="max-w-4xl mx-auto px-6">
                     {/* Header */}
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Course</h1>
-                        <p className="text-gray-600">Share your knowledge and help others learn new skills</p>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Course</h1>
+                        <p className="text-gray-600">Update your course information and content</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-8">
@@ -400,8 +486,6 @@ const CreateCourse = () => {
                                         placeholder="English"
                                     />
                                 </div>
-
-
 
                                 <div className="md:col-span-2">
                                     <label className="flex items-center">
@@ -594,15 +678,6 @@ const CreateCourse = () => {
                             />
                         </div>
 
-
-
-
-
-
-
-
-
-
                         {/* Submit Button */}
                         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
                             <div className="flex gap-4">
@@ -610,13 +685,14 @@ const CreateCourse = () => {
                                     type="submit"
                                     className="flex-1 py-4 px-6 bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
                                 >
-                                    Create Course
+                                    Update Course
                                 </button>
                                 <button
                                     type="button"
+                                    onClick={() => navigate(`/courses/${courseId}`)}
                                     className="px-6 py-4 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors duration-200"
                                 >
-                                    Save Draft
+                                    Cancel
                                 </button>
                             </div>
                         </div>
@@ -627,4 +703,4 @@ const CreateCourse = () => {
     );
 };
 
-export default CreateCourse;
+export default EditCourse;

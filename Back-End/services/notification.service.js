@@ -1,137 +1,160 @@
+const Notification = require('../models/notification.model');
+const User = require('../models/users.model');
 const courseModel = require('../models/course.model');
-const userModel = require('../models/users.model');
-//const ratingModel = require('../models/rating.model');
-const UserCourses = require('../models/coures_creator.model');
-exports.createCourse = async (courseData) => {
-    const { title, description, tags, category, priceInPoints, thumbnail, advisor } = courseData;
 
-    if (!title || !description || !tags || !category || !priceInPoints || !thumbnail) {
-        throw new Error("All fields are required");
-    }
-
-    const course = new courseModel({
-        title,
-        description,
-        advisor,
-        tags,
-        category,
-        priceInPoints,
-        thumbnail,
-
-    });
-    const savedCourse = await course.save();
-    return savedCourse;
-}
-
-exports.getAllCourses = async (data) => {
-    // If user is not logged in, return all courses
-    if (!data || !data._id) {
-        const allCourses = await courseModel.find({ status: { $ne: "blocked" } }).populate('advisor', 'name email');
-        if (!allCourses || allCourses.length === 0) {
-            throw new Error("No courses found");
+// Get user notifications with pagination
+exports.getUserNotifications = async (userId, options = {}) => {
+    try {
+        const { page = 1, limit = 10, type } = options;
+        const skip = (page - 1) * limit;
+        
+        // Build query
+        const query = { receiver: userId };
+        if (type) {
+            query.type = type;
         }
-        return allCourses;
-    }
-
-    // If user is logged in, exclude their own created courses
-    //console.log(data._id);
-    const userCourses = await UserCourses.findOne({ advisorId: data._id }).populate('courses');
-    const userCreatedCourseIds = userCourses ? userCourses.courses.map(course => course._id) : [];
-    //console.log(userCreatedCourseIds);
-    const allCourses = await courseModel.find({
-        status: { $ne: "blocked" },
-        _id: { $nin: userCreatedCourseIds }
-    }).populate('advisor', 'fullname.firstname fullname.lastname email')
-
-    if (!allCourses || allCourses.length === 0) {
-        throw new Error("No courses found");
-    }
-    const clearedCourses = allCourses.map(course => {
+        
+        // Get notifications with populated sender and course data
+        const notifications = await Notification.find(query)
+            .populate('sender', 'fullname username profilePhoto profilePicture')
+            .populate('course', 'title thumbnail')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+        
+        // Get total count for pagination
+        const totalNotifications = await Notification.countDocuments(query);
+        const totalPages = Math.ceil(totalNotifications / limit);
+        
         return {
-            _id: course?._id,
-            title: course.title,
-            description: course.description,
-            priceInPoints: course.priceInPoints,
-            categories: course.categories,
-            tags: course.tags,
-            advisor: {
-                _id: course.advisor?._id,
-                fullname: `${course.advisor?.fullname.firstname} ${course.advisor?.fullname.lastname}`,
-                email: course.advisor?.email
-            },
-            thumbnail: course.thumbnail,
-            averageRating: course.averageRating,
-            totalRatings: course.totalRatings,
-            createdAt: course.createdAt,
-            views: course.views
+            notifications,
+            currentPage: page,
+            totalPages,
+            totalNotifications,
+            hasNext: page < totalPages,
+            hasPrev: page > 1
         };
-    });
-    return clearedCourses;
-}
+    } catch (error) {
+        throw new Error(`Failed to get user notifications: ${error.message}`);
+    }
+};
 
-exports.getCourseByTitile = async (title) => {
-    const courses = await courseModel.find({ status: { $ne: "blocked" } }).populate('advisor', 'name email')
-    if (!title) {
-        throw new Error("Title is required");
+// Mark notification as read
+exports.markAsRead = async (userId, notificationId) => {
+    try {
+        const notification = await Notification.findOneAndUpdate(
+            { _id: notificationId, receiver: userId },
+            { isRead: true },
+            { new: true }
+        ).populate('sender', 'fullname username profilePhoto profilePicture')
+         .populate('course', 'title thumbnail');
+        
+        return notification;
+    } catch (error) {
+        throw new Error(`Failed to mark notification as read: ${error.message}`);
     }
-    if (!courses || courses.length === 0) {
-        throw new Error("No courses found");
-    }
-    const c = courses.filter(course => course.title.toLowerCase().includes(title.toLowerCase()));
-    if (c.length === 0) {
-        throw new Error("No courses found with the given title");
-    }
-    return c;
-}
-exports.updatetoBlacked = async (courseId) => {
-    const course = await courseModel.findById({
-        _id: courseId,
-        status: { $ne: "blocked" }
-    });
-    if (!course) {
-        throw new Error("Course not found");
-    }
-    course.status = "blocked";
-    const updatedCourse = await course.save();
-    return updatedCourse;
-}
-exports.getCourseById = async (courseId) => {
-    const course = await courseModel.findById(courseId).populate('advisor');
-    if (!course) {
-        throw new Error("Course not found");
-    }
-    return {
-        _id: course?._id,
-        title: course.title,
-        description: course.description,
-        priceInPoints: course.priceInPoints,
-        categories: course.categories,
-        tags: course.tags,
-        advisor: {
-            _id: course.advisor?._id,
-            fullname: `${course.advisor?.fullname.firstname} ${course.advisor?.fullname.lastname}`,
-            email: course.advisor?.email
-        },
-        thumbnail: course.thumbnail,
-        averageRating: course.averageRating,
-        totalRatings: course.totalRatings,
-        createdAt: course.createdAt,
-        views: course.views
-    };
-}
+};
 
+// Mark all notifications as read
+exports.markAllAsRead = async (userId) => {
+    try {
+        const result = await Notification.updateMany(
+            { receiver: userId, isRead: false },
+            { isRead: true }
+        );
+        
+        return { updatedCount: result.modifiedCount };
+    } catch (error) {
+        throw new Error(`Failed to mark all notifications as read: ${error.message}`);
+    }
+};
 
-exports.createCC = async (ccData) => {
-    const { courseId, advisorId } = ccData;
-    let userCourses = await UserCourses.findOne({ advisorId });
-    if (!userCourses) {
-        userCourses = new UserCourses({
-            advisorId,
-            courses: [courseId],
+// Delete notification
+exports.deleteNotification = async (userId, notificationId) => {
+    try {
+        const notification = await Notification.findOneAndDelete({
+            _id: notificationId,
+            receiver: userId
         });
-    } else {
-        userCourses.courses.push(courseId);
+        
+        return notification;
+    } catch (error) {
+        throw new Error(`Failed to delete notification: ${error.message}`);
     }
-    await userCourses.save();
-    return userCourses;
+};
+
+// Get unread notification count
+exports.getUnreadCount = async (userId) => {
+    try {
+        const count = await Notification.countDocuments({
+            receiver: userId,
+            isRead: false
+        });
+        
+        return count;
+    } catch (error) {
+        throw new Error(`Failed to get unread count: ${error.message}`);
+    }
+};
+
+// Create and emit real-time notification
+exports.createAndEmitNotification = async (notificationData, io) => {
+    try {
+        const { receiverId, senderId, type, courseId, message } = notificationData;
+        
+        // Create notification in database
+        const notification = new Notification({
+            receiver: receiverId,
+            sender: senderId,
+            type,
+            course: courseId,
+            message
+        });
+        
+        const savedNotification = await notification.save();
+        
+        // Populate the notification for real-time emission
+        const populatedNotification = await Notification.findById(savedNotification._id)
+            .populate('sender', 'fullname username profilePhoto profilePicture')
+            .populate('course', 'title thumbnail');
+        
+        // Emit to specific user
+        if (io) {
+            io.to(`user_${receiverId}`).emit('new_notification', {
+                notification: populatedNotification,
+                type: 'new_notification'
+            });
+            
+            // Also emit to course room if it's a course-related notification
+            if (courseId) {
+                io.to(`course_${courseId}`).emit('course_notification', {
+                    notification: populatedNotification,
+                    type: 'course_notification'
+                });
+            }
+        }
+        
+        return populatedNotification;
+    } catch (error) {
+        throw new Error(`Failed to create and emit notification: ${error.message}`);
+    }
+};
+
+// Emit notification to multiple users (for followers)
+exports.emitToMultipleUsers = async (userIds, notificationData, io) => {
+    try {
+        const notifications = [];
+        
+        for (const userId of userIds) {
+            const notification = await this.createAndEmitNotification({
+                ...notificationData,
+                receiverId: userId
+            }, io);
+            notifications.push(notification);
+        }
+        
+        return notifications;
+    } catch (error) {
+        throw new Error(`Failed to emit to multiple users: ${error.message}`);
+    }
 };

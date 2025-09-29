@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -9,8 +10,13 @@ const SearchBar = () => {
         minViews: '',
         minRating: '',
         author: '',
-        searchScope: 'all'
+        searchScope: 'all',
+        userType: ''
     });
+    const [searchResults, setSearchResults] = useState(null);
+    const [isSearching, setIsSearching] = useState(false);
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const filtersRef = useRef(null);
 
     // Close filters dropdown when clicking outside
@@ -27,11 +33,64 @@ const SearchBar = () => {
         };
     }, []);
 
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
         e.preventDefault();
-        if (searchQuery.trim() || Object.values(filters).some(filter => filter)) {
-            console.log('Searching for:', searchQuery, 'with filters:', filters);
-            // Implement search logic here with filters
+        if (!searchQuery.trim() && !Object.values(filters).some(filter => filter && filter !== 'all')) {
+            return;
+        }
+
+        setIsSearching(true);
+        try {
+            let endpoint = '/search/all';
+            let params = {};
+
+            // Determine endpoint based on search scope
+            if (filters.searchScope === 'courses') {
+                endpoint = '/search/courses';
+                params = {
+                    query: searchQuery,
+                    dateRange: filters.dateRange,
+                    minViews: filters.minViews,
+                    minRating: filters.minRating,
+                    author: filters.author
+                };
+            } else if (filters.searchScope === 'users') {
+                endpoint = '/search/users';
+                params = {
+                    query: searchQuery,
+                    userType: filters.userType,
+                    author: filters.author
+                };
+            } else {
+                params = { query: searchQuery };
+            }
+
+            // Remove empty parameters
+            Object.keys(params).forEach(key => {
+                if (!params[key] || params[key] === 'all') {
+                    delete params[key];
+                }
+            });
+
+            const response = await axios.get(`http://localhost:3000${endpoint}`, {
+                params,
+                withCredentials: true
+            });
+
+            if (response.data.success) {
+                setSearchResults(response.data);
+                console.log('Search results:', response.data);
+
+                // You can emit an event or use a callback to pass results to parent component
+                window.dispatchEvent(new CustomEvent('searchResults', {
+                    detail: response.data
+                }));
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+            alert('Search failed. Please try again.');
+        } finally {
+            setIsSearching(false);
         }
     };
 
@@ -48,8 +107,54 @@ const SearchBar = () => {
             minViews: '',
             minRating: '',
             author: '',
-            searchScope: 'all'
+            searchScope: 'all',
+            userType: ''
         });
+    };
+
+    // Fetch search suggestions
+    const fetchSuggestions = async (query) => {
+        if (query.length < 2) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        try {
+            const response = await axios.get('http://localhost:3000/search/suggestions', {
+                params: {
+                    query,
+                    type: filters.searchScope === 'all' ? 'all' : filters.searchScope
+                },
+                withCredentials: true
+            });
+
+            if (response.data.success) {
+                setSuggestions(response.data.suggestions);
+                setShowSuggestions(true);
+            }
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+        }
+    };
+
+    // Handle input change with debounced suggestions
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+
+        // Debounce suggestions
+        clearTimeout(window.suggestionTimeout);
+        window.suggestionTimeout = setTimeout(() => {
+            fetchSuggestions(value);
+        }, 300);
+    };
+
+    // Handle suggestion click
+    const handleSuggestionClick = (suggestion) => {
+        setSearchQuery(suggestion.text);
+        setShowSuggestions(false);
+        setSuggestions([]);
     };
 
     const getActiveFiltersCount = () => {
@@ -69,9 +174,16 @@ const SearchBar = () => {
                     <input
                         type="text"
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onFocus={() => setIsSearchFocused(true)}
-                        onBlur={() => setIsSearchFocused(false)}
+                        onChange={handleInputChange}
+                        onFocus={() => {
+                            setIsSearchFocused(true);
+                            if (suggestions.length > 0) setShowSuggestions(true);
+                        }}
+                        onBlur={() => {
+                            setIsSearchFocused(false);
+                            // Delay hiding suggestions to allow clicking
+                            setTimeout(() => setShowSuggestions(false), 200);
+                        }}
                         className="w-full pl-10 pr-20 py-2.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:bg-white focus:border-indigo-500 transition-all duration-300 placeholder-gray-400 text-sm"
                         style={{ fontFamily: 'Poppins, sans-serif' }}
                         placeholder={
@@ -104,7 +216,11 @@ const SearchBar = () => {
                         {searchQuery && (
                             <button
                                 type="button"
-                                onClick={() => setSearchQuery('')}
+                                onClick={() => {
+                                    setSearchQuery('');
+                                    setSuggestions([]);
+                                    setShowSuggestions(false);
+                                }}
                                 className="mr-3 text-gray-400 hover:text-gray-600"
                             >
                                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,8 +228,51 @@ const SearchBar = () => {
                                 </svg>
                             </button>
                         )}
+
+                        {/* Search Button */}
+                        <button
+                            type="submit"
+                            disabled={isSearching}
+                            className="mr-3 px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                        >
+                            {isSearching ? (
+                                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            ) : (
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            )}
+                        </button>
                     </div>
                 </div>
+
+                {/* Search Suggestions Dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto">
+                        <div className="p-2">
+                            <div className="text-xs font-semibold text-gray-500 mb-2 px-2">Suggestions</div>
+                            {suggestions.map((suggestion, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleSuggestionClick(suggestion)}
+                                    className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors duration-200 flex items-center gap-3"
+                                >
+                                    <div className={`w-2 h-2 rounded-full ${suggestion.type === 'course' ? 'bg-blue-500' :
+                                            suggestion.type === 'user' ? 'bg-green-500' :
+                                                'bg-purple-500'
+                                        }`}></div>
+                                    <div>
+                                        <div className="text-sm font-medium text-gray-900">{suggestion.text}</div>
+                                        <div className="text-xs text-gray-500">{suggestion.category}</div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Filters Dropdown */}
                 {isFiltersOpen && (

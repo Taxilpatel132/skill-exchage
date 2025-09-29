@@ -1,14 +1,17 @@
-import React, { useEffect, useInsertionEffect } from "react";
+import React, { useEffect, useInsertionEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import CourseCard from "../components/CourseCard";
 import UserCard from "../components/UserCard";
+import SearchResults from "../components/SearchResults";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
+import Footer from "../components/Footer";
 const Home = () => {
     const [showUserCard, setShowUserCard] = React.useState(true);
     const [myData, setMyData] = React.useState(null);
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
     const [courses, setCourses] = React.useState([]);
+    const [showSearchResults, setShowSearchResults] = useState(false);
     useEffect(() => {
         async function fetchData() {
             const response = await axios.get('http://localhost:3000/users/mycard', { withCredentials: true });
@@ -39,30 +42,51 @@ const Home = () => {
     }
         , [])
 
+    // Handle search results
+    useEffect(() => {
+        const handleSearchResults = (event) => {
+            setShowSearchResults(true);
+        };
+
+        const handleSearchStart = () => {
+            setShowSearchResults(true);
+        };
+
+        window.addEventListener('searchResults', handleSearchResults);
+        window.addEventListener('searchStart', handleSearchStart);
+
+        return () => {
+            window.removeEventListener('searchResults', handleSearchResults);
+            window.removeEventListener('searchStart', handleSearchStart);
+        };
+    }, []);
+
     return (
         <>
             <Navbar IsLoggedIn={isLoggedIn} myData={myData} />
-            <div className="container mx-auto px-4 py-8">
-
-
-                <div>
-                    <div className="flex items-center justify-between mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            Featured Courses
-                        </h1>
-                        <button
-
-                            className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
-                            View All →
-                        </button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {courses.map(c => (
-                            <CourseCard key={c._id} course={c} />
-                        ))}
+            {showSearchResults ? (
+                <SearchResults />
+            ) : (
+                <div className="container mx-auto px-4 py-8">
+                    <div>
+                        <div className="flex items-center justify-between mb-8">
+                            <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                Featured Courses
+                            </h1>
+                            <button
+                                className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
+                                View All →
+                            </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {courses.map(c => (
+                                <CourseCard key={c._id} course={c} />
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
+            <Footer />
         </>
     );
 }

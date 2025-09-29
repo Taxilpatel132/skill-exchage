@@ -119,6 +119,7 @@ const Profile = () => {
                             coursesList: userData.coursesList || []
                         });
 
+                        setIsFollowing(response.data.OtherUserProfile.isFollowing);
                         // Check if current user is following this user
                         if (myData && myData.following) {
                             setIsFollowing(myData.following.includes(userId));

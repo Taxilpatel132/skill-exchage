@@ -4,6 +4,8 @@ const cors = require('cors');
 const userRoutes = require('./routes/user.route');
 const adminRoutes = require('./routes/admin.route');
 const courseRoutes = require('./routes/course.route');
+const searchRoutes = require('./routes/search.route');
+const notificationRoutes = require('./routes/notification.route');
 
 const cookieparser = require("cookie-parser");
 
@@ -23,5 +25,7 @@ app.get('/', (req, res) => {
 app.use('/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/course', courseRoutes);
+app.use('/search', searchRoutes);
+app.use('/notifications', notificationRoutes);
 
 module.exports = app;

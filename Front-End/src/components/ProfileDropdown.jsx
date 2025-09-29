@@ -14,6 +14,7 @@ const ProfileDropdown = (props) => {
         name: props.mydata?.fullname,
         email: props.mydata?.email,
         avatar: initials,
+        points: props.mydata?.points || 0,
         stats: {
             courses: props.mydata?.courses,
             students: props.mydata?.students,
@@ -81,16 +82,27 @@ const ProfileDropdown = (props) => {
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 animate-fade-in">
                     {/* Profile Header */}
                     <div className="px-4 py-3 border-b border-gray-100">
-                        <div className="flex items-center space-x-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-semibold">
-                                {userInfo.avatar}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-semibold">
+                                    {userInfo.avatar}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-gray-800" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                        {userInfo.name}
+                                    </p>
+                                    <p className="text-xs text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                        {userInfo.email}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-sm font-semibold text-gray-800" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                    {userInfo.name}
+                            {/* Points Display */}
+                            <div className="text-right">
+                                <p className={`text-lg font-bold ${userInfo.points < 500 ? 'text-red-600' : 'text-green-600'}`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                    {userInfo.points}
                                 </p>
                                 <p className="text-xs text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                    {userInfo.email}
+                                    Points
                                 </p>
                             </div>
                         </div>
@@ -116,18 +128,6 @@ const ProfileDropdown = (props) => {
 
                     {/* Menu Items */}
                     <div className="py-2">
-                        {/* My Learning */}
-                        <Link
-                            to="/my-enrollments"
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-150 block"
-                            style={{ fontFamily: 'Poppins, sans-serif' }}
-                            onClick={() => setIsProfileOpen(false)}
-                        >
-                            <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                            </svg>
-                            <span>My Learning</span>
-                        </Link>
 
                         {/* Profile */}
                         <button
@@ -141,17 +141,19 @@ const ProfileDropdown = (props) => {
                             <span>My Profile</span>
                         </button>
 
-                        {/* My Courses */}
-                        <button
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-150"
+
+                        {/* My Learning */}
+                        <Link
+                            to="/my-enrollments"
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-150 block"
                             style={{ fontFamily: 'Poppins, sans-serif' }}
-                            onClick={() => handleProfileNavigation('/my-courses')}
+                            onClick={() => setIsProfileOpen(false)}
                         >
                             <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                             </svg>
-                            <span>My Courses</span>
-                        </button>
+                            <span>My Learning</span>
+                        </Link>
 
                         {/* History */}
                         <button
@@ -165,30 +167,8 @@ const ProfileDropdown = (props) => {
                             <span>Points History</span>
                         </button>
 
-                        {/* Settings */}
-                        <button
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-150"
-                            style={{ fontFamily: 'Poppins, sans-serif' }}
-                            onClick={() => handleProfileNavigation('/settings')}
-                        >
-                            <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <span>Settings</span>
-                        </button>
 
-                        {/* Help */}
-                        <button
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-150"
-                            style={{ fontFamily: 'Poppins, sans-serif' }}
-                            onClick={() => handleProfileNavigation('/help')}
-                        >
-                            <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>Help & Support</span>
-                        </button>
+
 
                         {/* Divider */}
                         <div className="border-t border-gray-100 my-2"></div>

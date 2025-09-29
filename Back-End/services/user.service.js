@@ -2,11 +2,11 @@ const usermodel = require("../models/users.model");
 const courseCreator = require("../models/coures_creator.model");
 const courseService = require("../services/course.service");
 
-const NotificationService = require("../services/notification.service");
+//const NotificationService = require("../services/notification.service");
 const UserEnroll = require("../models/User_enroll.model");
 const course = require("../models/course.model");
 const ModuleModel = require("../models/module.model");
-
+const UserProgress = require("../models/user_progress.model");
 exports.createuser = async (userData) => {
     const { fullname, email, password, phone } = userData;
     if (!fullname || !email || !password || !phone) {
@@ -413,6 +413,7 @@ exports.mycard = async (userId) => {
                 courses: "0",
                 avgRating: "0.000",
                 students: "0",
+                points: user.points.toString()
 
             }
         }
@@ -601,3 +602,32 @@ exports.searchUsersWithFilters = async (filters) => {
         throw new Error(`Failed to search users: ${error.message}`);
     }
 };
+exports.Isfollow = async (userId, followId) => {
+    if (!userId || !followId) {
+        throw new Error("User ID and Follow ID are required");
+    }
+    const user = await usermodel.findById(userId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+    if (user.following.includes(followId)) {
+        return true;
+    }
+    return false;
+}
+exports.getEnrollment = async (userId, courseId) => {
+    if (!userId || !courseId) {
+        throw new Error("User ID and Course ID are required");
+    }
+    const enrollment = await UserEnroll.findOne({ user: userId });
+    if (!enrollment) {
+        throw new Error("Enrollment not found");
+    }
+    if (enrollment.courses.includes(courseId)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+}

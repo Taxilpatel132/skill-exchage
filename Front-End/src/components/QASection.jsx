@@ -1,6 +1,20 @@
 import React from 'react';
 
-const QASection = ({ qa, questionText, setQuestionText, handleAddQuestion, questionLoading, isEnrolled }) => {
+const QASection = ({
+    qa,
+    questionText,
+    setQuestionText,
+    handleAddQuestion,
+    questionLoading,
+    isEnrolled,
+    isAdvisor,
+    expandedQuestionId,
+    answerText,
+    setAnswerText,
+    handleAnswerQuestion,
+    toggleQuestionExpansion,
+    answerLoading
+}) => {
     return (
         <section className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">Questions & Answers</h2>
@@ -39,6 +53,62 @@ const QASection = ({ qa, questionText, setQuestionText, handleAddQuestion, quest
                                     <p className={`text-gray-800 ${q.status === 'pending' ? 'italic text-gray-500' : ''}`}>
                                         {q.answer}
                                     </p>
+
+                                    {/* Advisor Answer Form - Only show for advisors and pending questions */}
+                                    {isAdvisor && q.status === 'pending' && (
+                                        <div className="mt-4 pt-4 border-t border-indigo-200">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <span className="text-sm font-semibold text-indigo-700">Answer this question:</span>
+                                                <button
+                                                    onClick={() => toggleQuestionExpansion(q.id)}
+                                                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                                                >
+                                                    {expandedQuestionId === q.id ? 'Cancel' : 'Answer'}
+                                                    <svg
+                                                        className={`w-4 h-4 transition-transform ${expandedQuestionId === q.id ? 'rotate-180' : ''}`}
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            {expandedQuestionId === q.id && (
+                                                <div className="space-y-3">
+                                                    <textarea
+                                                        rows={3}
+                                                        placeholder="Type your answer here..."
+                                                        className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 border px-4 py-3 text-sm resize-none"
+                                                        value={answerText}
+                                                        onChange={e => setAnswerText(e.target.value)}
+                                                    />
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => handleAnswerQuestion(q.id)}
+                                                            disabled={answerLoading || !answerText.trim()}
+                                                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${answerLoading || !answerText.trim()
+                                                                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                                                                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                                                }`}
+                                                        >
+                                                            {answerLoading ? 'Submitting...' : 'Submit Answer'}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setAnswerText('');
+                                                                setExpandedQuestionId(null);
+                                                            }}
+                                                            className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))
@@ -55,8 +125,8 @@ const QASection = ({ qa, questionText, setQuestionText, handleAddQuestion, quest
                 </div>
             </div>
 
-            {/* Ask Question Form - Only show if enrolled */}
-            {isEnrolled ? (
+            {/* Ask Question Form - Only show if enrolled and not advisor */}
+            {isEnrolled && !isAdvisor ? (
                 <form onSubmit={handleAddQuestion} className="border-t border-gray-200 pt-6">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Ask a Question</h3>
                     <div className="flex gap-4">
@@ -72,8 +142,8 @@ const QASection = ({ qa, questionText, setQuestionText, handleAddQuestion, quest
                             type="submit"
                             disabled={questionLoading || !questionText.trim()}
                             className={`px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 ${questionLoading || !questionText.trim()
-                                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                                    : 'text-white bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600'
+                                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                                : 'text-white bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600'
                                 }`}
                         >
                             {questionLoading ? (
@@ -90,6 +160,14 @@ const QASection = ({ qa, questionText, setQuestionText, handleAddQuestion, quest
                         </button>
                     </div>
                 </form>
+            ) : isAdvisor ? (
+                <div className="border-t border-gray-200 pt-6">
+                    <div className="text-center p-6 bg-blue-50 rounded-lg border border-blue-200">
+                        <p className="text-blue-700">
+                            <strong>As the course advisor</strong>, you can view and answer questions from students.
+                        </p>
+                    </div>
+                </div>
             ) : (
                 <div className="border-t border-gray-200 pt-6">
                     <div className="text-center p-6 bg-amber-50 rounded-lg border border-amber-200">

@@ -2,11 +2,87 @@ const course = require('../models/course.model');
 const User = require('../models/users.model');
 const { create } = require('../models/notification.model');
 const courseService = require('../services/course.service');
+const notificationService = require('../services/notification.service');
 const coures_creator = require("../models/coures_creator.model");
 const UserEnroll = require('../models/User_enroll.model');
 exports.createCourse = async (req, res) => {
     try {
         const advisor = req.user; // Assuming the user is authenticated and their ID is available in req.user
+        const {
+            title,description,fullDescription,category,level,priceInPoints,duration,language,thumbnail,trailerVideo,skills,learningObjectives,prerequisites,courseHighlights,tools,targetAudience,certificate,modules
+        } = req.body;
+
+        // Validate required fields
+        if (!title || !description || !fullDescription || !category || !level || !priceInPoints || !duration || !thumbnail) {
+            return res.status(400).json({
+                message: "Required fields: title, description, fullDescription, category, level, priceInPoints, duration, thumbnail"
+            });
+        }
+        if (!skills || !Array.isArray(skills) || skills.length === 0) {
+            return res.status(400).json({ message: "At least one skill is required" });
+        }
+        const courseData = {
+            title: title.trim(),
+            description: description.trim(),
+            fullDescription: fullDescription.trim(),
+            category,
+            level,
+            priceInPoints: parseInt(priceInPoints),
+            duration: duration.trim(),
+            language: language || 'English',
+            thumbnail,
+            trailerVideo: trailerVideo || '',
+            skills: skills.filter(skill => skill.trim()),
+            learningObjectives: learningObjectives ? learningObjectives.filter(obj => obj.trim()) : [],
+            prerequisites: prerequisites ? prerequisites.filter(req => req.trim()) : [],
+            courseHighlights: courseHighlights ? courseHighlights.filter(highlight => highlight.trim()) : [],
+            tools: tools || [],
+            targetAudience: targetAudience ? targetAudience.filter(audience => audience.trim()) : [],
+            certificate: certificate !== undefined ? certificate : true,
+            advisor: advisor._id
+        };
+        const savedCourse = await courseService.createCourse(courseData, modules);
+        if (!savedCourse) {
+            return res.status(400).json({ message: "Failed to create course" });
+        }
+        const cc = await courseService.createCC({ courseId: savedCourse?._id, advisorId: advisor?._id })
+        if (!cc) {
+            return res.status(400).json({ message: "Failed to create course creator" });
+        }
+        const advisorWithFollowers = await User.findById(advisor._id).populate('followers');
+        const io = req.app.get('io'); 
+        const followerNotifications = [];
+        if (advisorWithFollowers.followers && advisorWithFollowers.followers.length > 0) {
+            const followerIds = advisorWithFollowers.followers.map(follower => follower._id);
+            
+            const notifications = await notificationService.emitToMultipleUsers(
+                followerIds,
+                {
+                    senderId: advisor._id,
+                    type: 'new_course',
+                    courseId: savedCourse._id,
+                    message: `published a new course: ${savedCourse.title}`
+                },
+                io
+            );
+            followerNotifications.push(...notifications);
+        }
+
+        res.status(201).json({
+            course: savedCourse,
+            courseCreator: cc,
+            message: "Course created successfully",
+            notificationsSent: followerNotifications.length
+        });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+exports.updateCourse = async (req, res) => {
+    try {
+        const advisor = req.user;
+        const { courseId } = req.params;
         const {
             title,
             description,
@@ -28,7 +104,6 @@ exports.createCourse = async (req, res) => {
             modules
         } = req.body;
 
-        // Validate required fields
         if (!title || !description || !fullDescription || !category || !level || !priceInPoints || !duration || !thumbnail) {
             return res.status(400).json({
                 message: "Required fields: title, description, fullDescription, category, level, priceInPoints, duration, thumbnail"
@@ -38,6 +113,38 @@ exports.createCourse = async (req, res) => {
         // Validate arrays
         if (!skills || !Array.isArray(skills) || skills.length === 0) {
             return res.status(400).json({ message: "At least one skill is required" });
+        }
+
+        // Check if course exists and user is the advisor
+        const existingCourse = await courseService.getCourseById(courseId);
+        if (!existingCourse) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+
+
+        // Handle advisor comparison - advisor can be ObjectId or populated object
+        let courseAdvisorId;
+        if (existingCourse.advisor && existingCourse.advisor._id) {
+            // If advisor is populated object
+            courseAdvisorId = existingCourse.advisor._id.toString();
+        } else {
+            // If advisor is ObjectId
+            courseAdvisorId = existingCourse.advisor.toString();
+        }
+
+        const currentUserId = advisor._id.toString();
+
+
+        if (courseAdvisorId !== currentUserId) {
+            return res.status(403).json({
+                message: "You can only edit your own courses",
+                debug: {
+                    courseAdvisorId,
+                    currentUserId,
+                    match: courseAdvisorId === currentUserId
+                }
+            });
         }
 
         // Prepare course data
@@ -58,45 +165,18 @@ exports.createCourse = async (req, res) => {
             courseHighlights: courseHighlights ? courseHighlights.filter(highlight => highlight.trim()) : [],
             tools: tools || [],
             targetAudience: targetAudience ? targetAudience.filter(audience => audience.trim()) : [],
-            certificate: certificate !== undefined ? certificate : true,
-            advisor: advisor._id
+            certificate: certificate !== undefined ? certificate : true
         };
 
-        const savedCourse = await courseService.createCourse(courseData, modules);
+        const updatedCourse = await courseService.updateCourse(courseId, courseData, modules);
 
-        if (!savedCourse) {
-            return res.status(400).json({ message: "Failed to create course" });
+        if (!updatedCourse) {
+            return res.status(400).json({ message: "Failed to update course" });
         }
 
-        const cc = await courseService.createCC({ courseId: savedCourse?._id, advisorId: advisor?._id })
-        if (!cc) {
-            return res.status(400).json({ message: "Failed to create course creator" });
-        }
-
-        const advisorWithFollowers = await User.findById(advisor._id).populate('followers');
-
-        const followerNotifications = [];
-        if (advisorWithFollowers.followers && advisorWithFollowers.followers.length > 0) {
-            for (const follower of advisorWithFollowers.followers) {
-                const notificationData = {
-                    senderId: advisor._id,
-                    receiverId: follower._id,
-                    courseId: savedCourse._id,
-                    message: `published a new course: ${savedCourse.title}`,
-                    type: 'new_course'
-                };
-                const notification = await courseService.createNotification(notificationData);
-                if (notification) {
-                    followerNotifications.push(notification);
-                }
-            }
-        }
-
-        res.status(201).json({
-            course: savedCourse,
-            courseCreator: cc,
-            message: "Course created successfully",
-            notificationsSent: followerNotifications.length
+        res.status(200).json({
+            course: updatedCourse,
+            message: "Course updated successfully"
         });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -194,15 +274,16 @@ exports.askQuestion = async (req, res) => {
         if (!course) {
             return res.status(404).json({ message: "Course not found for notification" });
         }
-        const receiverId = course.advisor._id; // Assuming the course object has an advisor field with the advisor's ID
-        const notificationData = {
-            receiverId: receiverId,
+        const io = req.app.get('io'); // Get Socket.io instance
+        
+        const notification = await notificationService.createAndEmitNotification({
+            receiverId: course.advisor._id,
             senderId: student._id,
             type: 'question',
             courseId,
             message: `New question posted: ${question}`
-        };
-        const notification = await courseService.createNotification(notificationData);
+        }, io);
+        
         if (!notification) {
             return res.status(400).json({ message: "Failed to create notification" });
         }
@@ -232,15 +313,15 @@ exports.answerQuestion = async (req, res) => {
             return res.status(404).json({ message: "Course not found for notification" });
         }
 
-        const receiverId = updatedQuestion.studentId; // The student who asked the question
-        const notificationData = {
-            receiverId: receiverId,
+        const io = req.app.get('io'); // Get Socket.io instance
+        const notification = await notificationService.createAndEmitNotification({
+            receiverId: updatedQuestion.studentId,
             senderId: advisor._id,
             type: 'answer',
             courseId: updatedQuestion.courseId,
             message: `Your question has been answered: ${answer}`
-        };
-        const notification = await courseService.createNotification(notificationData);
+        }, io);
+        
         if (!notification) {
             return res.status(400).json({ message: "Failed to create notification" });
         }
@@ -256,19 +337,13 @@ exports.answerQuestion = async (req, res) => {
 exports.getCourseDetails = async (req, res) => {
     try {
         const { courseId } = req.params;
-
         if (!courseId) {
             return res.status(400).json({ message: "Course ID is required" });
         }
-
-        // Get course with populated data
         const course = await courseService.getCourseDetailsForDisplay(courseId);
-
         if (!course) {
             return res.status(404).json({ message: "Course not found" });
         }
-
-        // Get modules for this course
         const ModuleModel = require('../models/module.model');
         const modules = await ModuleModel.find({ courseId: courseId }).sort({ order: 1 });
         const data = await coures_creator.find({ advisorId: course.advisor._id }).populate("advisorId courses");
@@ -284,24 +359,16 @@ exports.getCourseDetails = async (req, res) => {
 
             }
         }
-
         let avgRating = 0;
-        let coursesWithRatings = 0; // Count only courses that have ratings
-
+        let coursesWithRatings = 0; 
         for (course1 of data[0].courses) {
             const enrollments = await UserEnroll.find({ courses: course1._id });
-
-            // Only include courses with ratings > 0 in average calculation
             if (course1.averageRating > 0) {
                 avgRating += course1.averageRating;
                 coursesWithRatings++;
             }
-        }
-
-        // Calculate average only from courses that have ratings
+        } 
         avgRating = coursesWithRatings > 0 ? avgRating / coursesWithRatings : 0;
-
-        // Format response for CourseDetails page with correct field names
         const response = {
             course: {
                 id: course._id,
@@ -324,6 +391,7 @@ exports.getCourseDetails = async (req, res) => {
                 totalReviews: course.totalRatings || 0
             },
             advisor: {
+                _id: course.advisor._id,
                 name: course.advisor.fullname ?
                     `${course.advisor.fullname.firstname} ${course.advisor.fullname.lastname}` :
                     course.advisor.username || 'Unknown Advisor',
@@ -366,7 +434,7 @@ exports.addReviewToCourse = async (req, res) => {
         }
 
         const updatedCourse = await courseService.rateCourse({ courseId, studentId: student._id.toString(), rating, review });
-
+        console.log({ courseContoller: updatedCourse })
         res.status(201).json({
             message: "Review added successfully",
             averageRating: updatedCourse.averageRating,
@@ -401,18 +469,14 @@ exports.getCourseReviews = async (req, res) => {
 exports.getCourseQA = async (req, res) => {
     try {
         const { courseId } = req.params;
-
         if (!courseId) {
             return res.status(400).json({ message: "Course ID is required" });
         }
-
-        const CourseQA = require('../models/course_qa.model');
-        const questions = await CourseQA.find({ courseId })
-            .populate('studentId', 'fullname username')
-            .populate('answer.answeredBy', 'fullname username')
-            .sort({ createdAt: -1 });
-
-        res.status(200).json({ questions });
+        const questions = await courseService.getCourseQA(courseId);
+        res.status(200).json({
+            questions: questions || [],
+            count: questions ? questions.length : 0
+        });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

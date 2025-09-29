@@ -7,6 +7,9 @@ const authMiddleware = require('../auth-middleware/auth');
 // Course creation (requires authentication)
 router.post('/create', authMiddleware.authUser, courseController.createCourse);
 
+// Course update (requires authentication)
+router.put('/update/:courseId', authMiddleware.authUser, courseController.updateCourse);
+
 // Course viewing (optional authentication - shows personalized data if logged in)
 router.get('/search/all', authMiddleware.optionalAuthUser, courseController.getAllCourses);
 router.get('/details/:courseId', authMiddleware.optionalAuthUser, courseController.getCourseDetails);

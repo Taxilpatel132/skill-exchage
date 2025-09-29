@@ -33,7 +33,7 @@ const CourseCard = ({ course, isOwnCourse = false }) => {
     const handleEditClick = (e) => {
         e.stopPropagation();
 
-        navigate(`/edit-course/${_id}`);
+        navigate(`/courses/edit/${_id}`);
     };
 
     const handleEnrollClick = async (e) => {

@@ -17,6 +17,7 @@ import History from './pages/History'
 
 // Course Pages
 import CreateCourse from './pages/CreateCourse'
+import EditCourse from './pages/EditCourse'
 import CourseDetails from './pages/CourseDetails'
 import MyEnrollments from './pages/MyEnrollments'
 
@@ -61,13 +62,14 @@ function App() {
 
       {/* Course Routes */}
       <Route path="/courses/create" element={<CreateCourse />} />
+      <Route path="/courses/edit/:courseId" element={<EditCourse />} />
       <Route path="/courses/:courseId" element={<CourseDetails />} />
       <Route path="/courses/my-enrollments" element={<MyEnrollments />} />
-      {/* <Route path="/courses/edit/:courseId" element={<EditCourse />} /> */}
       {/* <Route path="/courses/search" element={<SearchResults />} /> */}
 
       {/* Legacy course routes for backward compatibility */}
       <Route path="/create-course" element={<Navigate to="/courses/create" replace />} />
+      <Route path="/edit-course/:courseId" element={<Navigate to="/courses/edit/:courseId" replace />} />
       <Route path="/course/:courseId" element={<CourseRedirect />} />
       <Route path="/my-enrollments" element={<Navigate to="/courses/my-enrollments" replace />} />
       <Route path="/edit-profile" element={<Navigate to="/profile/edit" replace />} />

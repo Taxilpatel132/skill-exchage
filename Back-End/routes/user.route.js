@@ -22,6 +22,7 @@ router.get('/search/advanced', authmiddleware.optionalAuthUser, usercontroller.s
 router.put('/profile/edit', authmiddleware.authUser, usercontroller.updateUserProfile);
 router.post('/profile/upload-photo', authmiddleware.authUser, upload.single('profilePhoto'), usercontroller.uploadProfilePhoto);
 router.get('/history', authmiddleware.authUser, usercontroller.getUserHistory);
+router.get('/enrollment/:courseId', authmiddleware.authUser, usercontroller.getEnrollment);
 
 
 module.exports = router;
