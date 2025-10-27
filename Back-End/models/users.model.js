@@ -56,7 +56,11 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 1000
     },
-
+    status: {
+        type: String,
+        enum: ['active', 'blocked'],
+        default: 'active'
+    },
     socketId: {
         type: String,
         default: null

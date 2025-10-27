@@ -78,7 +78,6 @@ exports.createCourse = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 }
-
 exports.updateCourse = async (req, res) => {
     try {
         const advisor = req.user;
@@ -214,9 +213,6 @@ exports.getCourse = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 }
-
-
-//pending
 exports.getCourseByTitle = async (req, res) => {
     try {
         const { title } = req.query;
@@ -232,10 +228,6 @@ exports.getCourseByTitle = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 }
-
-
-// Removed rateCourse - using addReviewToCourse instead (unified model)
-// complete
 exports.enrollInCourse = async (req, res) => {
     try {
         const student = req.user; // Assuming the user is authenticated and their ID is available in req.user
@@ -253,7 +245,6 @@ exports.enrollInCourse = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
 exports.askQuestion = async (req, res) => {
     try {
         const student = req.user; // Assuming the user is authenticated and their ID is available in req.user
@@ -332,8 +323,6 @@ exports.answerQuestion = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
-// Get detailed course information for course details page (updated for unified model)
 exports.getCourseDetails = async (req, res) => {
     try {
         const { courseId } = req.params;
@@ -416,9 +405,6 @@ exports.getCourseDetails = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
-// Add review to course using unified model
-
 exports.addReviewToCourse = async (req, res) => {
     try {
         const student = req.user;
@@ -444,8 +430,6 @@ exports.addReviewToCourse = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
-// Get course reviews using unified model
 exports.getCourseReviews = async (req, res) => {
     try {
         const { courseId } = req.params;
@@ -464,8 +448,6 @@ exports.getCourseReviews = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
-// Get Q&A for a course
 exports.getCourseQA = async (req, res) => {
     try {
         const { courseId } = req.params;

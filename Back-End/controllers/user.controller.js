@@ -23,11 +23,19 @@ exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
-            return res.status(400).json({ message: "email and password are required" });
+            return res.status(400).json({ message: "Email and password are required" });
         }
 
         const user = await userservice.loginUser({ email, password });
         if (user) {
+            // Check if user is blocked
+            if (user.status === 'blocked') {
+                return res.status(403).json({
+                    success: false,
+                    message: "Your account has been blocked for some reason. Please contact support for more information."
+                });
+            }
+
             const token = user.generateAuthToken();
 
             // Set HttpOnly cookie

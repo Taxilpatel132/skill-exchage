@@ -20,6 +20,7 @@ import CreateCourse from './pages/CreateCourse'
 import EditCourse from './pages/EditCourse'
 import CourseDetails from './pages/CourseDetails'
 import MyEnrollments from './pages/MyEnrollments'
+import AdminDashboard from './pages/AdminDashboard'
 
 // Import other pages that might exist
 // import AdminDashboard from './pages/AdminDashboard'
@@ -75,8 +76,7 @@ function App() {
       <Route path="/edit-profile" element={<Navigate to="/profile/edit" replace />} />
 
       {/* Admin Routes (if AdminDashboard exists) */}
-      {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
-
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
       {/* 404 Not Found - Redirect to home */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

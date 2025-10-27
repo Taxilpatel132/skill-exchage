@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const userRoutes = require('./routes/user.route');
-const adminRoutes = require('./routes/admin.route');
 const courseRoutes = require('./routes/course.route');
+const adminRoutes = require('./routes/admin.routes');
 const searchRoutes = require('./routes/search.route');
 const notificationRoutes = require('./routes/notification.route');
 
@@ -23,8 +23,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/users', userRoutes);
-app.use('/api/admin', adminRoutes);
 app.use('/course', courseRoutes);
+app.use('/admin', adminRoutes);
 app.use('/search', searchRoutes);
 app.use('/notifications', notificationRoutes);
 
