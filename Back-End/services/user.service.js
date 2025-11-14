@@ -30,7 +30,7 @@ exports.loginUser = async (userData) => {
     if (!email || !password) {
         throw new Error("email and password are require");
     }
-    const user = await usermodel.findOne({ email: email });
+    const user = await usermodel.findOne({ email: email }).select('+password');
     if (!user) {
         throw new Error("User not found");
     }

@@ -1,15 +1,27 @@
 let dotenv = require('dotenv');
-dotenv.config('./.env');
+dotenv.config();
+console.log('✅ Environment variables loaded');
+
 let http = require('http');
+console.log('✅ HTTP module loaded');
+
 let app = require('./app');
+console.log('✅ App module loaded');
+
 const connectDB = require('./database/db');
+console.log('✅ Database module loaded');
+
 const { Server } = require('socket.io');
+console.log('✅ Socket.io loaded');
+
 const jwt = require('jsonwebtoken');
 const User = require('./models/users.model');
+console.log('✅ All modules loaded successfully');
+
+console.log('🚀 Starting server...');
 
 let port = process.env.PORT || 3000;
 let server = http.createServer(app);
-
 // Initialize Socket.io
 const io = new Server(server, {
     cors: {
@@ -77,8 +89,18 @@ io.on('connection', (socket) => {
 // Make io available globally
 app.set('io', io);
 
-connectDB();
-server.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-    console.log(`Socket.io server is running`);
-});
+// Start server after database connection
+const startServer = async () => {
+    try {
+        await connectDB();
+        server.listen(port, () => {
+            console.log(`✅ Server is running on port ${port}`);
+            console.log(`✅ Socket.io server is running`);
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error.message);
+        process.exit(1);
+    }
+};
+
+startServer();

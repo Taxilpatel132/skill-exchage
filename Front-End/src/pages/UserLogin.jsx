@@ -24,6 +24,7 @@ const UserLogin = () => {
         setIsLoading(true);
 
         try {
+            console.log(formData)
             const response = await fetch('http://localhost:3000/users/login', {
                 method: 'POST',
                 headers: {
@@ -111,9 +112,9 @@ const UserLogin = () => {
                                     </div>
                                     <input
                                         type="text"
-                                        id="username"
+                                        id="email"
                                         name="email"
-                                        value={formData.username}
+                                        value={formData.email}
                                         onChange={handleInputChange}
                                         required
                                         className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:bg-white transition-all duration-300 placeholder-gray-400 text-sm"
