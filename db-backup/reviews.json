@@ -1,0 +1,12 @@
+[
+  {
+    "_id": "68d9fcd0de02ca4ea1edbd83",
+    "courseId": "68d99affdd3e44b9ea8f1bb7",
+    "userId": "68d99256ec9950d81aa6483d",
+    "rating": 4,
+    "review": "this is good",
+    "createdAt": "2025-09-29T03:28:16.801Z",
+    "updatedAt": "2025-09-29T03:28:16.801Z",
+    "__v": 0
+  }
+]

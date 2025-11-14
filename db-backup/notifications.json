@@ -1,0 +1,13 @@
+[
+  {
+    "_id": "68d9abf9de02ca4ea1edbb86",
+    "receiver": "68d99230ec9950d81aa64833",
+    "sender": "68d99256ec9950d81aa6483d",
+    "type": "new_course",
+    "course": "68d9abf9de02ca4ea1edbb80",
+    "message": "published a new course: c1",
+    "isRead": true,
+    "createdAt": "2025-09-28T21:43:21.967Z",
+    "__v": 0
+  }
+]

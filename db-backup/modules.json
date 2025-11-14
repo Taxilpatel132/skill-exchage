@@ -1,0 +1,1049 @@
+[
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b72",
+    "courseId": "68d99a1edd3e44b9ea8f1b70",
+    "title": "Introduction to Web Development",
+    "description": "Learn the fundamentals of web development, set up your development environment, and understand how the web works.",
+    "duration": "3 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/module1-intro.mp4",
+    "resources": [
+      {
+        "title": "Development Environment Setup Guide",
+        "url": "https://cloudinary.com/pdf/setup-guide.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b73"
+      },
+      {
+        "title": "HTML & CSS Refresher",
+        "url": "https://cloudinary.com/video/html-css-refresher.mp4",
+        "type": "video",
+        "_id": "68d99a1edd3e44b9ea8f1b74"
+      },
+      {
+        "title": "Web Development Roadmap",
+        "url": "https://roadmap.sh/frontend",
+        "type": "link",
+        "_id": "68d99a1edd3e44b9ea8f1b75"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:27:10.086Z",
+    "updatedAt": "2025-09-28T20:27:10.089Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b77",
+    "courseId": "68d99a1edd3e44b9ea8f1b70",
+    "title": "JavaScript Fundamentals",
+    "description": "Master JavaScript ES6+ features, async programming, and modern JavaScript concepts essential for full-stack development.",
+    "duration": "5 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/module2-javascript.mp4",
+    "resources": [
+      {
+        "title": "JavaScript ES6+ Cheat Sheet",
+        "url": "https://cloudinary.com/pdf/js-es6-cheatsheet.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b78"
+      },
+      {
+        "title": "Async/Await Practice Exercises",
+        "url": "https://cloudinary.com/quiz/async-quiz.html",
+        "type": "quiz",
+        "_id": "68d99a1edd3e44b9ea8f1b79"
+      },
+      {
+        "title": "MDN JavaScript Guide",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
+        "type": "link",
+        "_id": "68d99a1edd3e44b9ea8f1b7a"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:27:10.134Z",
+    "updatedAt": "2025-09-28T20:27:10.137Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b7c",
+    "courseId": "68d99a1edd3e44b9ea8f1b70",
+    "title": "React Fundamentals",
+    "description": "Build dynamic user interfaces with React. Learn components, state, props, and the React ecosystem.",
+    "duration": "8 hours",
+    "order": 3,
+    "videoUrl": "https://cloudinary.com/video/module3-react-basics.mp4",
+    "resources": [
+      {
+        "title": "React Component Patterns",
+        "url": "https://cloudinary.com/pdf/react-patterns.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b7d"
+      },
+      {
+        "title": "Building Your First React App",
+        "url": "https://cloudinary.com/video/first-react-app.mp4",
+        "type": "video",
+        "_id": "68d99a1edd3e44b9ea8f1b7e"
+      },
+      {
+        "title": "React Hooks Quiz",
+        "url": "https://cloudinary.com/quiz/react-hooks-quiz.html",
+        "type": "quiz",
+        "_id": "68d99a1edd3e44b9ea8f1b7f"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:27:10.186Z",
+    "updatedAt": "2025-09-28T20:27:10.188Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b81",
+    "courseId": "68d99a1edd3e44b9ea8f1b70",
+    "title": "Advanced React & State Management",
+    "description": "Master React hooks, context API, and state management patterns for complex applications.",
+    "duration": "6 hours",
+    "order": 4,
+    "videoUrl": "https://cloudinary.com/video/module4-advanced-react.mp4",
+    "resources": [
+      {
+        "title": "Context API vs Redux Guide",
+        "url": "https://cloudinary.com/pdf/state-management-guide.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b82"
+      },
+      {
+        "title": "Custom Hooks Examples",
+        "url": "https://cloudinary.com/video/custom-hooks.mp4",
+        "type": "video",
+        "_id": "68d99a1edd3e44b9ea8f1b83"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:27:10.239Z",
+    "updatedAt": "2025-09-28T20:27:10.240Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b85",
+    "courseId": "68d99a1edd3e44b9ea8f1b70",
+    "title": "Node.js & Express Backend",
+    "description": "Build robust backend APIs with Node.js and Express. Learn middleware, routing, and server-side development.",
+    "duration": "7 hours",
+    "order": 5,
+    "videoUrl": "https://cloudinary.com/video/module5-nodejs.mp4",
+    "resources": [
+      {
+        "title": "Express.js Best Practices",
+        "url": "https://cloudinary.com/pdf/express-best-practices.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b86"
+      },
+      {
+        "title": "REST API Design Principles",
+        "url": "https://cloudinary.com/video/rest-api-design.mp4",
+        "type": "video",
+        "_id": "68d99a1edd3e44b9ea8f1b87"
+      },
+      {
+        "title": "Node.js Documentation",
+        "url": "https://nodejs.org/en/docs/",
+        "type": "link",
+        "_id": "68d99a1edd3e44b9ea8f1b88"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:27:10.299Z",
+    "updatedAt": "2025-09-28T20:27:10.301Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b8a",
+    "courseId": "68d99a1edd3e44b9ea8f1b70",
+    "title": "Database Design with MongoDB",
+    "description": "Learn NoSQL database concepts, MongoDB operations, and data modeling for web applications.",
+    "duration": "5 hours",
+    "order": 6,
+    "videoUrl": "https://cloudinary.com/video/module6-mongodb.mp4",
+    "resources": [
+      {
+        "title": "MongoDB Schema Design Patterns",
+        "url": "https://cloudinary.com/pdf/mongodb-patterns.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b8b"
+      },
+      {
+        "title": "Mongoose ODM Tutorial",
+        "url": "https://cloudinary.com/video/mongoose-tutorial.mp4",
+        "type": "video",
+        "_id": "68d99a1edd3e44b9ea8f1b8c"
+      },
+      {
+        "title": "Database Design Quiz",
+        "url": "https://cloudinary.com/quiz/db-design-quiz.html",
+        "type": "quiz",
+        "_id": "68d99a1edd3e44b9ea8f1b8d"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:27:10.368Z",
+    "updatedAt": "2025-09-28T20:27:10.369Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b8f",
+    "courseId": "68d99a1edd3e44b9ea8f1b70",
+    "title": "Authentication & Security",
+    "description": "Implement secure user authentication, authorization, and security best practices in your applications.",
+    "duration": "4 hours",
+    "order": 7,
+    "videoUrl": "https://cloudinary.com/video/module7-auth.mp4",
+    "resources": [
+      {
+        "title": "JWT Authentication Guide",
+        "url": "https://cloudinary.com/pdf/jwt-guide.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b90"
+      },
+      {
+        "title": "Security Checklist",
+        "url": "https://cloudinary.com/pdf/security-checklist.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b91"
+      },
+      {
+        "title": "OWASP Security Practices",
+        "url": "https://owasp.org/www-project-top-ten/",
+        "type": "link",
+        "_id": "68d99a1edd3e44b9ea8f1b92"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:27:10.425Z",
+    "updatedAt": "2025-09-28T20:27:10.426Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b94",
+    "courseId": "68d99a1edd3e44b9ea8f1b70",
+    "title": "Testing & Deployment",
+    "description": "Learn testing strategies, CI/CD pipelines, and deploy your applications to production environments.",
+    "duration": "6 hours",
+    "order": 8,
+    "videoUrl": "https://cloudinary.com/video/module8-deployment.mp4",
+    "resources": [
+      {
+        "title": "Testing Best Practices",
+        "url": "https://cloudinary.com/pdf/testing-guide.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b95"
+      },
+      {
+        "title": "Deployment to Heroku Tutorial",
+        "url": "https://cloudinary.com/video/heroku-deployment.mp4",
+        "type": "video",
+        "_id": "68d99a1edd3e44b9ea8f1b96"
+      },
+      {
+        "title": "DevOps Fundamentals Quiz",
+        "url": "https://cloudinary.com/quiz/devops-quiz.html",
+        "type": "quiz",
+        "_id": "68d99a1edd3e44b9ea8f1b97"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:27:10.484Z",
+    "updatedAt": "2025-09-28T20:27:10.486Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b99",
+    "courseId": "68d99a1edd3e44b9ea8f1b70",
+    "title": "Final Project & Portfolio",
+    "description": "Build a complete full-stack application from scratch and create your developer portfolio.",
+    "duration": "10 hours",
+    "order": 9,
+    "videoUrl": "https://cloudinary.com/video/module9-project.mp4",
+    "resources": [
+      {
+        "title": "Project Requirements Document",
+        "url": "https://cloudinary.com/pdf/project-requirements.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b9a"
+      },
+      {
+        "title": "Portfolio Building Guide",
+        "url": "https://cloudinary.com/pdf/portfolio-guide.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b9b"
+      },
+      {
+        "title": "Code Review Checklist",
+        "url": "https://cloudinary.com/pdf/code-review-checklist.pdf",
+        "type": "pdf",
+        "_id": "68d99a1edd3e44b9ea8f1b9c"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:27:10.534Z",
+    "updatedAt": "2025-09-28T20:27:10.536Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99af6dd3e44b9ea8f1ba9",
+    "courseId": "68d99af6dd3e44b9ea8f1ba7",
+    "title": "Design Thinking Process",
+    "description": "Introduction to design thinking methodology and user-centered design approach",
+    "duration": "2.5 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/design-thinking.mp4",
+    "resources": [
+      {
+        "title": "Design Thinking Toolkit",
+        "url": "https://cloudinary.com/pdf/design-thinking-toolkit.pdf",
+        "type": "pdf",
+        "_id": "68d99af6dd3e44b9ea8f1baa"
+      },
+      {
+        "title": "Empathy Mapping Template",
+        "url": "https://cloudinary.com/pdf/empathy-mapping.pdf",
+        "type": "pdf",
+        "_id": "68d99af6dd3e44b9ea8f1bab"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:30:46.314Z",
+    "updatedAt": "2025-09-28T20:30:46.315Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99af6dd3e44b9ea8f1bad",
+    "courseId": "68d99af6dd3e44b9ea8f1ba7",
+    "title": "User Research Methods",
+    "description": "Learn various user research techniques and how to conduct effective interviews",
+    "duration": "3.5 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/user-research.mp4",
+    "resources": [
+      {
+        "title": "User Interview Template",
+        "url": "https://cloudinary.com/pdf/interview-template.pdf",
+        "type": "pdf",
+        "_id": "68d99af6dd3e44b9ea8f1bae"
+      },
+      {
+        "title": "Research Planning Guide",
+        "url": "https://cloudinary.com/pdf/research-planning.pdf",
+        "type": "pdf",
+        "_id": "68d99af6dd3e44b9ea8f1baf"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:30:46.366Z",
+    "updatedAt": "2025-09-28T20:30:46.366Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99affdd3e44b9ea8f1bb9",
+    "courseId": "68d99affdd3e44b9ea8f1bb7",
+    "title": "Python Fundamentals",
+    "description": "Review Python basics and learn data science specific libraries",
+    "duration": "4 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/python-fundamentals.mp4",
+    "resources": [
+      {
+        "title": "Python Cheat Sheet",
+        "url": "https://cloudinary.com/pdf/python-cheatsheet.pdf",
+        "type": "pdf",
+        "_id": "68d99affdd3e44b9ea8f1bba"
+      },
+      {
+        "title": "Data Types and Structures",
+        "url": "https://cloudinary.com/video/python-data-types.mp4",
+        "type": "video",
+        "_id": "68d99affdd3e44b9ea8f1bbb"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:30:55.206Z",
+    "updatedAt": "2025-09-28T20:30:55.207Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99affdd3e44b9ea8f1bbd",
+    "courseId": "68d99affdd3e44b9ea8f1bb7",
+    "title": "Data Manipulation with Pandas",
+    "description": "Learn to work with data using pandas library for data analysis",
+    "duration": "5 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/pandas-tutorial.mp4",
+    "resources": [
+      {
+        "title": "Pandas Documentation",
+        "url": "https://pandas.pydata.org/docs/",
+        "type": "link",
+        "_id": "68d99affdd3e44b9ea8f1bbe"
+      },
+      {
+        "title": "Data Cleaning Techniques",
+        "url": "https://cloudinary.com/pdf/data-cleaning.pdf",
+        "type": "pdf",
+        "_id": "68d99affdd3e44b9ea8f1bbf"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:30:55.268Z",
+    "updatedAt": "2025-09-28T20:30:55.268Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99b09dd3e44b9ea8f1bc9",
+    "courseId": "68d99b09dd3e44b9ea8f1bc7",
+    "title": "Digital Marketing Fundamentals",
+    "description": "Introduction to digital marketing landscape and key concepts",
+    "duration": "2 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/digital-marketing-intro.mp4",
+    "resources": [
+      {
+        "title": "Digital Marketing Glossary",
+        "url": "https://cloudinary.com/pdf/marketing-glossary.pdf",
+        "type": "pdf",
+        "_id": "68d99b09dd3e44b9ea8f1bca"
+      },
+      {
+        "title": "Marketing Funnel Template",
+        "url": "https://cloudinary.com/pdf/marketing-funnel.pdf",
+        "type": "pdf",
+        "_id": "68d99b09dd3e44b9ea8f1bcb"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:31:05.291Z",
+    "updatedAt": "2025-09-28T20:31:05.292Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99b09dd3e44b9ea8f1bcd",
+    "courseId": "68d99b09dd3e44b9ea8f1bc7",
+    "title": "SEO and Content Marketing",
+    "description": "Learn search engine optimization and content creation strategies",
+    "duration": "4 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/seo-content.mp4",
+    "resources": [
+      {
+        "title": "SEO Checklist",
+        "url": "https://cloudinary.com/pdf/seo-checklist.pdf",
+        "type": "pdf",
+        "_id": "68d99b09dd3e44b9ea8f1bce"
+      },
+      {
+        "title": "Content Calendar Template",
+        "url": "https://cloudinary.com/pdf/content-calendar.pdf",
+        "type": "pdf",
+        "_id": "68d99b09dd3e44b9ea8f1bcf"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:31:05.365Z",
+    "updatedAt": "2025-09-28T20:31:05.365Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99b11dd3e44b9ea8f1bd9",
+    "courseId": "68d99b11dd3e44b9ea8f1bd7",
+    "title": "React Native Fundamentals",
+    "description": "Introduction to React Native, setup, and basic components",
+    "duration": "3 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/react-native-intro.mp4",
+    "resources": [
+      {
+        "title": "React Native Setup Guide",
+        "url": "https://cloudinary.com/pdf/rn-setup-guide.pdf",
+        "type": "pdf",
+        "_id": "68d99b11dd3e44b9ea8f1bda"
+      },
+      {
+        "title": "Component Library Reference",
+        "url": "https://cloudinary.com/pdf/rn-components.pdf",
+        "type": "pdf",
+        "_id": "68d99b11dd3e44b9ea8f1bdb"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:31:13.866Z",
+    "updatedAt": "2025-09-28T20:31:13.866Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99b11dd3e44b9ea8f1bdd",
+    "courseId": "68d99b11dd3e44b9ea8f1bd7",
+    "title": "Navigation and State Management",
+    "description": "Learn navigation patterns and state management in React Native apps",
+    "duration": "4 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/rn-navigation.mp4",
+    "resources": [
+      {
+        "title": "Navigation Patterns Guide",
+        "url": "https://cloudinary.com/pdf/navigation-patterns.pdf",
+        "type": "pdf",
+        "_id": "68d99b11dd3e44b9ea8f1bde"
+      },
+      {
+        "title": "Redux Toolkit Tutorial",
+        "url": "https://cloudinary.com/video/redux-toolkit.mp4",
+        "type": "video",
+        "_id": "68d99b11dd3e44b9ea8f1bdf"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:31:13.918Z",
+    "updatedAt": "2025-09-28T20:31:13.920Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99bc7dd3e44b9ea8f1c7e",
+    "courseId": "68d99bc7dd3e44b9ea8f1c7c",
+    "title": "Introduction to Machine Learning",
+    "description": "Learn the fundamentals of machine learning, types of learning, and the ML workflow",
+    "duration": "4 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/ml-intro.mp4",
+    "resources": [
+      {
+        "title": "ML Algorithms Cheat Sheet",
+        "url": "https://cloudinary.com/pdf/ml-algorithms.pdf",
+        "type": "pdf",
+        "_id": "68d99bc7dd3e44b9ea8f1c7f"
+      },
+      {
+        "title": "Python for ML Setup",
+        "url": "https://cloudinary.com/video/python-ml-setup.mp4",
+        "type": "video",
+        "_id": "68d99bc7dd3e44b9ea8f1c80"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:34:15.744Z",
+    "updatedAt": "2025-09-28T20:34:15.745Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99bc7dd3e44b9ea8f1c82",
+    "courseId": "68d99bc7dd3e44b9ea8f1c7c",
+    "title": "Supervised Learning Algorithms",
+    "description": "Master regression, classification, and ensemble methods",
+    "duration": "6 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/supervised-learning.mp4",
+    "resources": [
+      {
+        "title": "Regression Analysis Guide",
+        "url": "https://cloudinary.com/pdf/regression-guide.pdf",
+        "type": "pdf",
+        "_id": "68d99bc7dd3e44b9ea8f1c83"
+      },
+      {
+        "title": "Classification Metrics",
+        "url": "https://cloudinary.com/pdf/classification-metrics.pdf",
+        "type": "pdf",
+        "_id": "68d99bc7dd3e44b9ea8f1c84"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:34:15.815Z",
+    "updatedAt": "2025-09-28T20:34:15.816Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99be7dd3e44b9ea8f1c92",
+    "courseId": "68d99be7dd3e44b9ea8f1c90",
+    "title": "Blockchain Fundamentals",
+    "description": "Learn the basics of blockchain technology, cryptocurrencies, and distributed systems",
+    "duration": "4 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/blockchain-fundamentals.mp4",
+    "resources": [
+      {
+        "title": "Blockchain Whitepaper Collection",
+        "url": "https://cloudinary.com/pdf/blockchain-whitepapers.pdf",
+        "type": "pdf",
+        "_id": "68d99be7dd3e44b9ea8f1c93"
+      },
+      {
+        "title": "Cryptocurrency Glossary",
+        "url": "https://cloudinary.com/pdf/crypto-glossary.pdf",
+        "type": "pdf",
+        "_id": "68d99be7dd3e44b9ea8f1c94"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:34:47.939Z",
+    "updatedAt": "2025-09-28T20:34:47.939Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99be7dd3e44b9ea8f1c96",
+    "courseId": "68d99be7dd3e44b9ea8f1c90",
+    "title": "Smart Contract Development",
+    "description": "Master Solidity programming and smart contract development",
+    "duration": "6 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/smart-contracts.mp4",
+    "resources": [
+      {
+        "title": "Solidity Programming Guide",
+        "url": "https://cloudinary.com/pdf/solidity-guide.pdf",
+        "type": "pdf",
+        "_id": "68d99be7dd3e44b9ea8f1c97"
+      },
+      {
+        "title": "Smart Contract Security Best Practices",
+        "url": "https://cloudinary.com/pdf/contract-security.pdf",
+        "type": "pdf",
+        "_id": "68d99be7dd3e44b9ea8f1c98"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:34:47.995Z",
+    "updatedAt": "2025-09-28T20:34:47.995Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99c18dd3e44b9ea8f1ca2",
+    "courseId": "68d99c18dd3e44b9ea8f1ca0",
+    "title": "Introduction to Cybersecurity",
+    "description": "Learn the fundamentals of cybersecurity, threat landscape, and security principles",
+    "duration": "3 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/cybersecurity-intro.mp4",
+    "resources": [
+      {
+        "title": "Security Framework Guide",
+        "url": "https://cloudinary.com/pdf/security-framework.pdf",
+        "type": "pdf",
+        "_id": "68d99c18dd3e44b9ea8f1ca3"
+      },
+      {
+        "title": "Threat Intelligence Sources",
+        "url": "https://cloudinary.com/pdf/threat-intelligence.pdf",
+        "type": "pdf",
+        "_id": "68d99c18dd3e44b9ea8f1ca4"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:35:36.569Z",
+    "updatedAt": "2025-09-28T20:35:36.570Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99c18dd3e44b9ea8f1ca6",
+    "courseId": "68d99c18dd3e44b9ea8f1ca0",
+    "title": "Network Security Fundamentals",
+    "description": "Understand network protocols, firewalls, and network security measures",
+    "duration": "4 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/network-security.mp4",
+    "resources": [
+      {
+        "title": "Network Security Checklist",
+        "url": "https://cloudinary.com/pdf/network-security-checklist.pdf",
+        "type": "pdf",
+        "_id": "68d99c18dd3e44b9ea8f1ca7"
+      },
+      {
+        "title": "Firewall Configuration Guide",
+        "url": "https://cloudinary.com/pdf/firewall-config.pdf",
+        "type": "pdf",
+        "_id": "68d99c18dd3e44b9ea8f1ca8"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:35:36.625Z",
+    "updatedAt": "2025-09-28T20:35:36.626Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99c3edd3e44b9ea8f1cb8",
+    "courseId": "68d99c3edd3e44b9ea8f1cb6",
+    "title": "AWS Fundamentals",
+    "description": "Introduction to AWS services, account setup, and basic cloud concepts",
+    "duration": "3 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/aws-fundamentals.mp4",
+    "resources": [
+      {
+        "title": "AWS Services Overview",
+        "url": "https://cloudinary.com/pdf/aws-services.pdf",
+        "type": "pdf",
+        "_id": "68d99c3edd3e44b9ea8f1cb9"
+      },
+      {
+        "title": "AWS Account Setup Guide",
+        "url": "https://cloudinary.com/pdf/aws-setup.pdf",
+        "type": "pdf",
+        "_id": "68d99c3edd3e44b9ea8f1cba"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:36:14.746Z",
+    "updatedAt": "2025-09-28T20:36:14.747Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99c3edd3e44b9ea8f1cbc",
+    "courseId": "68d99c3edd3e44b9ea8f1cb6",
+    "title": "EC2 and Virtual Machines",
+    "description": "Learn to create and manage virtual machines on AWS EC2",
+    "duration": "4 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/aws-ec2.mp4",
+    "resources": [
+      {
+        "title": "EC2 Instance Types Guide",
+        "url": "https://cloudinary.com/pdf/ec2-instances.pdf",
+        "type": "pdf",
+        "_id": "68d99c3edd3e44b9ea8f1cbd"
+      },
+      {
+        "title": "Security Groups Best Practices",
+        "url": "https://cloudinary.com/pdf/security-groups.pdf",
+        "type": "pdf",
+        "_id": "68d99c3edd3e44b9ea8f1cbe"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:36:14.805Z",
+    "updatedAt": "2025-09-28T20:36:14.807Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99c5cdd3e44b9ea8f1cc8",
+    "courseId": "68d99c5cdd3e44b9ea8f1cc6",
+    "title": "Unity Basics and Interface",
+    "description": "Introduction to Unity engine, interface, and basic game development concepts",
+    "duration": "3 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/unity-basics.mp4",
+    "resources": [
+      {
+        "title": "Unity Interface Guide",
+        "url": "https://cloudinary.com/pdf/unity-interface.pdf",
+        "type": "pdf",
+        "_id": "68d99c5cdd3e44b9ea8f1cc9"
+      },
+      {
+        "title": "Game Development Workflow",
+        "url": "https://cloudinary.com/pdf/game-workflow.pdf",
+        "type": "pdf",
+        "_id": "68d99c5cdd3e44b9ea8f1cca"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:36:44.151Z",
+    "updatedAt": "2025-09-28T20:36:44.152Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99c5cdd3e44b9ea8f1ccc",
+    "courseId": "68d99c5cdd3e44b9ea8f1cc6",
+    "title": "C# Programming for Games",
+    "description": "Learn C# programming fundamentals and game-specific programming patterns",
+    "duration": "5 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/csharp-games.mp4",
+    "resources": [
+      {
+        "title": "C# Game Programming Patterns",
+        "url": "https://cloudinary.com/pdf/csharp-patterns.pdf",
+        "type": "pdf",
+        "_id": "68d99c5cdd3e44b9ea8f1ccd"
+      },
+      {
+        "title": "Unity Scripting API Reference",
+        "url": "https://cloudinary.com/pdf/unity-api.pdf",
+        "type": "pdf",
+        "_id": "68d99c5cdd3e44b9ea8f1cce"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:36:44.223Z",
+    "updatedAt": "2025-09-28T20:36:44.224Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99d48dd3e44b9ea8f1d05",
+    "courseId": "68d99d48dd3e44b9ea8f1d03",
+    "title": "Introduction to DevOps",
+    "description": "Learn DevOps culture, principles, and the DevOps lifecycle",
+    "duration": "3 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/devops-intro.mp4",
+    "resources": [
+      {
+        "title": "DevOps Culture Guide",
+        "url": "https://cloudinary.com/pdf/devops-culture.pdf",
+        "type": "pdf",
+        "_id": "68d99d48dd3e44b9ea8f1d06"
+      },
+      {
+        "title": "DevOps Tools Landscape",
+        "url": "https://cloudinary.com/pdf/devops-tools.pdf",
+        "type": "pdf",
+        "_id": "68d99d48dd3e44b9ea8f1d07"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:40:40.945Z",
+    "updatedAt": "2025-09-28T20:40:40.946Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99d49dd3e44b9ea8f1d09",
+    "courseId": "68d99d48dd3e44b9ea8f1d03",
+    "title": "Containerization with Docker",
+    "description": "Master Docker containers, images, and container orchestration",
+    "duration": "5 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/docker-fundamentals.mp4",
+    "resources": [
+      {
+        "title": "Docker Best Practices",
+        "url": "https://cloudinary.com/pdf/docker-best-practices.pdf",
+        "type": "pdf",
+        "_id": "68d99d49dd3e44b9ea8f1d0a"
+      },
+      {
+        "title": "Docker Compose Examples",
+        "url": "https://cloudinary.com/pdf/docker-compose.pdf",
+        "type": "pdf",
+        "_id": "68d99d49dd3e44b9ea8f1d0b"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:40:41.027Z",
+    "updatedAt": "2025-09-28T20:40:41.028Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99d5fdd3e44b9ea8f1d16",
+    "courseId": "68d99d5fdd3e44b9ea8f1d14",
+    "title": "Introduction to Deep Learning",
+    "description": "Learn neural networks, backpropagation, and deep learning fundamentals",
+    "duration": "5 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/deep-learning-intro.mp4",
+    "resources": [
+      {
+        "title": "Neural Networks Mathematics",
+        "url": "https://cloudinary.com/pdf/neural-networks-math.pdf",
+        "type": "pdf",
+        "_id": "68d99d5fdd3e44b9ea8f1d17"
+      },
+      {
+        "title": "Deep Learning Frameworks Comparison",
+        "url": "https://cloudinary.com/pdf/dl-frameworks.pdf",
+        "type": "pdf",
+        "_id": "68d99d5fdd3e44b9ea8f1d18"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:41:03.127Z",
+    "updatedAt": "2025-09-28T20:41:03.128Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99d5fdd3e44b9ea8f1d1a",
+    "courseId": "68d99d5fdd3e44b9ea8f1d14",
+    "title": "Computer Vision with CNNs",
+    "description": "Master convolutional neural networks for image recognition and computer vision",
+    "duration": "6 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/computer-vision.mp4",
+    "resources": [
+      {
+        "title": "CNN Architecture Guide",
+        "url": "https://cloudinary.com/pdf/cnn-architectures.pdf",
+        "type": "pdf",
+        "_id": "68d99d5fdd3e44b9ea8f1d1b"
+      },
+      {
+        "title": "Image Processing Techniques",
+        "url": "https://cloudinary.com/pdf/image-processing.pdf",
+        "type": "pdf",
+        "_id": "68d99d5fdd3e44b9ea8f1d1c"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:41:03.184Z",
+    "updatedAt": "2025-09-28T20:41:03.185Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99d89dd3e44b9ea8f1d29",
+    "courseId": "68d99d89dd3e44b9ea8f1d27",
+    "title": "Camera Fundamentals",
+    "description": "Learn camera settings, exposure triangle, and basic photography concepts",
+    "duration": "3 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/camera-fundamentals.mp4",
+    "resources": [
+      {
+        "title": "Camera Settings Cheat Sheet",
+        "url": "https://cloudinary.com/pdf/camera-settings.pdf",
+        "type": "pdf",
+        "_id": "68d99d89dd3e44b9ea8f1d2a"
+      },
+      {
+        "title": "Exposure Triangle Guide",
+        "url": "https://cloudinary.com/pdf/exposure-triangle.pdf",
+        "type": "pdf",
+        "_id": "68d99d89dd3e44b9ea8f1d2b"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:41:45.315Z",
+    "updatedAt": "2025-09-28T20:41:45.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99d89dd3e44b9ea8f1d2d",
+    "courseId": "68d99d89dd3e44b9ea8f1d27",
+    "title": "Composition and Lighting",
+    "description": "Master composition rules, lighting techniques, and creative photography",
+    "duration": "4 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/composition-lighting.mp4",
+    "resources": [
+      {
+        "title": "Composition Rules Guide",
+        "url": "https://cloudinary.com/pdf/composition-rules.pdf",
+        "type": "pdf",
+        "_id": "68d99d89dd3e44b9ea8f1d2e"
+      },
+      {
+        "title": "Lighting Techniques",
+        "url": "https://cloudinary.com/pdf/lighting-techniques.pdf",
+        "type": "pdf",
+        "_id": "68d99d89dd3e44b9ea8f1d2f"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:41:45.389Z",
+    "updatedAt": "2025-09-28T20:41:45.389Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99d9bdd3e44b9ea8f1d39",
+    "courseId": "68d99d9bdd3e44b9ea8f1d37",
+    "title": "Financial Statement Analysis",
+    "description": "Learn to read and analyze balance sheets, income statements, and cash flow statements",
+    "duration": "4 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/financial-statements.mp4",
+    "resources": [
+      {
+        "title": "Financial Ratios Guide",
+        "url": "https://cloudinary.com/pdf/financial-ratios.pdf",
+        "type": "pdf",
+        "_id": "68d99d9bdd3e44b9ea8f1d3a"
+      },
+      {
+        "title": "Statement Analysis Template",
+        "url": "https://cloudinary.com/pdf/analysis-template.pdf",
+        "type": "pdf",
+        "_id": "68d99d9bdd3e44b9ea8f1d3b"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:42:03.727Z",
+    "updatedAt": "2025-09-28T20:42:03.728Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99d9bdd3e44b9ea8f1d3d",
+    "courseId": "68d99d9bdd3e44b9ea8f1d37",
+    "title": "Investment Valuation Methods",
+    "description": "Master DCF, comparable company analysis, and other valuation techniques",
+    "duration": "5 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/valuation-methods.mp4",
+    "resources": [
+      {
+        "title": "DCF Model Template",
+        "url": "https://cloudinary.com/pdf/dcf-template.pdf",
+        "type": "pdf",
+        "_id": "68d99d9bdd3e44b9ea8f1d3e"
+      },
+      {
+        "title": "Valuation Multiples Guide",
+        "url": "https://cloudinary.com/pdf/valuation-multiples.pdf",
+        "type": "pdf",
+        "_id": "68d99d9bdd3e44b9ea8f1d3f"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:42:03.785Z",
+    "updatedAt": "2025-09-28T20:42:03.786Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99da5dd3e44b9ea8f1d49",
+    "courseId": "68d99da5dd3e44b9ea8f1d47",
+    "title": "Content Strategy and Planning",
+    "description": "Learn to develop content strategies, plan content calendars, and identify target audiences",
+    "duration": "2.5 hours",
+    "order": 1,
+    "videoUrl": "https://cloudinary.com/video/content-strategy.mp4",
+    "resources": [
+      {
+        "title": "Content Calendar Template",
+        "url": "https://cloudinary.com/pdf/content-calendar.pdf",
+        "type": "pdf",
+        "_id": "68d99da5dd3e44b9ea8f1d4a"
+      },
+      {
+        "title": "Audience Research Guide",
+        "url": "https://cloudinary.com/pdf/audience-research.pdf",
+        "type": "pdf",
+        "_id": "68d99da5dd3e44b9ea8f1d4b"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:42:13.940Z",
+    "updatedAt": "2025-09-28T20:42:13.940Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d99da5dd3e44b9ea8f1d4d",
+    "courseId": "68d99da5dd3e44b9ea8f1d47",
+    "title": "Video Content Creation",
+    "description": "Master video production, editing, and optimization for social media platforms",
+    "duration": "3.5 hours",
+    "order": 2,
+    "videoUrl": "https://cloudinary.com/video/video-creation.mp4",
+    "resources": [
+      {
+        "title": "Video Editing Workflow",
+        "url": "https://cloudinary.com/pdf/video-workflow.pdf",
+        "type": "pdf",
+        "_id": "68d99da5dd3e44b9ea8f1d4e"
+      },
+      {
+        "title": "Platform-Specific Guidelines",
+        "url": "https://cloudinary.com/pdf/platform-guidelines.pdf",
+        "type": "pdf",
+        "_id": "68d99da5dd3e44b9ea8f1d4f"
+      }
+    ],
+    "isActive": true,
+    "createdAt": "2025-09-28T20:42:13.996Z",
+    "updatedAt": "2025-09-28T20:42:13.996Z",
+    "__v": 0
+  }
+]

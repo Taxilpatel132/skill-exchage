@@ -1,0 +1,133 @@
+[
+  {
+    "_id": "68d99230ec9950d81aa64833",
+    "fullname": {
+      "firstname": "test1",
+      "lastname": "patel"
+    },
+    "email": "test1@test.com",
+    "phone": "1231231231",
+    "skills": [],
+    "points": 960,
+    "socketId": null,
+    "followers": [
+      "68d9ff22de02ca4ea1edbf23"
+    ],
+    "following": [
+      "68d99256ec9950d81aa6483d",
+      "68d99241ec9950d81aa64838"
+    ],
+    "bestSkill": "",
+    "notifications": [],
+    "createdAt": "2025-09-28T19:53:20.740Z",
+    "updatedAt": "2025-10-30T15:58:11.331Z",
+    "__v": 3,
+    "bio": "i am the web devaloper",
+    "profilePhoto": "https://imgs.search.brave.com/fH6mMCh28tOpv1fmVG86z7UhBLXmGKMAFBw1g7waI-U/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzAwLzVk/L2MxLzAwNWRjMWU5/NmNiZDRiOGU0NzU1/YzUwMGMzNDExOGJi/LmpwZw",
+    "status": "active"
+  },
+  {
+    "_id": "68d99241ec9950d81aa64838",
+    "fullname": {
+      "firstname": "test2",
+      "lastname": "xyz"
+    },
+    "email": "test2@test.com",
+    "phone": "1231231232",
+    "skills": [],
+    "points": 2500,
+    "socketId": null,
+    "followers": [
+      "68d99230ec9950d81aa64833"
+    ],
+    "following": [],
+    "bestSkill": "",
+    "notifications": [],
+    "createdAt": "2025-09-28T19:53:37.654Z",
+    "updatedAt": "2025-10-30T15:58:11.268Z",
+    "__v": 1,
+    "status": "active"
+  },
+  {
+    "_id": "68d99256ec9950d81aa6483d",
+    "fullname": {
+      "firstname": "test3",
+      "lastname": "paa"
+    },
+    "email": "test3@test.com",
+    "phone": "1111122222",
+    "skills": [],
+    "points": 790,
+    "socketId": null,
+    "followers": [
+      "68d99230ec9950d81aa64833"
+    ],
+    "following": [],
+    "bestSkill": "",
+    "notifications": [],
+    "createdAt": "2025-09-28T19:53:58.139Z",
+    "updatedAt": "2025-09-29T03:27:27.426Z",
+    "__v": 1,
+    "bio": "No bio provided",
+    "profilePhoto": "https://imgs.search.brave.com/YQgoGKtC84xePpU71ZR7UaoaQqW-b9x3WFsDFuwror8/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzL2RkLzA0/LzAxL2RkMDQwMTY2/ZTFlOGZiNTA4OTFl/Y2Y5MjI3MWExY2Yz/LmpwZw"
+  },
+  {
+    "_id": "68d9926eec9950d81aa64842",
+    "fullname": {
+      "firstname": "test4",
+      "lastname": "amin"
+    },
+    "email": "test4@test.com",
+    "phone": "1231231231",
+    "skills": [],
+    "points": 550,
+    "socketId": null,
+    "followers": [],
+    "following": [],
+    "bestSkill": "",
+    "notifications": [],
+    "createdAt": "2025-09-28T19:54:22.275Z",
+    "updatedAt": "2025-09-29T03:46:15.374Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d9928cec9950d81aa64847",
+    "fullname": {
+      "firstname": "taxil",
+      "lastname": "movaliya"
+    },
+    "email": "taxilmovaliya09@gmail.com",
+    "phone": "1234567890",
+    "skills": [],
+    "points": 1000,
+    "socketId": null,
+    "followers": [],
+    "following": [],
+    "bestSkill": "",
+    "notifications": [],
+    "createdAt": "2025-09-28T19:54:52.849Z",
+    "updatedAt": "2025-09-28T19:54:52.849Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d9ff22de02ca4ea1edbf23",
+    "fullname": {
+      "firstname": "Divyang",
+      "lastname": "Makwana"
+    },
+    "email": "divyangmakwana68@gmail.com",
+    "phone": "9726714878",
+    "skills": [],
+    "points": 200,
+    "socketId": null,
+    "followers": [],
+    "following": [
+      "68d99230ec9950d81aa64833"
+    ],
+    "bestSkill": "",
+    "notifications": [],
+    "createdAt": "2025-09-29T03:38:10.148Z",
+    "updatedAt": "2025-09-29T03:44:48.864Z",
+    "__v": 1
+  }
+]

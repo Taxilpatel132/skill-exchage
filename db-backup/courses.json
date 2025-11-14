@@ -1,0 +1,1077 @@
+[
+  {
+    "_id": "68d99a1edd3e44b9ea8f1b70",
+    "title": "Full-Stack Web Development Bootcamp",
+    "description": "Master modern web development with React, Node.js, and MongoDB",
+    "fullDescription": "Complete UI/UX design course covering user research, wireframing, prototyping, and visual design. Learn industry-standard tools like Figma and Adobe XD.",
+    "trailerVideo": "",
+    "learningObjectives": [],
+    "prerequisites": [],
+    "courseHighlights": [],
+    "tools": [],
+    "targetAudience": [],
+    "skills": [
+      "React",
+      "Node.js",
+      "REST APIs",
+      "MongoDB",
+      "Authentication",
+      "Deployment"
+    ],
+    "duration": "8 Weeks • ~60 hrs",
+    "priceInPoints": 450,
+    "thumbnail": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop",
+    "level": "Intermediate",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99a1edd3e44b9ea8f1b72",
+      "68d99a1edd3e44b9ea8f1b77",
+      "68d99a1edd3e44b9ea8f1b7c",
+      "68d99a1edd3e44b9ea8f1b81",
+      "68d99a1edd3e44b9ea8f1b85",
+      "68d99a1edd3e44b9ea8f1b8a",
+      "68d99a1edd3e44b9ea8f1b8f",
+      "68d99a1edd3e44b9ea8f1b94",
+      "68d99a1edd3e44b9ea8f1b99"
+    ],
+    "reviews": [],
+    "advisor": "68d99230ec9950d81aa64833",
+    "enrollmentCount": 1,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 6,
+    "status": "active",
+    "createdAt": "2025-09-28T20:27:10.013Z",
+    "updatedAt": "2025-09-29T03:46:57.510Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99af6dd3e44b9ea8f1ba7",
+    "title": "UI/UX Design Masterclass",
+    "description": "Master the art of user interface and experience design with modern tools and techniques",
+    "fullDescription": "Complete UI/UX design course covering user research, wireframing, prototyping, and visual design. Learn industry-standard tools like Figma and Adobe XD to create stunning user experiences.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Understand user-centered design principles",
+      "Conduct effective user research",
+      "Create wireframes and prototypes",
+      "Design beautiful and functional interfaces",
+      "Implement design systems and style guides"
+    ],
+    "prerequisites": [
+      "Basic computer skills",
+      "Interest in design and user experience",
+      "Access to design software (Figma, Adobe XD)"
+    ],
+    "courseHighlights": [
+      "Design 3 complete app interfaces",
+      "Build a professional design portfolio",
+      "Learn from industry experts",
+      "Get feedback on your designs",
+      "Access to design resources and templates"
+    ],
+    "tools": [
+      "Figma",
+      "Adobe XD",
+      "Sketch",
+      "InVision",
+      "Principle"
+    ],
+    "targetAudience": [
+      "Aspiring UI/UX designers",
+      "Graphic designers transitioning to digital",
+      "Product managers and developers"
+    ],
+    "skills": [
+      "UI Design",
+      "UX Research",
+      "Figma",
+      "Adobe XD",
+      "Prototyping",
+      "User Testing"
+    ],
+    "duration": "6 Weeks • ~45 hrs",
+    "priceInPoints": 350,
+    "thumbnail": "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=400&h=250&fit=crop",
+    "level": "Beginner",
+    "certificate": true,
+    "language": "English",
+    "category": "Design",
+    "modules": [
+      "68d99af6dd3e44b9ea8f1ba9",
+      "68d99af6dd3e44b9ea8f1bad"
+    ],
+    "reviews": [],
+    "advisor": "68d99230ec9950d81aa64833",
+    "enrollmentCount": 1,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 12,
+    "status": "active",
+    "createdAt": "2025-09-28T20:30:46.249Z",
+    "updatedAt": "2025-10-30T15:57:12.494Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99affdd3e44b9ea8f1bb7",
+    "title": "Python for Data Science",
+    "description": "Learn Python programming and data analysis with real-world datasets and projects",
+    "fullDescription": "This course covers Python programming fundamentals and advanced data science concepts. You'll learn to work with pandas, NumPy, matplotlib, and scikit-learn to analyze data and build machine learning models.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Master Python programming for data science",
+      "Analyze and visualize data effectively",
+      "Build machine learning models",
+      "Work with real-world datasets",
+      "Deploy data science solutions"
+    ],
+    "prerequisites": [
+      "Basic programming knowledge",
+      "Understanding of statistics",
+      "Familiarity with command line"
+    ],
+    "courseHighlights": [
+      "Work with 10+ real datasets",
+      "Build 5 machine learning projects",
+      "Learn from data science professionals",
+      "Get hands-on experience with industry tools",
+      "Career guidance and job placement support"
+    ],
+    "tools": [
+      "Jupyter Notebook",
+      "Anaconda",
+      "Pandas",
+      "NumPy",
+      "Matplotlib",
+      "Scikit-learn"
+    ],
+    "targetAudience": [
+      "Aspiring data scientists",
+      "Software developers transitioning to data science",
+      "Analysts looking to learn Python"
+    ],
+    "skills": [
+      "Python",
+      "Pandas",
+      "NumPy",
+      "Matplotlib",
+      "Scikit-learn",
+      "Machine Learning"
+    ],
+    "duration": "10 Weeks • ~80 hrs",
+    "priceInPoints": 500,
+    "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop",
+    "level": "Advanced",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99affdd3e44b9ea8f1bb9",
+      "68d99affdd3e44b9ea8f1bbd"
+    ],
+    "reviews": [],
+    "advisor": "68d99230ec9950d81aa64833",
+    "enrollmentCount": 1,
+    "averageRating": 4,
+    "totalRatings": 1,
+    "views": 6,
+    "status": "active",
+    "createdAt": "2025-09-28T20:30:55.156Z",
+    "updatedAt": "2025-09-29T03:31:34.939Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99b09dd3e44b9ea8f1bc7",
+    "title": "Digital Marketing Strategy",
+    "description": "Master digital marketing strategies, social media, SEO, and analytics for business growth",
+    "fullDescription": "Comprehensive digital marketing course covering all aspects of online marketing including social media marketing, SEO, content marketing, email marketing, and analytics. Learn to create effective marketing campaigns that drive results.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Develop comprehensive digital marketing strategies",
+      "Master SEO and content marketing techniques",
+      "Create effective social media campaigns",
+      "Analyze marketing performance with analytics",
+      "Optimize conversion rates and ROI"
+    ],
+    "prerequisites": [
+      "Basic understanding of business concepts",
+      "Familiarity with social media platforms",
+      "Access to internet and marketing tools"
+    ],
+    "courseHighlights": [
+      "Real-world case studies and examples",
+      "Hands-on marketing campaign projects",
+      "Industry expert insights",
+      "Certification in digital marketing",
+      "Career guidance and networking"
+    ],
+    "tools": [
+      "Google Analytics",
+      "Facebook Ads Manager",
+      "Hootsuite",
+      "Mailchimp",
+      "Canva"
+    ],
+    "targetAudience": [
+      "Marketing professionals",
+      "Small business owners",
+      "Entrepreneurs and startups",
+      "Career changers"
+    ],
+    "skills": [
+      "SEO",
+      "Social Media Marketing",
+      "Content Marketing",
+      "Email Marketing",
+      "Analytics",
+      "Google Ads"
+    ],
+    "duration": "5 Weeks • ~35 hrs",
+    "priceInPoints": 280,
+    "thumbnail": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop",
+    "level": "Beginner",
+    "certificate": true,
+    "language": "English",
+    "category": "Marketing",
+    "modules": [
+      "68d99b09dd3e44b9ea8f1bc9",
+      "68d99b09dd3e44b9ea8f1bcd"
+    ],
+    "reviews": [],
+    "advisor": "68d99230ec9950d81aa64833",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 0,
+    "status": "active",
+    "createdAt": "2025-09-28T20:31:05.236Z",
+    "updatedAt": "2025-09-28T20:31:05.413Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99b11dd3e44b9ea8f1bd7",
+    "title": "Mobile App Development with React Native",
+    "description": "Build cross-platform mobile applications using React Native and modern development practices",
+    "fullDescription": "Complete mobile app development course covering React Native fundamentals, navigation, state management, API integration, and app deployment. Learn to create professional mobile applications for both iOS and Android platforms.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Build cross-platform mobile applications",
+      "Master React Native components and navigation",
+      "Implement state management in mobile apps",
+      "Integrate APIs and external services",
+      "Deploy apps to app stores"
+    ],
+    "prerequisites": [
+      "Basic knowledge of React and JavaScript",
+      "Understanding of mobile app concepts",
+      "Access to development environment"
+    ],
+    "courseHighlights": [
+      "Build 3 complete mobile applications",
+      "Learn iOS and Android development",
+      "Master app store deployment process",
+      "Industry best practices and patterns",
+      "Portfolio-ready projects"
+    ],
+    "tools": [
+      "Expo",
+      "React Native CLI",
+      "Xcode",
+      "Android Studio",
+      "Flipper"
+    ],
+    "targetAudience": [
+      "React developers expanding to mobile",
+      "Mobile app developers",
+      "Full-stack developers",
+      "Entrepreneurs building mobile apps"
+    ],
+    "skills": [
+      "React Native",
+      "JavaScript",
+      "Mobile Development",
+      "iOS",
+      "Android",
+      "App Store Deployment"
+    ],
+    "duration": "7 Weeks • ~55 hrs",
+    "priceInPoints": 400,
+    "thumbnail": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=250&fit=crop",
+    "level": "Intermediate",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99b11dd3e44b9ea8f1bd9",
+      "68d99b11dd3e44b9ea8f1bdd"
+    ],
+    "reviews": [],
+    "advisor": "68d99230ec9950d81aa64833",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 2,
+    "status": "active",
+    "createdAt": "2025-09-28T20:31:13.811Z",
+    "updatedAt": "2025-09-28T20:32:28.091Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99bc7dd3e44b9ea8f1c7c",
+    "title": "Machine Learning with Python",
+    "description": "Master machine learning algorithms and build intelligent applications using Python",
+    "fullDescription": "Comprehensive machine learning course covering supervised and unsupervised learning, deep learning, and AI applications. Learn to build predictive models, recommendation systems, and AI-powered applications using Python and popular ML libraries.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Master machine learning algorithms and techniques",
+      "Build predictive models and recommendation systems",
+      "Implement deep learning solutions",
+      "Work with large datasets and big data",
+      "Deploy ML models to production"
+    ],
+    "prerequisites": [
+      "Strong Python programming skills",
+      "Understanding of statistics and mathematics",
+      "Basic knowledge of data structures and algorithms"
+    ],
+    "courseHighlights": [
+      "Build 8 real-world ML projects",
+      "Work with industry-standard datasets",
+      "Learn from ML research papers",
+      "Portfolio of ML applications",
+      "Career guidance in AI/ML field"
+    ],
+    "tools": [
+      "Jupyter Notebook",
+      "TensorFlow",
+      "PyTorch",
+      "Scikit-learn",
+      "Pandas",
+      "NumPy"
+    ],
+    "targetAudience": [
+      "Data scientists and analysts",
+      "Software developers interested in AI",
+      "Researchers and academics",
+      "Career changers to AI/ML"
+    ],
+    "skills": [
+      "Machine Learning",
+      "Python",
+      "TensorFlow",
+      "Scikit-learn",
+      "Deep Learning",
+      "Neural Networks"
+    ],
+    "duration": "12 Weeks • ~100 hrs",
+    "priceInPoints": 600,
+    "thumbnail": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=250&fit=crop",
+    "level": "Advanced",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99bc7dd3e44b9ea8f1c7e",
+      "68d99bc7dd3e44b9ea8f1c82"
+    ],
+    "reviews": [],
+    "advisor": "68d99241ec9950d81aa64838",
+    "enrollmentCount": 1,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 6,
+    "status": "active",
+    "createdAt": "2025-09-28T20:34:15.674Z",
+    "updatedAt": "2025-10-30T15:57:58.085Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99be7dd3e44b9ea8f1c90",
+    "title": "Blockchain Development",
+    "description": "Build decentralized applications and smart contracts using blockchain technology",
+    "fullDescription": "Complete blockchain development course covering Ethereum, smart contracts, DeFi protocols, and Web3 applications. Learn to build decentralized applications (dApps) and understand the future of decentralized technology.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Understand blockchain technology and cryptocurrencies",
+      "Develop smart contracts using Solidity",
+      "Build decentralized applications (dApps)",
+      "Implement DeFi protocols and NFT systems",
+      "Deploy and interact with blockchain networks"
+    ],
+    "prerequisites": [
+      "Strong JavaScript programming skills",
+      "Understanding of web development",
+      "Basic knowledge of cryptography"
+    ],
+    "courseHighlights": [
+      "Build 5 complete blockchain projects",
+      "Create your own cryptocurrency",
+      "Develop NFT marketplace",
+      "Learn from industry experts",
+      "Portfolio of Web3 applications"
+    ],
+    "tools": [
+      "Remix IDE",
+      "Truffle",
+      "Hardhat",
+      "MetaMask",
+      "Web3.js",
+      "OpenZeppelin"
+    ],
+    "targetAudience": [
+      "Software developers",
+      "Web developers",
+      "Fintech professionals",
+      "Entrepreneurs in blockchain"
+    ],
+    "skills": [
+      "Blockchain",
+      "Solidity",
+      "Smart Contracts",
+      "Web3",
+      "DeFi",
+      "NFTs"
+    ],
+    "duration": "10 Weeks • ~85 hrs",
+    "priceInPoints": 550,
+    "thumbnail": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=250&fit=crop",
+    "level": "Advanced",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99be7dd3e44b9ea8f1c92",
+      "68d99be7dd3e44b9ea8f1c96"
+    ],
+    "reviews": [],
+    "advisor": "68d99241ec9950d81aa64838",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 0,
+    "status": "active",
+    "createdAt": "2025-09-28T20:34:47.719Z",
+    "updatedAt": "2025-09-28T20:34:48.052Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99c18dd3e44b9ea8f1ca0",
+    "title": "Cybersecurity Fundamentals",
+    "description": "Learn essential cybersecurity concepts, threat detection, and security best practices",
+    "fullDescription": "Comprehensive cybersecurity course covering network security, ethical hacking, incident response, and security governance. Learn to protect systems, detect threats, and implement security measures in modern organizations.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Understand cybersecurity threats and vulnerabilities",
+      "Implement network security measures",
+      "Conduct security assessments and audits",
+      "Respond to security incidents",
+      "Develop security policies and procedures"
+    ],
+    "prerequisites": [
+      "Basic understanding of computer networks",
+      "Familiarity with operating systems",
+      "Interest in security and technology"
+    ],
+    "courseHighlights": [
+      "Hands-on security labs and simulations",
+      "Real-world case studies and scenarios",
+      "Industry-standard security tools",
+      "Certification preparation",
+      "Career guidance in cybersecurity"
+    ],
+    "tools": [
+      "Wireshark",
+      "Nmap",
+      "Metasploit",
+      "Burp Suite",
+      "Nessus",
+      "Kali Linux"
+    ],
+    "targetAudience": [
+      "IT professionals",
+      "Network administrators",
+      "Software developers",
+      "Career changers to cybersecurity"
+    ],
+    "skills": [
+      "Network Security",
+      "Ethical Hacking",
+      "Incident Response",
+      "Risk Assessment",
+      "Security Tools",
+      "Compliance"
+    ],
+    "duration": "8 Weeks • ~65 hrs",
+    "priceInPoints": 450,
+    "thumbnail": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=250&fit=crop",
+    "level": "Intermediate",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99c18dd3e44b9ea8f1ca2",
+      "68d99c18dd3e44b9ea8f1ca6"
+    ],
+    "reviews": [],
+    "advisor": "68d99241ec9950d81aa64838",
+    "enrollmentCount": 2,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 13,
+    "status": "active",
+    "createdAt": "2025-09-28T20:35:36.511Z",
+    "updatedAt": "2025-10-29T13:55:50.158Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99c3edd3e44b9ea8f1cb6",
+    "title": "Cloud Computing with AWS",
+    "description": "Master Amazon Web Services and build scalable cloud applications",
+    "fullDescription": "Comprehensive AWS course covering cloud computing fundamentals, infrastructure as code, serverless architecture, and cloud security. Learn to design, deploy, and manage applications on AWS cloud platform.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Master AWS core services and architecture",
+      "Design scalable cloud solutions",
+      "Implement DevOps practices on AWS",
+      "Build serverless applications",
+      "Manage cloud security and compliance"
+    ],
+    "prerequisites": [
+      "Basic understanding of networking",
+      "Familiarity with Linux command line",
+      "Basic knowledge of web development"
+    ],
+    "courseHighlights": [
+      "Hands-on AWS labs and projects",
+      "Real-world cloud architecture design",
+      "AWS certification preparation",
+      "Industry best practices",
+      "Career guidance in cloud computing"
+    ],
+    "tools": [
+      "AWS Console",
+      "AWS CLI",
+      "Terraform",
+      "Docker",
+      "Kubernetes",
+      "Jenkins"
+    ],
+    "targetAudience": [
+      "System administrators",
+      "Software developers",
+      "DevOps engineers",
+      "IT professionals"
+    ],
+    "skills": [
+      "AWS",
+      "Cloud Computing",
+      "DevOps",
+      "Serverless",
+      "Docker",
+      "Kubernetes"
+    ],
+    "duration": "9 Weeks • ~75 hrs",
+    "priceInPoints": 480,
+    "thumbnail": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=250&fit=crop",
+    "level": "Intermediate",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99c3edd3e44b9ea8f1cb8",
+      "68d99c3edd3e44b9ea8f1cbc"
+    ],
+    "reviews": [],
+    "advisor": "68d99241ec9950d81aa64838",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 0,
+    "status": "active",
+    "createdAt": "2025-09-28T20:36:14.685Z",
+    "updatedAt": "2025-09-28T20:36:14.863Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99c5cdd3e44b9ea8f1cc6",
+    "title": "Game Development with Unity",
+    "description": "Create amazing games using Unity engine and C# programming",
+    "fullDescription": "Complete game development course covering Unity engine, C# programming, game design principles, and publishing. Learn to create 2D and 3D games, implement game mechanics, and publish your games to various platforms.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Master Unity game engine and tools",
+      "Learn C# programming for games",
+      "Design engaging game mechanics",
+      "Create 2D and 3D games",
+      "Publish games to app stores"
+    ],
+    "prerequisites": [
+      "Basic programming knowledge",
+      "Interest in game development",
+      "Access to Unity software"
+    ],
+    "courseHighlights": [
+      "Build 4 complete games",
+      "Learn from industry professionals",
+      "Portfolio of game projects",
+      "Publishing guidance",
+      "Career advice in game industry"
+    ],
+    "tools": [
+      "Unity",
+      "Visual Studio",
+      "Blender",
+      "Photoshop",
+      "Audacity",
+      "Git"
+    ],
+    "targetAudience": [
+      "Aspiring game developers",
+      "Programmers interested in games",
+      "Game designers",
+      "Creative professionals"
+    ],
+    "skills": [
+      "Unity",
+      "C#",
+      "Game Design",
+      "3D Modeling",
+      "Animation",
+      "Game Physics"
+    ],
+    "duration": "8 Weeks • ~70 hrs",
+    "priceInPoints": 380,
+    "thumbnail": "https://images.unsplash.com/photo-1556438064-2d7646166914?w=400&h=250&fit=crop",
+    "level": "Beginner",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99c5cdd3e44b9ea8f1cc8",
+      "68d99c5cdd3e44b9ea8f1ccc"
+    ],
+    "reviews": [],
+    "advisor": "68d99241ec9950d81aa64838",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 0,
+    "status": "active",
+    "createdAt": "2025-09-28T20:36:44.070Z",
+    "updatedAt": "2025-09-28T20:36:44.285Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99d48dd3e44b9ea8f1d03",
+    "title": "DevOps and CI/CD Pipeline",
+    "description": "Master DevOps practices, automation, and continuous integration/deployment pipelines",
+    "fullDescription": "Comprehensive DevOps course covering infrastructure automation, containerization, CI/CD pipelines, and monitoring. Learn to implement DevOps culture, automate deployments, and manage infrastructure as code using modern tools and practices.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Implement DevOps culture and practices",
+      "Master containerization with Docker",
+      "Build CI/CD pipelines",
+      "Manage infrastructure as code",
+      "Monitor and troubleshoot applications"
+    ],
+    "prerequisites": [
+      "Basic knowledge of Linux systems",
+      "Understanding of version control (Git)",
+      "Familiarity with command line interface"
+    ],
+    "courseHighlights": [
+      "Hands-on DevOps projects",
+      "Real-world pipeline implementations",
+      "Industry best practices",
+      "Certification preparation",
+      "Career guidance in DevOps"
+    ],
+    "tools": [
+      "Docker",
+      "Kubernetes",
+      "Jenkins",
+      "GitLab",
+      "Terraform",
+      "Prometheus"
+    ],
+    "targetAudience": [
+      "Software developers",
+      "System administrators",
+      "IT operations professionals",
+      "Career changers to DevOps"
+    ],
+    "skills": [
+      "Docker",
+      "Kubernetes",
+      "Jenkins",
+      "GitLab CI",
+      "Terraform",
+      "Monitoring"
+    ],
+    "duration": "10 Weeks • ~90 hrs",
+    "priceInPoints": 520,
+    "thumbnail": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=250&fit=crop",
+    "level": "Intermediate",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99d48dd3e44b9ea8f1d05",
+      "68d99d49dd3e44b9ea8f1d09"
+    ],
+    "reviews": [],
+    "advisor": "68d99256ec9950d81aa6483d",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 0,
+    "status": "active",
+    "createdAt": "2025-09-28T20:40:40.885Z",
+    "updatedAt": "2025-09-28T20:40:41.080Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99d5fdd3e44b9ea8f1d14",
+    "title": "Artificial Intelligence and Deep Learning",
+    "description": "Build intelligent systems using AI and deep learning techniques",
+    "fullDescription": "Advanced AI course covering neural networks, deep learning frameworks, computer vision, natural language processing, and AI ethics. Learn to build intelligent systems, chatbots, image recognition, and recommendation engines using cutting-edge AI technologies.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Master deep learning algorithms and architectures",
+      "Build computer vision applications",
+      "Implement natural language processing systems",
+      "Create AI-powered recommendation engines",
+      "Understand AI ethics and responsible AI"
+    ],
+    "prerequisites": [
+      "Strong Python programming skills",
+      "Understanding of machine learning",
+      "Knowledge of linear algebra and calculus"
+    ],
+    "courseHighlights": [
+      "Build 10 AI applications",
+      "Work with real-world datasets",
+      "Learn from AI research papers",
+      "Portfolio of AI projects",
+      "Career guidance in AI field"
+    ],
+    "tools": [
+      "TensorFlow",
+      "PyTorch",
+      "OpenCV",
+      "NLTK",
+      "spaCy",
+      "Jupyter"
+    ],
+    "targetAudience": [
+      "Data scientists",
+      "Machine learning engineers",
+      "Software developers",
+      "AI researchers"
+    ],
+    "skills": [
+      "Deep Learning",
+      "Neural Networks",
+      "Computer Vision",
+      "NLP",
+      "TensorFlow",
+      "PyTorch"
+    ],
+    "duration": "14 Weeks • ~120 hrs",
+    "priceInPoints": 650,
+    "thumbnail": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=250&fit=crop",
+    "level": "Advanced",
+    "certificate": true,
+    "language": "English",
+    "category": "Programming",
+    "modules": [
+      "68d99d5fdd3e44b9ea8f1d16",
+      "68d99d5fdd3e44b9ea8f1d1a"
+    ],
+    "reviews": [],
+    "advisor": "68d99256ec9950d81aa6483d",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 2,
+    "status": "active",
+    "createdAt": "2025-09-28T20:41:03.054Z",
+    "updatedAt": "2025-09-28T20:44:55.345Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99d89dd3e44b9ea8f1d27",
+    "title": "Digital Photography and Photo Editing",
+    "description": "Master digital photography techniques and professional photo editing skills",
+    "fullDescription": "Complete photography course covering camera fundamentals, composition, lighting, and post-processing. Learn to take stunning photos and edit them professionally using Adobe Lightroom and Photoshop. Perfect for beginners and intermediate photographers.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Master camera settings and exposure",
+      "Learn composition and lighting techniques",
+      "Edit photos professionally in Lightroom",
+      "Advanced editing in Photoshop",
+      "Build a photography portfolio"
+    ],
+    "prerequisites": [
+      "Access to a digital camera (DSLR or mirrorless)",
+      "Basic computer skills",
+      "Interest in photography and visual arts"
+    ],
+    "courseHighlights": [
+      "Hands-on photography assignments",
+      "Professional editing workflows",
+      "Portfolio building guidance",
+      "Industry expert feedback",
+      "Photography business tips"
+    ],
+    "tools": [
+      "Adobe Lightroom",
+      "Adobe Photoshop",
+      "Camera Raw",
+      "Bridge",
+      "Capture One"
+    ],
+    "targetAudience": [
+      "Photography enthusiasts",
+      "Content creators",
+      "Social media managers",
+      "Creative professionals"
+    ],
+    "skills": [
+      "Photography",
+      "Lightroom",
+      "Photoshop",
+      "Composition",
+      "Lighting",
+      "Post-Processing"
+    ],
+    "duration": "6 Weeks • ~50 hrs",
+    "priceInPoints": 320,
+    "thumbnail": "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400&h=250&fit=crop",
+    "level": "Beginner",
+    "certificate": true,
+    "language": "English",
+    "category": "Other",
+    "modules": [
+      "68d99d89dd3e44b9ea8f1d29",
+      "68d99d89dd3e44b9ea8f1d2d"
+    ],
+    "reviews": [],
+    "advisor": "68d99256ec9950d81aa6483d",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 0,
+    "status": "active",
+    "createdAt": "2025-09-28T20:41:45.237Z",
+    "updatedAt": "2025-09-28T20:41:45.458Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99d9bdd3e44b9ea8f1d37",
+    "title": "Financial Analysis and Investment",
+    "description": "Learn financial modeling, investment analysis, and portfolio management",
+    "fullDescription": "Comprehensive finance course covering financial statement analysis, valuation methods, investment strategies, and portfolio management. Learn to analyze companies, make investment decisions, and manage financial portfolios using Excel and financial modeling tools.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Analyze financial statements and ratios",
+      "Build financial models in Excel",
+      "Value companies using different methods",
+      "Create investment portfolios",
+      "Assess investment risks and returns"
+    ],
+    "prerequisites": [
+      "Basic understanding of accounting",
+      "Intermediate Excel skills",
+      "Interest in finance and investments"
+    ],
+    "courseHighlights": [
+      "Real-world financial case studies",
+      "Hands-on Excel modeling",
+      "Investment simulation games",
+      "Industry expert insights",
+      "Career guidance in finance"
+    ],
+    "tools": [
+      "Excel",
+      "Bloomberg Terminal",
+      "Yahoo Finance",
+      "Morningstar",
+      "Financial Modeling"
+    ],
+    "targetAudience": [
+      "Finance professionals",
+      "Investment analysts",
+      "Business students",
+      "Individual investors"
+    ],
+    "skills": [
+      "Financial Analysis",
+      "Excel",
+      "Investment",
+      "Valuation",
+      "Portfolio Management",
+      "Risk Assessment"
+    ],
+    "duration": "8 Weeks • ~70 hrs",
+    "priceInPoints": 420,
+    "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop",
+    "level": "Intermediate",
+    "certificate": true,
+    "language": "English",
+    "category": "Business",
+    "modules": [
+      "68d99d9bdd3e44b9ea8f1d39",
+      "68d99d9bdd3e44b9ea8f1d3d"
+    ],
+    "reviews": [],
+    "advisor": "68d99256ec9950d81aa6483d",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 0,
+    "status": "active",
+    "createdAt": "2025-09-28T20:42:03.663Z",
+    "updatedAt": "2025-09-28T20:42:03.855Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d99da5dd3e44b9ea8f1d47",
+    "title": "Content Creation and Social Media Marketing",
+    "description": "Master content creation, social media strategy, and digital brand building",
+    "fullDescription": "Complete content creation course covering video production, social media marketing, influencer strategies, and brand building. Learn to create engaging content, grow social media presence, and build a personal brand across multiple platforms.",
+    "trailerVideo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "learningObjectives": [
+      "Create engaging content for multiple platforms",
+      "Develop social media marketing strategies",
+      "Build and grow personal brands",
+      "Master video and photo editing",
+      "Analyze content performance and optimize"
+    ],
+    "prerequisites": [
+      "Basic computer skills",
+      "Access to smartphone or camera",
+      "Interest in social media and content creation"
+    ],
+    "courseHighlights": [
+      "Create content for 5 different platforms",
+      "Build your personal brand",
+      "Learn from successful influencers",
+      "Portfolio of content projects",
+      "Monetization strategies"
+    ],
+    "tools": [
+      "Canva",
+      "Adobe Premiere",
+      "Instagram",
+      "TikTok",
+      "YouTube",
+      "Analytics Tools"
+    ],
+    "targetAudience": [
+      "Content creators",
+      "Social media managers",
+      "Influencers and bloggers",
+      "Small business owners"
+    ],
+    "skills": [
+      "Content Creation",
+      "Social Media",
+      "Video Editing",
+      "Brand Building",
+      "Influencer Marketing",
+      "Analytics"
+    ],
+    "duration": "5 Weeks • ~40 hrs",
+    "priceInPoints": 290,
+    "thumbnail": "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=250&fit=crop",
+    "level": "Beginner",
+    "certificate": true,
+    "language": "English",
+    "category": "Marketing",
+    "modules": [
+      "68d99da5dd3e44b9ea8f1d49",
+      "68d99da5dd3e44b9ea8f1d4d"
+    ],
+    "reviews": [],
+    "advisor": "68d99256ec9950d81aa6483d",
+    "enrollmentCount": 1,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 4,
+    "status": "active",
+    "createdAt": "2025-09-28T20:42:13.878Z",
+    "updatedAt": "2025-09-28T21:40:52.026Z",
+    "__v": 1
+  },
+  {
+    "_id": "68d9abf9de02ca4ea1edbb80",
+    "title": "c1",
+    "description": "small",
+    "fullDescription": "this is big",
+    "trailerVideo": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+    "learningObjectives": [],
+    "prerequisites": [],
+    "courseHighlights": [],
+    "tools": [],
+    "targetAudience": [],
+    "skills": [
+      "html",
+      "english",
+      "css"
+    ],
+    "duration": "10 week ~100 hours",
+    "priceInPoints": 100,
+    "thumbnail": "https://res.cloudinary.com/dwbup2vci/image/upload/v1759095775/skill-exchange/course-thumbnails/eux4irbiesjm1dpxfm0j.png",
+    "level": "Beginner",
+    "certificate": true,
+    "language": "English",
+    "category": "Business",
+    "modules": [],
+    "reviews": [],
+    "advisor": "68d99256ec9950d81aa6483d",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 0,
+    "status": "active",
+    "createdAt": "2025-09-28T21:43:21.740Z",
+    "updatedAt": "2025-09-28T21:43:21.742Z",
+    "__v": 0
+  },
+  {
+    "_id": "68da0048de02ca4ea1edbfcd",
+    "title": "My First course",
+    "description": "QAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiols",
+    "fullDescription": "QAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjkQAZXSDERFGHJKLqwertyuiopwertyuiolsdfghjmk,sdfghjkl;sdfghjk",
+    "trailerVideo": "",
+    "learningObjectives": [],
+    "prerequisites": [],
+    "courseHighlights": [],
+    "tools": [],
+    "targetAudience": [],
+    "skills": [
+      "Intro"
+    ],
+    "duration": "2 weeks",
+    "priceInPoints": 50,
+    "thumbnail": "https://res.cloudinary.com/dwbup2vci/image/upload/v1759117370/skill-exchange/course-thumbnails/kwyrhjgooka2qevbkmea.png",
+    "level": "Beginner",
+    "certificate": true,
+    "language": "English",
+    "category": "Other",
+    "modules": [],
+    "reviews": [],
+    "advisor": "68d9ff22de02ca4ea1edbf23",
+    "enrollmentCount": 0,
+    "averageRating": 0,
+    "totalRatings": 0,
+    "views": 6,
+    "status": "active",
+    "createdAt": "2025-09-29T03:43:04.028Z",
+    "updatedAt": "2025-09-29T03:50:32.221Z",
+    "__v": 0
+  }
+]
