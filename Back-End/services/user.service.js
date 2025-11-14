@@ -6,7 +6,7 @@ const courseService = require("../services/course.service");
 const UserEnroll = require("../models/User_enroll.model");
 const course = require("../models/course.model");
 const ModuleModel = require("../models/module.model");
-const UserProgress = require("../models/user_progress.model");
+
 exports.createuser = async (userData) => {
     const { fullname, email, password, phone } = userData;
     if (!fullname || !email || !password || !phone) {
@@ -590,7 +590,7 @@ exports.searchUsersWithFilters = async (filters) => {
                 followers: user.followers || 0,
                 expertise: user.experience || 'General',
                 totalCourses: courseCount,
-                averageRating: avgRating, // This would need to be calculated from reviews if needed
+                averageRating: avgRating, 
                 createdAt: user.createdAt,
                 accountAge: experienceText
             };

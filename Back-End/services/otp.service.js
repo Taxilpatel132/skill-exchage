@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 const Otp = require("../models/otp.model");
 require("dotenv").config({ path: require('path').resolve(__dirname, '../../.env') }); // fixed path
-const adminModel = require("../models/admin.model");
+
 const usermodel = require("../models/users.model");
 const sendOTP = async (toEmail) => {
 

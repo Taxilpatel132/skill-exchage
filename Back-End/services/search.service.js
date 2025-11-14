@@ -21,6 +21,8 @@ exports.searchCourses = async (searchParams, currentUser) => {
         let courseQuery = { status: { $ne: "blocked" } };
 
         // Text search
+
+       
         if (query) {
             courseQuery.$or = [
                 { title: { $regex: query, $options: 'i' } },
@@ -31,7 +33,7 @@ exports.searchCourses = async (searchParams, currentUser) => {
             ];
         }
 
-        // Date range filter
+       
         if (dateRange && dateRange !== 'all') {
             const now = new Date();
             let startDate;
@@ -147,114 +149,113 @@ exports.searchCourses = async (searchParams, currentUser) => {
 
 // Search users with filters
 exports.searchUsers = async (searchParams, currentUser) => {
-    try {
-        const {
-            query,
-            userType,
-            author,
-            page,
-            limit,
-            sortBy,
-            sortOrder
-        } = searchParams;
+  try {
+    const {
+      query,
+      userType,
+      author,
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = searchParams;
 
-        // Build query object
-        let userQuery = {};
+    let userQuery = {};
 
-        // Text search
-        if (query) {
-            userQuery.$or = [
-                { 'fullname.firstname': { $regex: query, $options: 'i' } },
-                { 'fullname.lastname': { $regex: query, $options: 'i' } },
-                { username: { $regex: query, $options: 'i' } },
-                { bio: { $regex: query, $options: 'i' } },
-                { email: { $regex: query, $options: 'i' } }
-            ];
-        }
-
-        // User type filter
-        if (userType) {
-            // This would need to be implemented based on your user model structure
-            // For now, we'll use a simple approach
-            switch (userType) {
-                case 'instructor':
-                    // Find users who have created courses
-                    const instructorIds = await UserCourses.distinct('advisorId');
-                    userQuery._id = { $in: instructorIds };
-                    break;
-                case 'student':
-                    // Find users who have enrolled in courses
-                    const UserEnroll = require('../models/User_enroll.model');
-                    const studentIds = await UserEnroll.distinct('user');
-                    userQuery._id = { $in: studentIds };
-                    break;
-                case 'expert':
-                    // This would need to be defined based on your business logic
-                    userQuery.experience = { $gte: 5 }; // Example: 5+ years experience
-                    break;
-            }
-        }
-
-        // Author filter (same as query for users)
-        if (author && !query) {
-            userQuery.$or = [
-                { 'fullname.firstname': { $regex: author, $options: 'i' } },
-                { 'fullname.lastname': { $regex: author, $options: 'i' } },
-                { username: { $regex: author, $options: 'i' } }
-            ];
-        }
-
-        // Exclude current user
-        if (currentUser && currentUser._id) {
-            userQuery._id = { $ne: currentUser._id };
-        }
-
-        // Build sort object
-        const sortObj = {};
-        sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
-
-        // Execute query with pagination
-        const skip = (page - 1) * limit;
-        const users = await userModel.find(userQuery)
-            .select('fullname username email bio profilePhoto profilePicture experience followers points createdAt')
-            .sort(sortObj)
-            .skip(skip)
-            .limit(limit);
-
-        // Get total count for pagination
-        const totalItems = await userModel.countDocuments(userQuery);
-        const totalPages = Math.ceil(totalItems / limit);
-
-        // Format users for response
-        const formattedUsers = users.map(user => ({
-            _id: user._id,
-            fullname: user.fullname ?
-                `${user.fullname.firstname} ${user.fullname.lastname}` :
-                user.username || 'Unknown User',
-            username: user.username,
-            email: user.email,
-            bio: user.bio,
-            profilePhoto: user.profilePhoto || user.profilePicture,
-            experience: user.experience,
-            followers: user.followers?.length || 0,
-            points: user.points,
-            createdAt: user.createdAt
-        }));
-
-        return {
-            users: formattedUsers,
-            pagination: {
-                currentPage: page,
-                totalPages,
-                totalItems,
-                hasNext: page < totalPages,
-                hasPrev: page > 1
-            }
-        };
-    } catch (error) {
-        throw new Error(`Failed to search users: ${error.message}`);
+    // 🔍 Text search
+    if (query) {
+      userQuery.$or = [
+        { 'fullname.firstname': { $regex: query, $options: 'i' } },
+        { 'fullname.lastname': { $regex: query, $options: 'i' } },
+        { username: { $regex: query, $options: 'i' } },
+        { bio: { $regex: query, $options: 'i' } },
+        { email: { $regex: query, $options: 'i' } }
+      ];
     }
+
+    // 🧑‍🏫 User type filter
+    if (userType) {
+      switch (userType) {
+        case 'instructor':
+          const instructorIds = await UserCourses.distinct('advisorId');
+          userQuery._id = { $in: instructorIds };
+          break;
+        case 'student':
+          const UserEnroll = require('../models/User_enroll.model');
+          const studentIds = await UserEnroll.distinct('user');
+          userQuery._id = { $in: studentIds };
+          break;
+        case 'expert':
+          userQuery.experience = { $gte: 5 };
+          break;
+      }
+    }
+
+    // 🧑 Author filter
+    if (author && !query) {
+      userQuery.$or = [
+        { 'fullname.firstname': { $regex: author, $options: 'i' } },
+        { 'fullname.lastname': { $regex: author, $options: 'i' } },
+        { username: { $regex: author, $options: 'i' } }
+      ];
+    }
+
+    // 🚫 Exclude current user safely
+    if (currentUser && currentUser._id) {
+      if (userQuery._id) {
+        userQuery._id = {
+          ...userQuery._id,
+          $ne: currentUser._id
+        };
+      } else {
+        userQuery._id = { $ne: currentUser._id };
+      }
+    }
+
+   
+    const sortObj = {};
+    sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    const skip = (page - 1) * limit;
+    const users = await userModel.find(userQuery)
+      .select('fullname username email bio profilePhoto profilePicture experience followers points createdAt')
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limit);
+    
+    const totalItems = await userModel.countDocuments(userQuery);
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const formattedUsers = users.map(user => ({
+      _id: user._id,
+      fullname: user.fullname ?
+        `${user.fullname.firstname} ${user.fullname.lastname}` :
+        user.username || 'Unknown User',
+      username: user.username,
+      email: user.email,
+      bio: user.bio,
+      profilePhoto: user.profilePhoto || user.profilePicture,
+      experience: user.experience,
+      followers: user.followers?.length || 0,
+      points: user.points,
+      createdAt: user.createdAt
+    }));
+
+    return {
+      users: formattedUsers,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    };
+  } catch (error) {
+    throw new Error(`Failed to search users: ${error.message}`);
+  }
 };
+
 
 // Search all (courses + users)
 exports.searchAll = async (searchParams, currentUser) => {

@@ -74,7 +74,7 @@ exports.searchUsers = async (req, res) => {
         };
 
         const results = await searchService.searchUsers(searchParams, req.user);
-
+        console.log('Search users results:', results);
         res.status(200).json({
             success: true,
             data: results.users,
