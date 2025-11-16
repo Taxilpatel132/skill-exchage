@@ -12,17 +12,16 @@ const EnrolledCourseCard = ({ course, onProgressUpdate, onRefresh }) => {
         thumbnail,
         averageRating,
         totalRatings,
-        createdAt,
+       
         progress = 0,
         isCompleted = false,
         completedAt,
-        totalTimeSpent = 0,
+      
         lastAccessedAt,
-        totalModules = 0,
-        completedModules = 0,
-        estimatedHours = 0
+      
+        
     } = course;
-
+    
     const handleCardClick = () => {
         navigate(`/course/${_id}`);
     };
@@ -122,14 +121,14 @@ const EnrolledCourseCard = ({ course, onProgressUpdate, onRefresh }) => {
                 </p>
 
                 {/* Instructor */}
-                <div className="flex items-center mb-4">
+                { <div className="flex items-center mb-4">
                     <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full flex items-center justify-center text-white text-sm font-bold">
                         {advisor?.fullname?.[0] || 'I'}
                     </div>
                     <span className="ml-2 text-sm text-gray-600">
-                        {advisor?.fullname || 'Instructor'}
+                        {advisor?.fullname?.firstname+" "+advisor?.fullname?.lastname || 'Instructor'}
                     </span>
-                </div>
+                </div> }
 
                 {/* Rating */}
                 <div className="flex items-center mb-4">
@@ -141,25 +140,7 @@ const EnrolledCourseCard = ({ course, onProgressUpdate, onRefresh }) => {
                     </span>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-gray-700">Progress</span>
-                        <span className="text-sm font-bold text-gray-900">{progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                            className={`h-2 rounded-full transition-all duration-500 ${getProgressColor(progress)}`}
-                            style={{ width: `${progress}%` }}
-                        ></div>
-                    </div>
-
-                    {/* Progress Details */}
-                    <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-                        <span>{completedModules}/{totalModules} modules</span>
-                        <span>{Math.round(totalTimeSpent / 60 * 10) / 10}h spent</span>
-                    </div>
-                </div>
+             
 
                 {/* Completion Date or Last Accessed */}
                 <div className="text-xs text-gray-500 mb-4 flex items-center">

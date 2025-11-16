@@ -86,7 +86,7 @@ const MyEnrollments = () => {
     if (loading) {
         return <Loading />;
     }
-
+    console.log(myData)
     return (
         <>
             <Navbar IsLoggedIn={isLoggedIn} myData={myData} />

@@ -329,25 +329,18 @@ exports.getMyEnrollments = async (req, res) => {
 
     try {
         const enrollments = await userservice.getUserEnrollments(user._id);
-        const stats = await userservice.getEnrollmentStats(user._id);
+        
 
         if (!enrollments || enrollments.length === 0) {
             return res.status(200).json({
                 message: "No enrollments found for this user",
                 enrollments: [],
-                stats: {
-                    totalCourses: 0,
-                    completed: 0,
-                    totalHours: 0,
-                    actualHoursSpent: 0
-                }
             });
         }
 
         return res.status(200).json({
             message: "User enrollments retrieved successfully",
-            enrollments,
-            stats
+            enrollments
         });
     } catch (error) {
        

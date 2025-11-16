@@ -7,6 +7,7 @@ const UserEnroll = require("../models/User_enroll.model");
 const course = require("../models/course.model");
 const ModuleModel = require("../models/module.model");
 
+
 exports.createuser = async (userData) => {
     const { fullname, email, password, phone } = userData;
     if (!fullname || !email || !password || !phone) {
@@ -189,6 +190,7 @@ exports.getUserEnrollments = async (userId) => {
     }
 
     try {
+        //console.log("Fetching enrollments for userId:", userId);
         const userEnroll = await UserEnroll.findOne({ user: userId }).populate({
             path: 'courses',
             populate: {
@@ -198,67 +200,10 @@ exports.getUserEnrollments = async (userId) => {
         });
 
         const Mycourses = userEnroll ? userEnroll.courses : [];
+   // console.log({Mycourses});
+      
 
-        // Get progress for each course
-        const coursesWithProgress = await Promise.all(Mycourses.map(async (course) => {
-            // Get or create progress record
-            let progressRecord = await UserProgress.findOne({
-                user: userId,
-                course: course._id
-            });
-
-            if (!progressRecord) {
-                // Get total modules for this course
-                const totalModules = await ModuleModel.countDocuments({ courseId: course._id });
-
-                // Create new progress record
-                progressRecord = new UserProgress({
-                    user: userId,
-                    course: course._id,
-                    totalModules,
-                    progressPercentage: 0,
-                    completedModules: [],
-                    totalTimeSpent: 0,
-                    isCompleted: false
-                });
-                await progressRecord.save();
-            }
-
-            // Calculate learning hours from course duration
-            const durationMatch = course.duration?.match(/(\d+)/);
-            const courseDurationHours = durationMatch ? parseInt(durationMatch[1]) : 0;
-
-            return {
-                _id: course._id,
-                title: course.title,
-                description: course.description,
-                priceInPoints: course.priceInPoints,
-                categories: course.categories,
-                tags: course.tags,
-                advisor: {
-                    _id: course.advisor?._id,
-                    fullname: `${course.advisor?.fullname?.firstname} ${course.advisor?.fullname?.lastname}`,
-                    email: course.advisor?.email
-                },
-                thumbnail: course.thumbnail,
-                averageRating: course.averageRating,
-                totalRatings: course.totalRatings,
-                createdAt: course.createdAt,
-                views: course.views,
-                duration: course.duration,
-                // Progress tracking fields
-                progress: progressRecord.progressPercentage,
-                isCompleted: progressRecord.isCompleted,
-                completedAt: progressRecord.completedAt,
-                totalTimeSpent: progressRecord.totalTimeSpent, // in minutes
-                lastAccessedAt: progressRecord.lastAccessedAt,
-                totalModules: progressRecord.totalModules,
-                completedModules: progressRecord.completedModules.length,
-                estimatedHours: courseDurationHours
-            };
-        }));
-
-        return coursesWithProgress;
+        return Mycourses;
     } catch (error) {
         throw new Error("Failed to get user enrollments: " + error.message);
     }
@@ -303,49 +248,7 @@ exports.updateCourseProgress = async (userId, courseId, moduleId, timeSpent = 0)
 };
 
 // Add method to get enrollment statistics
-exports.getEnrollmentStats = async (userId) => {
-    if (!userId) {
-        throw new Error("User ID is required");
-    }
 
-    try {
-        const progressRecords = await UserProgress.find({ user: userId })
-            .populate('course', 'duration');
-
-        const stats = {
-            totalCourses: progressRecords.length,
-            inProgress: 0,
-            completed: 0,
-            totalHours: 0,
-            totalMinutesSpent: 0
-        };
-
-        progressRecords.forEach(record => {
-            if (record.isCompleted) {
-                stats.completed++;
-            } else if (record.progressPercentage > 0) {
-                stats.inProgress++;
-            }
-
-            // Add actual time spent
-            stats.totalMinutesSpent += record.totalTimeSpent;
-
-            // Add estimated course hours
-            if (record.course && record.course.duration) {
-                const durationMatch = record.course.duration.match(/(\d+)/);
-                const courseDurationHours = durationMatch ? parseInt(durationMatch[1]) : 0;
-                stats.totalHours += courseDurationHours;
-            }
-        });
-
-        // Convert minutes to hours for display
-        stats.actualHoursSpent = Math.round(stats.totalMinutesSpent / 60 * 10) / 10; // Round to 1 decimal
-
-        return stats;
-    } catch (error) {
-        throw new Error("Failed to get enrollment stats: " + error.message);
-    }
-};
 
 exports.followUser = async (userId, followId) => {
     if (!userId || !followId) {

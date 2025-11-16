@@ -60,7 +60,7 @@ const Home = () => {
             window.removeEventListener('searchStart', handleSearchStart);
         };
     }, []);
-
+    console.log({myData})
     return (
         <>
             <Navbar IsLoggedIn={isLoggedIn} myData={myData} />
