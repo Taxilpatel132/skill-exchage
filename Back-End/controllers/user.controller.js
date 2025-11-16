@@ -350,6 +350,7 @@ exports.getMyEnrollments = async (req, res) => {
             stats
         });
     } catch (error) {
+       
         return res.status(500).json({
             message: "Failed to retrieve enrollments",
             error: error.message

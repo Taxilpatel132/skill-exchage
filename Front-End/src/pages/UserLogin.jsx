@@ -41,7 +41,7 @@ const UserLogin = () => {
 
             if (response.ok) {
                 console.log('Login successful:', data);
-                // Store token in localStorage if needed
+               
                 if (data.token) {
                     console.log("hello")
                     localStorage.setItem('token', data.token);
@@ -63,7 +63,7 @@ const UserLogin = () => {
 
     return (
         <div className="h-screen relative overflow-hidden" style={{ backgroundColor: '#F9FAFB' }}>
-            {/* Custom Gradient Background */}
+           
             <div
                 className="absolute inset-0"
                 style={{
@@ -71,17 +71,17 @@ const UserLogin = () => {
                 }}
             ></div>
 
-            {/* Animated Background Elements */}
+           
             <div className="absolute inset-0">
                 <div className="absolute top-10 left-10 w-64 h-64 bg-white opacity-6 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-10 right-10 w-80 h-80 bg-white opacity-6 rounded-full blur-3xl animate-pulse delay-1000"></div>
                 <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-white opacity-3 rounded-full blur-2xl animate-bounce delay-500"></div>
             </div>
 
-            {/* Main Content */}
+           
             <div className="relative z-10 h-screen flex items-center justify-center p-6">
                 <div className="w-full max-w-sm">
-                    {/* Logo/Brand Section */}
+                   
                     <div className="text-center mb-5">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl mb-3 border border-white border-opacity-30 shadow-lg">
                             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,10 +96,10 @@ const UserLogin = () => {
                         </p>
                     </div>
 
-                    {/* Login Card */}
+                  
                     <div className="bg-white bg-opacity-95 backdrop-blur-lg rounded-xl shadow-xl p-6 border border-white border-opacity-30">
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            {/* Email Field */}
+                           
                             <div className="space-y-1">
                                 <label htmlFor="email" className="block text-xs font-medium" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '500', color: '#111827' }}>
                                     Email
@@ -131,7 +131,7 @@ const UserLogin = () => {
                                 </div>
                             </div>
 
-                            {/* Password Field */}
+                           
                             <div className="space-y-1">
                                 <label htmlFor="password" className="block text-xs font-medium" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '500', color: '#111827' }}>
                                     Password
@@ -179,7 +179,7 @@ const UserLogin = () => {
                                 </div>
                             </div>
 
-                            {/* Remember Me & Forgot Password */}
+                         
                             <div className="flex items-center justify-between pt-2">
                                 <div className="flex items-center">
                                     <input
@@ -200,7 +200,7 @@ const UserLogin = () => {
                                 </a>
                             </div>
 
-                            {/* Submit Button */}
+                            
                             <button
                                 type="submit"
                                 disabled={isLoading}
@@ -225,7 +225,7 @@ const UserLogin = () => {
                             </button>
                         </form>
 
-                        {/* Sign Up Link */}
+                     
                         <div className="mt-4 text-center">
                             <p className="text-xs" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '400', color: '#111827' }}>
                                 Don't have an account?{' '}
@@ -236,7 +236,6 @@ const UserLogin = () => {
                         </div>
                     </div>
 
-                    {/* Features */}
                     <div className="mt-4 text-center">
                         <div className="flex items-center justify-center space-x-6 text-white text-opacity-95">
                             <div className="flex items-center bg-white bg-opacity-15 px-3 py-1.5 rounded-lg backdrop-blur-sm">

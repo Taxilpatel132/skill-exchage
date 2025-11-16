@@ -1,28 +1,27 @@
 let dotenv = require('dotenv');
 dotenv.config();
-console.log('✅ Environment variables loaded');
 
 let http = require('http');
-console.log('✅ HTTP module loaded');
+
 
 let app = require('./app');
-console.log('✅ App module loaded');
+
 
 const connectDB = require('./database/db');
-console.log('✅ Database module loaded');
+
 
 const { Server } = require('socket.io');
-console.log('✅ Socket.io loaded');
+
 
 const jwt = require('jsonwebtoken');
 const User = require('./models/users.model');
-console.log('✅ All modules loaded successfully');
 
-console.log('🚀 Starting server...');
+
+
 
 let port = process.env.PORT || 3000;
 let server = http.createServer(app);
-// Initialize Socket.io
+
 const io = new Server(server, {
     cors: {
         origin: ['http://localhost:5173', 'http://localhost:3000'],
@@ -30,11 +29,8 @@ const io = new Server(server, {
         credentials: true
     }
 });
-
-// Store connected users
 const connectedUsers = new Map();
 
-// Socket.io authentication middleware
 io.use(async (socket, next) => {
     try {
         const token = socket.handshake.auth.token;
@@ -57,7 +53,6 @@ io.use(async (socket, next) => {
     }
 });
 
-// Socket.io connection handling
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.userId}`);
     
@@ -86,10 +81,10 @@ io.on('connection', (socket) => {
     });
 });
 
-// Make io available globally
+
 app.set('io', io);
 
-// Start server after database connection
+
 const startServer = async () => {
     try {
         await connectDB();
